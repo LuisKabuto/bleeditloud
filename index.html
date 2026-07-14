@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BLEEDIT LOUD - Verificación y Venta de Entradas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght=400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>tailwind.config={theme:{extend:{fontFamily:{display:['Oswald','sans-serif'],body:['Roboto Condensed','sans-serif']}}}}</script>
+    <style>
+        :root{--bg:#0a0a0a;--card:#111111;--border:#1e1e1e;--accent:#cc0000;--accent-bright:#ff1a1a;--accent-glow:rgba(204,0,0,0.4);--text:#e8e8e8;--muted:#555555;--success:#00cc44;--success-glow:rgba(0,204,68,0.4)}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:var(--bg);color:var(--text);font-family:'Roboto Condensed',sans-serif;-webkit-text-size-adjust:100%}
+        .grid-bg{background-image:linear-gradient(rgba(204,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(204,0,0,0.04) 1px,transparent 1px);background-size:24px 24px}
+        .scanlines::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9998}
+        .glitch{position:relative;display:inline-block}.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}.glitch::before{color:var(--accent);animation:ga 3s infinite linear alternate-reverse;clip-path:polygon(0 0,100% 0,100% 33%,0 33%)}.glitch::after{color:rgba(255,255,255,0.6);animation:gb 2.5s infinite linear alternate-reverse;clip-path:polygon(0 67%,100% 67%,100% 100%,0 100%)}
+        @keyframes ga{0%,90%{transform:translate(0)}92%{transform:translate(-3px,1px)}94%{transform:translate(2px,-1px)}96%{transform:translate(-1px,2px)}98%{transform:translate(3px,0)}100%{transform:translate(0)}}
+        @keyframes gb{0%,88%{transform:translate(0)}90%{transform:translate(2px,-1px)}93%{transform:translate(-3px,2px)}96%{transform:translate(1px,-2px)}100%{transform:translate(0)}}
+        .ab{border:1px solid var(--border);box-shadow:inset 0 0 30px rgba(204,0,0,0.05),0 0 15px rgba(204,0,0,0.05);transition:border-color .3s,box-shadow .3s}.ab:hover{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(204,0,0,0.1),0 0 20px var(--accent-glow)}
+        .bp{background:linear-gradient(135deg,var(--accent),#990000);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;-webkit-tap-highlight-color:transparent}.bp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}.bp:hover::before{transform:translateX(100%)}.bp:hover{box-shadow:0 0 30px var(--accent-glow),0 4px 15px rgba(0,0,0,.5);transform:translateY(-1px)}.bp:active{transform:translateY(1px)}
+        .bs{background:transparent;color:var(--muted);font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}.bs:hover{color:var(--text);border-color:var(--muted);background:rgba(255,255,255,.03)}
+        .sm{padding:6px 14px;font-size:11px;letter-spacing:1px}
+        .di{background:#0d0d0d;border:1px solid var(--border);color:var(--text);font-family:'Roboto Condensed',sans-serif;font-size:18px;padding:14px 18px;width:100%;outline:none;transition:border-color .3s,box-shadow .3s;-webkit-appearance:none;border-radius:2px}.di:focus{border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}.di::placeholder{color:#333}
+        .vf{position:relative;width:280px;height:280px;margin:0 auto}
+        .vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
+        .sl{position:absolute;left:5%;width:90%;height:2px;background:linear-gradient(90deg,transparent,var(--accent-bright),transparent);box-shadow:0 0 12px var(--accent-bright);animation:sm 2.5s ease-in-out infinite;z-index:10}@keyframes sm{0%,100%{top:5%}50%{top:92%}}
+        .rc{border:2px solid;padding:24px;text-align:center;animation:ri .4s ease-out}.rc-s{border-color:var(--success);background:rgba(0,204,68,.06);box-shadow:0 0 40px var(--success-glow)}.rc-e{border-color:var(--accent);background:rgba(204,0,0,.06);box-shadow:0 0 40px var(--accent-glow)}.rc-u{border-color:#cc8800;background:rgba(204,136,0,.06);box-shadow:0 0 40px rgba(204,136,0,.3)}@keyframes ri{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+        .fo{position:fixed;inset:0;pointer-events:none;z-index:9997;animation:fl .5s ease-out forwards}.fo-s{background:rgba(0,204,68,.15)}.fo-e{background:rgba(204,0,0,.15)}@keyframes fl{from{opacity:1}to{opacity:0}}
+        .at{padding:10px 20px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .3s;background:none;-webkit-tap-highlight-color:transparent}.at:hover{color:var(--text)}.at.ac{color:var(--accent-bright);border-bottom-color:var(--accent)}
+        .tb{width:100%;border-collapse:collapse}.tb th{text-align:left;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.tb td{padding:10px;border-bottom:1px solid rgba(30,30,30,.5);font-size:13px}.tb tr:hover td{background:rgba(255,255,255,.02)}
+        .bg-p{background:rgba(204,136,0,.15);color:#cc8800;border:1px solid rgba(204,136,0,.3)}.bg-u{background:rgba(0,204,68,.1);color:#00cc44;border:1px solid rgba(0,204,68,.25)}
+        .bg-pre{background:rgba(0, 102, 255, .15); color:#3399ff; border:1px solid rgba(0,102,255,.3)}
+        .bg-puerta{background:rgba(204,136,0,.15);color:#cc8800;border:1px solid rgba(204,136,0,.3)}
+        .bg-cortesia{background:rgba(153, 0, 204, .15); color:#cc00cc; border:1px solid rgba(153,0,204,.3)}
+        .bg-pagado{background:rgba(0,204,68,.15);color:#00cc44;border:1px solid rgba(0,204,68,.3)}
+        .bg-pendiente{background:rgba(204,0,0,.15);color:#ff1a1a;border:1px solid rgba(204,0,0,.3)}
+
+        .bd{display:inline-block;padding:3px 10px;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+        .mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center}.mb{background:var(--card);border:1px solid var(--border);padding:40px;max-width:380px;width:90%;text-align:center}
+        .tc{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+        .tt{padding:14px 22px;font-size:14px;animation:ti .4s ease,to .4s ease 2.6s forwards;max-width:340px}
+        .tt-s{background:rgba(0,204,68,.15);border:1px solid rgba(0,204,68,.3);color:#00cc44}.tt-e{background:rgba(204,0,0,.15);border:1px solid rgba(204,0,0,.3);color:var(--accent-bright)}.tt-i{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text)}
+        @keyframes ti{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes to{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+        .hi{position:relative;display:inline-block}.hi::after{content:'';position:absolute;inset:-1px;border:1px solid var(--accent);opacity:.4;pointer-events:none}.hi img{display:block;max-height:55vh;width:auto;max-width:90vw;filter:contrast(1.1) brightness(.95)}
+        @keyframes rp{0%,100%{box-shadow:0 0 20px rgba(204,0,0,.1)}50%{box-shadow:0 0 40px rgba(204,0,0,.25)}}.rp{animation:rp 3s ease-in-out infinite}
+        .vw{display:none}
+        @keyframes fp{0%,100%{transform:translate(0,0);opacity:.15}25%{transform:translate(30px,-20px);opacity:.35}50%{transform:translate(-15px,-40px);opacity:.2}75%{transform:translate(20px,-10px);opacity:.3}}
+        @keyframes sk{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+        .qg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}@media(min-width:640px){.qg{grid-template-columns:repeat(3,1fr)}}@media(min-width:1024px){.qg{grid-template-columns:repeat(4,1fr)}}
+        .qc{background:#fff;border-radius:4px;padding:12px;text-align:center;color:#111}.qc img,.qc canvas{display:block!important;margin:0 auto}.qc .qn{color:#111;font-size:12px;font-weight:700;margin-top:8px;line-height:1.2}.qc .qd{color:#666;font-family:monospace;font-size:11px;margin-top:2px}.qc .qct{color:#cc0000;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;margin-top:4px}
+        .qc .qdl{display:flex;align-items:center;justify-content:center;margin-top:8px;padding:6px 0;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;background:#0a0a0a;color:#fff;border:none;cursor:pointer;border-radius:2px;-webkit-tap-highlight-color:transparent;text-decoration:none;width:100%}
+        .qc .qdl:hover{background:var(--accent)}
+        .qc .qsend{display:flex;gap:6px;justify-content:center;margin-top:8px;width:100%}
+        .qc .qwa{background:#25D366;color:#fff;flex:1;border-radius:2px;display:flex;align-items:center;justify-content:center;padding:6px 0;font-size:11px;text-decoration:none;cursor:pointer}.qc .qwa:hover{background:#128C7E}
+        .qc .qtg{background:#0088cc;color:#fff;flex:1;border-radius:2px;display:flex;align-items:center;justify-content:center;padding:6px 0;font-size:11px;text-decoration:none;cursor:pointer}.qc .qtg:hover{background:#005580}
+        .qc .qnative{background:#4F46E5;color:#fff;flex:2;border-radius:2px;display:flex;align-items:center;justify-content:center;padding:6px 0;font-size:11px;text-decoration:none;cursor:pointer}.qc .qnative:hover{background:#4338CA}
+        #scanner-reader video{border-radius:4px!important}#scanner-reader{border:none!important}
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#222;border-radius:3px}
+        @media(max-width:640px){.hi img{max-height:40vh}.vf{width:220px;height:220px}.at{padding:8px 10px;font-size:11px;letter-spacing:1px}.mb{padding:28px 20px}.tb th{font-size:10px;padding:8px 6px}.tb td{font-size:12px;padding:8px 6px}}
+        @media(prefers-reduced-motion:reduce){.glitch::before,.glitch::after{animation:none}.sl{animation:none}.scanlines::after{display:none}.rp{animation:none}}
+    </style>
+</head>
+<body class="grid-bg scanlines min-h-screen">
+
+    <!-- LANDING -->
+    <section id="view-landing" class="vw flex-col items-center justify-center min-h-screen px-4 py-10 relative" style="display:flex">
+        <div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            <div class="absolute top-1/4 left-1/4 w-1 h-1 bg-red-600 rounded-full opacity-30" style="animation:fp 8s ease-in-out infinite"></div>
+            <div class="absolute top-1/2 right-1/3 w-0.5 h-0.5 bg-red-700 rounded-full opacity-20" style="animation:fp 11s ease-in-out infinite 2s"></div>
+            <div class="absolute bottom-1/3 left-1/2 w-1 h-1 bg-red-500 rounded-full opacity-25" style="animation:fp 9s ease-in-out infinite 4s"></div>
+            <div class="absolute top-1/3 right-1/4 w-0.5 h-0.5 bg-red-800 rounded-full opacity-15" style="animation:fp 13s ease-in-out infinite 1s"></div>
+        </div>
+        <div class="relative z-10 flex flex-col items-center gap-6 max-w-2xl w-full">
+            <div class="hi rp rounded-sm">
+                <img src="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2" alt="BLEEDIT LOUD" onerror="this.style.display='none';document.getElementById('ft').style.display='block'">
+            </div>
+            <div id="ft" style="display:none" class="text-center">
+                <h1 class="font-display text-5xl sm:text-7xl font-bold tracking-wider glitch" data-text="BLEEDIT LOUD">BLEEDIT LOUD</h1>
+                <p class="font-display text-sm tracking-[6px] mt-2" style="color:var(--muted)">TRIBUTO OFICIAL DE VENEZUELA</p>
+            </div>
+            <div class="text-center space-y-2">
+                <p class="font-display text-sm tracking-[5px] uppercase" style="color:var(--muted)">Adquisición y Control de Accesos</p>
+                <div class="flex items-center justify-center gap-6 text-sm" style="color:var(--muted)">
+                    <span><i class="fa-regular fa-calendar mr-2" style="color:var(--accent)"></i><span id="landing-date">26 / 06 / 2026</span></span>
+                    <span><i class="fa-solid fa-location-dot mr-2" style="color:var(--accent)"></i><span id="landing-city">San Cristobal, Venezuela</span></span>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                <button class="bp flex-1 text-center rounded-sm" onclick="showView('shop')"><i class="fa-solid fa-ticket mr-2"></i>Comprar Entradas</button>
+                <button class="bs flex-1 text-center rounded-sm" onclick="showView('verify')"><i class="fa-solid fa-qrcode mr-2"></i>Mi QR / DNI</button>
+            </div>
+            <div class="w-full max-w-md text-center">
+                <button class="text-xs uppercase tracking-[2px] hover:text-white" style="color:var(--muted)" onclick="requestAdminAccess()"><i class="fa-solid fa-lock mr-1"></i>Acceso Staff / Admin</button>
+            </div>
+        </div>
+        <footer class="absolute bottom-4 text-center w-full" style="color:#2a2a2a;font-size:11px;letter-spacing:2px">BLEEDIT LOUD &mdash; TRIBUTO OFICIAL LINKIN PARK VENEZUELA</footer>
+    </section>
+
+    <!-- TIENDA / COMPRA -->
+    <section id="view-shop" class="vw flex-col items-center justify-center min-h-screen px-4 py-10">
+        <div class="w-full max-w-lg space-y-6">
+            <button class="bs text-sm rounded-sm mb-2" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
+            <div class="text-center">
+                <h2 class="font-display text-3xl font-bold tracking-wider">COMPRAR ENTRADAS</h2>
+                <p class="text-sm mt-1" style="color:var(--muted)">Adquiere tus accesos de forma directa y segura</p>
+            </div>
+            <div class="ab rounded-sm p-6 space-y-4" style="background:var(--card)">
+                <div>
+                    <label class="block font-display text-xs tracking-[2px] uppercase mb-1" style="color:var(--muted)">Nombre Completo</label>
+                    <input type="text" id="shop-name" class="di" placeholder="Ej: Luis Puentes">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-display text-xs tracking-[2px] uppercase mb-1" style="color:var(--muted)">Cédula de Identidad</label>
+                        <input type="text" id="shop-dni" class="di" placeholder="Ej: 12345678" inputmode="numeric">
+                    </div>
+                    <div>
+                        <label class="block font-display text-xs tracking-[2px] uppercase mb-1" style="color:var(--muted)">Teléfono Celular</label>
+                        <input type="text" id="shop-phone" class="di" placeholder="Ej: +584141234567" inputmode="tel">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-display text-xs tracking-[2px] uppercase mb-1" style="color:var(--muted)">Fase de Venta</label>
+                        <select id="shop-stage" class="di" style="background-color:#0d0d0d;" onchange="calculateTotal()">
+                            <!-- Las opciones se inyectan dinámicamente desde JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-display text-xs tracking-[2px] uppercase mb-1" style="color:var(--muted)">Cantidad de Entradas</label>
+                        <input type="number" id="shop-qty" class="di" min="1" value="1" oninput="calculateTotal()">
+                    </div>
+                </div>
+                
+                <!-- Totalizador -->
+                <div class="p-4 rounded-sm border" style="border-color:var(--border); background:#050505">
+                    <div class="flex justify-between items-center">
+                        <span class="font-display tracking-wider text-sm" style="color:var(--muted)">MONTO TOTAL A PAGAR:</span>
+                        <span id="shop-total" class="font-display text-2xl font-bold" style="color:var(--accent-bright)">$0.00 USD</span>
+                    </div>
+                </div>
+
+                <!-- Detalles de Pago Móvil Dinámicos -->
+                <div class="text-xs p-3 rounded-sm space-y-1" style="background:rgba(204,0,0,0.04); border:1px solid rgba(204,0,0,0.15); color:#999">
+                    <p class="font-bold text-white uppercase mb-1"><i class="fa-solid fa-receipt mr-1" style="color:var(--accent)"></i> Datos de Pago Móvil (Venezuela):</p>
+                    <p>Banco: <strong id="lbl-shop-bank" class="text-white">-</strong></p>
+                    <p>Cédula: <strong id="lbl-shop-id" class="text-white">-</strong></p>
+                    <p>Teléfono: <strong id="lbl-shop-phone" class="text-white">-</strong></p>
+                    <p>Tasa del día: <strong class="text-white">BCV oficial</strong></p>
+                </div>
+
+                <div>
+                    <label class="block font-display text-xs tracking-[2px] uppercase mb-1" style="color:var(--muted)">Referencia / Captura del Pago</label>
+                    <input type="text" id="shop-ref" class="di" placeholder="Ej: Nro de Referencia o Captura">
+                </div>
+
+                <button class="bp w-full mt-4 rounded-sm text-sm" onclick="sendOrderWhatsApp()"><i class="fa-brands fa-whatsapp mr-2 text-lg"></i>Reportar y Solicitar Entradas</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VERIFICAR -->
+    <section id="view-verify" class="vw flex-col items-center justify-center min-h-screen px-4 py-10">
+        <div class="w-full max-w-md space-y-6">
+            <button class="bs text-sm rounded-sm mb-2" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
+            <div class="text-center">
+                <h2 class="font-display text-3xl font-bold tracking-wider">CONSULTAR ENTRADA</h2>
+                <p class="text-sm mt-1" style="color:var(--muted)">Ingresa tu número de cédula (solo números)</p>
+            </div>
+            <div class="ab rounded-sm p-6" style="background:var(--card)">
+                <label class="block font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">Número de Cédula</label>
+                <input type="text" id="verify-dni" class="di" placeholder="Ej: 12345678" inputmode="numeric" autocomplete="off" autocapitalize="off" autocorrect="off">
+                <button class="bp w-full mt-4 rounded-sm text-sm" onclick="verifyDNI()">Verificar</button>
+            </div>
+            <div id="verify-result" style="display:none"></div>
+        </div>
+    </section>
+
+    <!-- ESCANER -->
+    <section id="view-scanner" class="vw flex-col items-center min-h-screen px-4 py-6">
+        <div class="w-full max-w-lg space-y-5">
+            <div class="flex items-center justify-between">
+                <button class="bs text-sm rounded-sm" onclick="stopScanner();showView('admin')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
+                <h2 class="font-display text-xl font-bold tracking-wider">ESCANER QR</h2>
+                <div style="width:80px"></div>
+            </div>
+            <div class="ab rounded-sm p-4" style="background:var(--card)">
+                <div class="vf mx-auto">
+                    <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+                    <div class="sl" id="scan-line-anim"></div>
+                    <div id="scanner-reader" style="width:280px;height:280px;overflow:hidden;border-radius:4px"></div>
+                </div>
+                <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara...</p>
+            </div>
+            <div id="scanner-result" style="display:none"></div>
+            <div class="ab rounded-sm p-4" style="background:var(--card)">
+                <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">Verificación Manual</p>
+                <div class="flex gap-3">
+                    <input type="text" id="scanner-dni-input" class="di flex-1" placeholder="12345678" inputmode="numeric" autocapitalize="off" autocorrect="off">
+                    <button class="bp rounded-sm text-sm px-5" onclick="verifyFromScanner()"><i class="fa-solid fa-check"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN PANEL -->
+    <section id="view-admin" class="vw flex-col min-h-screen">
+        <div class="flex items-center justify-between px-4 py-4 border-b" style="border-color:var(--border);background:var(--card)">
+            <button class="bs text-sm rounded-sm" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Salir</button>
+            <h2 class="font-display text-lg font-bold tracking-wider">PANEL ADMIN</h2>
+            <div id="admin-data-count" class="text-xs font-display tracking-wider" style="color:var(--muted)">0 registros</div>
+        </div>
+        <nav class="flex border-b overflow-x-auto" style="border-color:var(--border);background:rgba(17,17,17,.8)">
+            <button class="at ac" onclick="switchTab('tab-verify',this)"><i class="fa-solid fa-magnifying-glass mr-1"></i> Verificar</button>
+            <button class="at" onclick="switchTab('tab-qr',this)"><i class="fa-solid fa-qrcode mr-1"></i> QR Masivos</button>
+            <button class="at" onclick="switchTab('tab-list',this)"><i class="fa-solid fa-list mr-1"></i> Lista</button>
+            <button class="at" onclick="switchTab('tab-config',this)"><i class="fa-solid fa-gear mr-1"></i> Config</button>
+        </nav>
+
+        <!-- TAB: VERIFICAR -->
+        <div id="tab-verify" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:block">
+            <div class="max-w-xl mx-auto space-y-5">
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <label class="block font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">Número de Cédula</label>
+                    <div class="flex gap-3">
+                        <input type="text" id="admin-dni-input" class="di flex-1 text-xl" placeholder="12345678" inputmode="numeric" autocapitalize="off" autocorrect="off" onkeydown="if(event.key==='Enter')adminVerify()">
+                        <button class="bp rounded-sm px-6 text-lg" onclick="adminVerify()"><i class="fa-solid fa-check"></i></button>
+                    </div>
+                </div>
+                <div id="admin-verify-result" style="display:none"></div>
+                <button class="bs w-full rounded-sm" onclick="openScanner()"><i class="fa-solid fa-camera mr-2"></i>Abrir Escaner QR</button>
+            </div>
+        </div>
+
+        <!-- TAB: QR MASIVOS -->
+        <div id="tab-qr" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="ab rounded-sm p-6 text-center" style="background:var(--card)">
+                    <h3 class="font-display text-xs tracking-[3px] uppercase mb-4" style="color:var(--accent)">QR de Puerta (Para Autochequeo de Clientes)</h3>
+                    <div id="door-qr" class="inline-block p-4 rounded-sm" style="background:#fff"></div>
+                    <div class="mt-4"><button class="bp sm rounded-sm" onclick="downloadDoorQR()"><i class="fa-solid fa-download mr-1"></i>Descargar</button></div>
+                </div>
+                <hr style="border-color:var(--border)">
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-xs tracking-[3px] uppercase mb-2" style="color:var(--accent)">Generar Códigos QR por Lotes</h3>
+                    <p class="text-sm mb-4" style="color:var(--muted)">Genera los QR de forma progresiva optimizada en memoria para evitar colgar el dispositivo.</p>
+                    
+                    <div class="flex flex-wrap gap-3 mb-4">
+                        <button class="bp rounded-sm text-sm" onclick="initBatchGeneration(false)"><i class="fa-solid fa-qrcode mr-2"></i>Generar Todos</button>
+                        <button class="bs sm rounded-sm" onclick="initBatchGeneration(true)"><i class="fa-solid fa-clock mr-1"></i>Solo Pendientes</button>
+                    </div>
+                    
+                    <div id="batch-actions" style="display:none" class="flex flex-wrap gap-3 mb-4 justify-between items-center border-b pb-4" style="border-color:var(--border)">
+                        <div class="flex gap-3">
+                            <button class="bs sm rounded-sm" onclick="printBatch()"><i class="fa-solid fa-print mr-1"></i>Imprimir Lote</button>
+                            <button class="bs sm rounded-sm" onclick="dlAllBatch()"><i class="fa-solid fa-download mr-1"></i>Descargar Lote</button>
+                        </div>
+                        <span id="batch-stats" class="text-xs tracking-wider uppercase text-gray-400"></span>
+                    </div>
+
+                    <div id="batch-loading" style="display:none" class="text-center py-8">
+                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-3 block" style="color:var(--accent)"></i>
+                        <p id="batch-loading-text" class="text-sm" style="color:var(--muted)">Procesando registros...</p>
+                    </div>
+
+                    <div id="batch-grid" class="qg"></div>
+
+                    <!-- Botón Cargar Más para optimización -->
+                    <div id="batch-load-more-container" style="display:none" class="text-center mt-6">
+                        <button class="bs rounded-sm text-sm px-6" onclick="renderNextBatch()"><i class="fa-solid fa-angles-down mr-2"></i>Cargar Siguiente Bloque</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: LISTA -->
+        <div id="tab-list" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
+            <div class="max-w-3xl mx-auto space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--muted)"></i>
+                        <input type="text" id="list-search" class="di text-sm py-2 pl-10" placeholder="Buscar por nombre o cédula..." oninput="filterAndRenderList()">
+                    </div>
+                    <button class="bs text-sm py-2 px-4 rounded-sm" onclick="exportAuditMetrics()">
+                        <i class="fa-solid fa-file-excel mr-2 text-emerald-500"></i>Exportar Auditoría
+                    </button>
+                </div>
+
+                <!-- Filtros Avanzados -->
+                <div class="flex flex-wrap gap-2 py-1 overflow-x-auto border-b border-zinc-900 pb-3" id="filters-container">
+                    <button class="bs text-xs sm px-3 py-1.5 rounded-sm active-filter bg-zinc-900 border-zinc-600 text-white" onclick="changeListFilter('all', this)">Todos</button>
+                    <button class="bs text-xs sm px-3 py-1.5 rounded-sm" onclick="changeListFilter('remaining', this)">Pendiente Puerta</button>
+                    <button class="bs text-xs sm px-3 py-1.5 rounded-sm" onclick="changeListFilter('scanned', this)">Ingresados</button>
+                    <button class="bs text-xs sm px-3 py-1.5 rounded-sm" onclick="changeListFilter('unpaid', this)">Pago Pendiente</button>
+                    <button class="bs text-xs sm px-3 py-1.5 rounded-sm" onclick="changeListFilter('preventa', this)">Preventas</button>
+                    <button class="bs text-xs sm px-3 py-1.5 rounded-sm" onclick="changeListFilter('cortesias', this)">Cortesías</button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="ab rounded-sm p-3" style="background:var(--card)">
+                        <span class="block font-display text-[10px] tracking-wider uppercase text-gray-500">Total Compras</span>
+                        <span class="font-display text-xl font-bold" id="total-count">0</span>
+                    </div>
+                    <div class="ab rounded-sm p-3" style="background:var(--card)">
+                        <span class="block font-display text-[10px] tracking-wider uppercase text-gray-500">Entradas Vendidas</span>
+                        <span class="font-display text-xl font-bold" id="total-tickets">0</span>
+                    </div>
+                    <div class="ab rounded-sm p-3" style="background:var(--card)">
+                        <span class="block font-display text-[10px] tracking-wider uppercase text-gray-500">Admitidos</span>
+                        <span class="font-display text-xl font-bold text-emerald-500" id="verified-count">0</span>
+                    </div>
+                </div>
+
+                <div class="ab rounded-sm overflow-hidden" style="background:var(--card)">
+                    <div class="overflow-x-auto">
+                        <table class="tb">
+                            <thead>
+                                <tr>
+                                    <th>Asistente</th>
+                                    <th>Cédula</th>
+                                    <th>Cant.</th>
+                                    <th>Estado / Tipo</th>
+                                    <th>Asistencia</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CONFIG -->
+        <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
+            <div class="max-w-xl mx-auto space-y-5">
+                
+                <!-- NUEVO: CONFIGURACIÓN DE TAQUILLA PÚBLICA (EDITABLE) -->
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Configuración de Taquilla Pública</h3>
+                    <p class="text-xs mb-4" style="color:var(--muted)">Modifica los parámetros comerciales que visualizan tus clientes al comprar entradas.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block font-display text-[11px] tracking-[1px] uppercase mb-1" style="color:var(--muted)">Precio Preventa ($)</label>
+                            <input type="number" id="cfg-shop-p-pre" class="di text-sm py-2.5" min="0" step="0.01">
+                        </div>
+                        <div>
+                            <label class="block font-display text-[11px] tracking-[1px] uppercase mb-1" style="color:var(--muted)">Precio Puerta ($)</label>
+                            <input type="number" id="cfg-shop-p-pue" class="di text-sm py-2.5" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block font-display text-[11px] tracking-[1px] uppercase mb-1" style="color:var(--muted)">Banco Pago Móvil</label>
+                            <input type="text" id="cfg-shop-bank" class="di text-sm py-2.5" placeholder="Ej: Banesco (0134)">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-display text-[11px] tracking-[1px] uppercase mb-1" style="color:var(--muted)">Cédula Destino</label>
+                                <input type="text" id="cfg-shop-id" class="di text-sm py-2.5" placeholder="Ej: V-12.345.678">
+                            </div>
+                            <div>
+                                <label class="block font-display text-[11px] tracking-[1px] uppercase mb-1" style="color:var(--muted)">Teléfono Destino</label>
+                                <input type="text" id="cfg-shop-phone" class="di text-sm py-2.5" placeholder="Ej: 0414-1234567">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-display text-[11px] tracking-[1px] uppercase mb-1" style="color:var(--muted)">WhatsApp Receptor de Ventas (Formato Internacional)</label>
+                            <input type="text" id="cfg-shop-wa" class="di text-sm py-2.5" placeholder="Ej: 584141234567">
+                            <span class="text-[10px] text-zinc-500">Coloca el código de país sin el signo '+'. Ej: 584141234567 para Venezuela.</span>
+                        </div>
+                    </div>
+                    <button class="bp w-full mt-4 rounded-sm text-sm" onclick="saveShopConfig()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Cambios de Taquilla</button>
+                </div>
+
+                <!-- AGREGAR MANUAL -->
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Agregar Asistente Manual</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" id="manual-nombre" class="di" placeholder="Nombre completo">
+                        <input type="text" id="manual-cedula" class="di" placeholder="Cédula">
+                        <input type="number" id="manual-cantidad" class="di" placeholder="Cantidad" min="1" value="1">
+                        <input type="text" id="manual-etapa" class="di" placeholder="Etapa (Preventa, Puerta...)">
+                        <input type="text" id="manual-telefono" class="di" placeholder="Teléfono (opcional)">
+                        <select id="manual-pagado" class="di" style="background-color:#0d0d0d;">
+                            <option value="Si" style="background:#0d0d0d;">Pagado: Sí</option>
+                            <option value="No" style="background:#0d0d0d;">Pagado: No</option>
+                        </select>
+                    </div>
+                    <button class="bp w-full mt-4 rounded-sm text-sm" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar a la Lista</button>
+                    <button class="bs w-full mt-2 rounded-sm text-xs" onclick="clearManualAttendees()"><i class="fa-solid fa-trash mr-2"></i>Borrar Manuales Añadidos</button>
+                    <div id="manual-status" class="mt-3 text-sm" style="display:none"></div>
+                </div>
+
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Datos del Evento</h3>
+                    <p class="text-sm mb-4" style="color:var(--muted)">Cambia la fecha y ciudad que se muestran en la página principal.</p>
+                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">Fecha del Evento</label>
+                    <input type="text" id="config-date" class="di mb-4" placeholder="Ej: 26 / 06 / 2026">
+                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">Ciudad / Lugar</label>
+                    <input type="text" id="config-city" class="di mb-4" placeholder="Ej: San Cristobal, Venezuela">
+                    <button class="bp rounded-sm text-sm" onclick="saveEventInfo()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Datos del Evento</button>
+                    <div id="event-status" class="mt-3 text-sm" style="display:none"></div>
+                </div>
+
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Vincular Google Sheet (Nube)</h3>
+                    <p class="text-sm mb-4" style="color:var(--muted)">Usa una hoja de cálculo pública de Google Sheets vinculada en tiempo real para leer los asistentes.</p>
+                    <input type="text" id="config-sheet-id" class="di mb-4" placeholder="ID de la Hoja de Google Sheets">
+                    <button class="bp rounded-sm text-sm" onclick="saveAndLoadSheet()"><i class="fa-solid fa-sync mr-2"></i>Guardar y Sincronizar</button>
+                    <button class="bs rounded-sm text-sm sm" onclick="resetToDemo()">Usar Demo</button>
+                    <div id="sheet-status" class="mt-3 text-sm" style="display:none"></div>
+                </div>
+
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Subir Archivo Local (Excel/CSV)</h3>
+                    <p class="text-sm mb-4" style="color:var(--muted)">Sube directamente tu archivo local con columnas N, D, C, E, T, P para cargar offline de inmediato.</p>
+                    <input type="file" id="config-file" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFile(this)">
+                    <button class="bs w-full rounded-sm text-sm" onclick="document.getElementById('config-file').click()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Seleccionar Archivo Local</button>
+                    <div id="file-status" class="mt-3 text-sm" style="display:none"></div>
+                </div>
+
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-3" style="color:var(--accent)">Datos locales</h3>
+                    <button class="bs w-full rounded-sm text-sm" onclick="clearUsedEntries()"><i class="fa-solid fa-rotate-left mr-2"></i>Reiniciar Entradas Usadas</button>
+                    <p class="text-xs mt-3" style="color:#333">Las entradas marcadas como usadas se guardan en este navegador de forma local para control offline.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL PIN -->
+    <div id="pin-modal" class="mo" role="dialog" aria-modal="true">
+        <div class="mb">
+            <div class="mb-6">
+                <i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i>
+                <h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3>
+                <p class="text-sm mt-2" style="color:var(--muted)">Ingrese el PIN de administrador</p>
+            </div>
+            <input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] mb-4" placeholder="----" maxlength="10" autocomplete="off" inputmode="numeric">
+            <div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div>
+            <div class="flex gap-3">
+                <button class="bs flex-1 rounded-sm text-sm" onclick="closePINModal()">Cancelar</button>
+                <button class="bp flex-1 rounded-sm text-sm" onclick="checkPIN()">Acceder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EDICIÓN DE ASISTENTE -->
+    <div id="edit-modal" class="mo" role="dialog" aria-modal="true">
+        <div class="mb" style="max-width: 480px;">
+            <div class="mb-4 text-left">
+                <h3 class="font-display text-xl tracking-wider font-bold text-white"><i class="fa-solid fa-user-pen mr-2 text-red-600"></i>EDITAR ASISTENTE LOCAL</h3>
+                <p class="text-xs mt-1 text-zinc-500">Puedes modificar los datos locales del asistente. La cédula modificada re-mapeará los QR.</p>
+            </div>
+            <input type="hidden" id="edit-original-dni">
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block font-display text-[11px] tracking-[2px] uppercase mb-1 text-zinc-400">Nombre Completo</label>
+                    <input type="text" id="edit-name" class="di text-sm py-2.5">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-display text-[11px] tracking-[2px] uppercase mb-1 text-zinc-400">Cédula</label>
+                        <input type="text" id="edit-dni" class="di text-sm py-2.5" inputmode="numeric">
+                    </div>
+                    <div>
+                        <label class="block font-display text-[11px] tracking-[2px] uppercase mb-1 text-zinc-400">Celular</label>
+                        <input type="text" id="edit-phone" class="di text-sm py-2.5" inputmode="tel">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-2">
+                        <label class="block font-display text-[11px] tracking-[2px] uppercase mb-1 text-zinc-400">Etapa de Venta</label>
+                        <input type="text" id="edit-stage" class="di text-sm py-2.5" placeholder="Preventa, Cortesía...">
+                    </div>
+                    <div>
+                        <label class="block font-display text-[11px] tracking-[2px] uppercase mb-1 text-zinc-400">Entradas</label>
+                        <input type="number" id="edit-qty" class="di text-sm py-2.5" min="1">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-display text-[11px] tracking-[2px] uppercase mb-1 text-zinc-400">Estado de Pago</label>
+                    <select id="edit-paid" class="di text-sm py-2.5" style="background-color:#0d0d0d;">
+                        <option value="Si">Pagado (Sí)</option>
+                        <option value="No">Pendiente (No)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button class="bs flex-1 rounded-sm text-sm" onclick="closeEditModal()">Cancelar</button>
+                <button class="bp flex-1 rounded-sm text-sm" onclick="updateAttendeeData()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tc" id="toast-container" aria-live="polite"></div>
+
+    <script>
+        var CFG={PIN:'2025',SID:'',ED:'26 / 06 / 2026',CI:'San Cristobal, Venezuela'};
+        
+        // Valores iniciales y estructura por defecto editables para la taquilla pública
+        var SHOP_CFG={
+            P_PRE: 10.00,
+            P_PUE: 15.00,
+            BANK: 'Banesco (0134)',
+            ID_DEST: 'V-12.345.678',
+            PHONE_DEST: '0414-1234567',
+            WA_DEST: '584141234567'
+        };
+
+        var DEMO=[
+            {N:'Carlos Rodriguez',D:'V-12.345.678',C:4,E:'Preventa',T:'+584141234567',P:'Si'},
+            {N:'Maria Gonzalez',D:'V23,456,789',C:2,E:'Puerta',T:'+584247654321',P:'Si'},
+            {N:'Jose Perez',D:'V-34567890',C:1,E:'Cortesia',T:'',P:'No'},
+            {N:'Ana Martinez',D:'V45.678.901',C:3,E:'Preventa',T:'+584121112233',P:'Si'}
+        ];
+        var attendees=[],usedIDs,manualAttendees=[];
+        try{usedIDs=new Map(JSON.parse(localStorage.getItem('bleedit_used')||'[]'));}catch(e){usedIDs=new Map();}
+        try{manualAttendees=JSON.parse(localStorage.getItem('bleedit_manual')||'[]');}catch(e){manualAttendees=[];}
+
+        // Paginación y Cola del Generador de QR Masivo
+        var batchListQueue=[];
+        var batchPointer=0;
+        const BATCH_SIZE=12; 
+        var currentListFilter='all';
+
+        var scannerInst=null,scannerOn=false,doorQR=null,lastScan='',lastTime=0;
+
+        function nD(d){return d?d.replace(/[^0-9]/g,''):'';}
+        function nS(s){return s?s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim():'';}
+        function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+        function isPaid(val){var v=nS(val);return v==='si'||v==='true'||v==='1'||v==='pagado'||v==='pagada'||v==='yes';}
+        
+        function getStageClass(stage){
+            if(nS(stage).includes('preventa')) return 'bg-pre';
+            if(nS(stage).includes('puerta')) return 'bg-puerta';
+            if(nS(stage).includes('cortesia')) return 'bg-cortesia';
+            return 'bg-p';
+        }
+
+        document.addEventListener('DOMContentLoaded',function(){
+            CFG.ED=localStorage.getItem('bleedit_event_date')||CFG.ED;
+            CFG.CI=localStorage.getItem('bleedit_event_city')||CFG.CI;
+            CFG.SID=localStorage.getItem('bleedit_sheet_id')||'';
+            
+            // Cargar configuración de taquilla de LocalStorage si existe
+            if(localStorage.getItem('bleedit_shop_cfg')) {
+                try { SHOP_CFG = JSON.parse(localStorage.getItem('bleedit_shop_cfg')); } catch(e){}
+            }
+
+            document.getElementById('config-sheet-id').value=CFG.SID;
+            document.getElementById('config-date').value=CFG.ED;
+            document.getElementById('config-city').value=CFG.CI;
+            document.getElementById('landing-date').textContent=CFG.ED;
+            document.getElementById('landing-city').textContent=CFG.CI;
+            
+            // Inicializar los inputs de configuración comercial del panel de administrador
+            initAdminShopInputs();
+            // Inyectar etiquetas dinámicas en la vista de compras del cliente
+            syncPublicShopUI();
+
+            loadData();
+        });
+
+        // --- MANEJO DE CONFIGURACIÓN DE TAQUILLA ---
+        function initAdminShopInputs() {
+            document.getElementById('cfg-shop-p-pre').value = SHOP_CFG.P_PRE;
+            document.getElementById('cfg-shop-p-pue').value = SHOP_CFG.P_PUE;
+            document.getElementById('cfg-shop-bank').value = SHOP_CFG.BANK;
+            document.getElementById('cfg-shop-id').value = SHOP_CFG.ID_DEST;
+            document.getElementById('cfg-shop-phone').value = SHOP_CFG.PHONE_DEST;
+            document.getElementById('cfg-shop-wa').value = SHOP_CFG.WA_DEST;
+        }
+
+        function syncPublicShopUI() {
+            // Inyectar las opciones de la fase dinámicamente según los precios guardados
+            var select = document.getElementById('shop-stage');
+            select.innerHTML = '<option value="Preventa - $' + SHOP_CFG.P_PRE + '" data-price="' + SHOP_CFG.P_PRE + '">Preventa ($' + SHOP_CFG.P_PRE + ' USD)</option>' +
+                               '<option value="Puerta - $' + SHOP_CFG.P_PUE + '" data-price="' + SHOP_CFG.P_PUE + '">Fase Puerta ($' + SHOP_CFG.P_PUE + ' USD)</option>';
+            
+            // Sincronizar etiquetas informativas de Pago Móvil
+            document.getElementById('lbl-shop-bank').textContent = SHOP_CFG.BANK;
+            document.getElementById('lbl-shop-id').textContent = SHOP_CFG.ID_DEST;
+            document.getElementById('lbl-shop-phone').textContent = SHOP_CFG.PHONE_DEST;
+            
+            calculateTotal();
+        }
+
+        function saveShopConfig() {
+            var pPre = parseFloat(document.getElementById('cfg-shop-p-pre').value) || 0;
+            var pPue = parseFloat(document.getElementById('cfg-shop-p-pue').value) || 0;
+            var bank = document.getElementById('cfg-shop-bank').value.trim();
+            var idDest = document.getElementById('cfg-shop-id').value.trim();
+            var phoneDest = document.getElementById('cfg-shop-phone').value.trim();
+            var waDest = document.getElementById('cfg-shop-wa').value.trim().replace(/[^0-9]/g,'');
+
+            if(!bank || !idDest || !phoneDest || !waDest) {
+                showToast('Por favor completa todos los campos de configuración de taquilla', 'e');
+                return;
+            }
+
+            SHOP_CFG.P_PRE = pPre;
+            SHOP_CFG.P_PUE = pPue;
+            SHOP_CFG.BANK = bank;
+            SHOP_CFG.ID_DEST = idDest;
+            SHOP_CFG.PHONE_DEST = phoneDest;
+            SHOP_CFG.WA_DEST = waDest;
+
+            localStorage.setItem('bleedit_shop_cfg', JSON.stringify(SHOP_CFG));
+            syncPublicShopUI();
+            showToast('Configuración de taquilla actualizada con éxito', 's');
+        }
+
+        // --- CÁLCULOS COMPRA DIRECTA ---
+        function calculateTotal() {
+            var select = document.getElementById('shop-stage');
+            if(!select.options.length) return;
+            var price = parseFloat(select.options[select.selectedIndex].getAttribute('data-price')) || 0;
+            var qty = parseInt(document.getElementById('shop-qty').value) || 1;
+            if(qty < 1) qty = 1;
+            var total = price * qty;
+            document.getElementById('shop-total').textContent = '$' + total.toFixed(2) + ' USD';
+        }
+
+        function sendOrderWhatsApp() {
+            var name = document.getElementById('shop-name').value.trim();
+            var dni = document.getElementById('shop-dni').value.trim();
+            var phone = document.getElementById('shop-phone').value.trim();
+            var stage = document.getElementById('shop-stage').value;
+            var qty = document.getElementById('shop-qty').value;
+            var ref = document.getElementById('shop-ref').value.trim();
+            var total = document.getElementById('shop-total').textContent;
+
+            if(!name || !dni || !phone || !ref) {
+                showToast('Por favor completa todos los campos requeridos','e');
+                return;
+            }
+
+            var text = "*RESERVA DE ENTRADAS - BLEEDIT LOUD*\n\n" +
+                       "👤 *Cliente:* " + name + "\n" +
+                       "🪪 *Cédula:* " + dni + "\n" +
+                       "📞 *Teléfono:* " + phone + "\n" +
+                       "🎟️ *Fase:* " + stage + "\n" +
+                       "📦 *Cantidad:* " + qty + " entrada(s)\n" +
+                       "💰 *Monto Total:* " + total + "\n" +
+                       "🧾 *Referencia Pago:* " + ref + "\n\n" +
+                       "_Por favor verifique mi pago móvil adjunto para liberar mi QR de acceso._";
+
+            var waLink = "https://wa.me/" + SHOP_CFG.WA_DEST + "?text=" + encodeURIComponent(text);
+            window.open(waLink, '_blank');
+            showToast('Pedido de compra enviado a WhatsApp', 's');
+        }
+
+        // --- CARGA DE DATOS ---
+        function loadData(){
+            if(CFG.SID){
+                var url='https://docs.google.com/spreadsheets/d/'+CFG.SID+'/gviz/tq?tqx=out:csv';
+                var st=document.getElementById('sheet-status');
+                st.style.display='block';st.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sincronizando de la nube...';
+                fetch(url).then(function(r){if(!r.ok)throw new Error('No se pudo leer la hoja');return r.text();})
+                .then(function(csv){
+                    attendees=parseCSV(csv);
+                    mergeManual();
+                    updateUI();
+                    st.innerHTML='<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>Hojas de Google cargadas en la nube';
+                }).catch(function(e){
+                    st.innerHTML='<i class="fa-solid fa-circle-xmark mr-2" style="color:var(--accent)"></i>Error: '+esc(e.message);
+                    attendees=DEMO.slice();
+                    mergeManual();
+                    updateUI();
+                    showToast('Cargados datos de reserva local','i');
+                });
+            }else{
+                attendees=DEMO.slice();
+                mergeManual();
+                updateUI();
+            }
+        }
+
+        function parseCSV(csv){
+            var lines=csv.split(/\r?\n/);
+            var res=[];
+            for(var i=1;i<lines.length;i++){
+                var row=splitCSVLine(lines[i]);
+                if(row.length>=2){
+                    var n=row[0].replace(/^"|"$/g,'').trim();
+                    var d=row[1].replace(/^"|"$/g,'').trim();
+                    if(!n&&!d)continue;
+                    var c=parseInt(row[2])||1;
+                    var e=row[3]?row[3].replace(/^"|"$/g,'').trim():'General';
+                    var t=row[4]?row[4].replace(/^"|"$/g,'').trim():'';
+                    var p=row[5]?row[5].replace(/^"|"$/g,'').trim():'Si';
+                    res.push({N:n,D:d,C:c,E:e,T:t,P:p});
+                }
+            }
+            return res;
+        }
+
+        function splitCSVLine(line){
+            var parts=[];
+            var inside=false;
+            var current='';
+            for(var i=0;i<line.length;i++){
+                var char=line[i];
+                if(char==='"'){inside=!inside;}
+                else if(char===','&&!inside){parts.push(current);current='';}
+                else{current+=char;}
+            }
+            parts.push(current);
+            return parts;
+        }
+
+        function mergeManual(){
+            var activeDnis=new Set();
+            for(var i=0;i<attendees.length;i++) activeDnis.add(nD(attendees[i].D));
+            for(var j=0;j<manualAttendees.length;j++){
+                if(!activeDnis.has(nD(manualAttendees[j].D))){
+                    attendees.push(manualAttendees[j]);
+                }
+            }
+        }
+
+        function handleFile(input){
+            var file=input.files[0];if(!file)return;
+            var st=document.getElementById('file-status');
+            st.style.display='block';st.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Procesando archivo local...';
+            var reader=new FileReader();
+            reader.onload=function(e){
+                try{
+                    var data=new Uint8Array(e.target.result);
+                    var wb=XLSX.read(data,{type:'array'});
+                    var ws=wb.Sheets[wb.SheetNames[0]];
+                    var csv=XLSX.utils.sheet_to_csv(ws);
+                    attendees=parseCSV(csv);
+                    if(!attendees.length) throw new Error('Archivo vacío o sin columnas correctas');
+                    mergeManual();
+                    updateUI();
+                    st.innerHTML='<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>'+attendees.length+' registros cargados localmente.';
+                    showToast(attendees.length+' registros cargados','s');
+                }catch(err){
+                    st.innerHTML='<i class="fa-solid fa-circle-xmark mr-2" style="color:var(--accent)"></i>Error: '+err.message;
+                    showToast('Error al procesar','e');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function addManualAttendee(){
+            var n=document.getElementById('manual-nombre').value.trim();
+            var d=document.getElementById('manual-cedula').value.trim();
+            var c=parseInt(document.getElementById('manual-cantidad').value)||1;
+            var e=document.getElementById('manual-etapa').value.trim()||'Manual';
+            var t=document.getElementById('manual-telefono').value.trim();
+            var p=document.getElementById('manual-pagado').value;
+            var st=document.getElementById('manual-status');
+
+            if(!n||!d){showToast('Nombre y Cédula son obligatorios','e');return;}
+            var newAtt={N:n,D:d,C:c,E:e,T:t,P:p};
+
+            for(var i=0;i<attendees.length;i++){
+                if(nD(attendees[i].D)===nD(d)){
+                    showToast('Esta cédula ya está registrada','e');
+                    return;
+                }
+            }
+            attendees.push(newAtt);
+            manualAttendees.push(newAtt);
+            localStorage.setItem('bleedit_manual',JSON.stringify(manualAttendees));
+            updateUI();
+            st.style.display='block';st.innerHTML='<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>Asistente agregado.';
+            showToast('Asistente agregado correctamente','s');
+            document.getElementById('manual-nombre').value='';
+            document.getElementById('manual-cedula').value='';
+            document.getElementById('manual-cantidad').value='1';
+            document.getElementById('manual-etapa').value='';
+            document.getElementById('manual-telefono').value='';
+        }
+
+        function clearManualAttendees(){
+            manualAttendees=[];localStorage.removeItem('bleedit_manual');
+            loadData();showToast('Asistentes manuales borrados','i');
+        }
+
+        function updateUI(){
+            document.getElementById('admin-data-count').textContent=attendees.length+' registros';
+            var total=0,used=0, tickets=0;
+            for(var i=0;i<attendees.length;i++){
+                total++;
+                tickets+=attendees[i].C;
+                for(var j=1;j<=attendees[i].C;j++){
+                    if(usedIDs.has(nD(attendees[i].D)+'-'+j))used++;
+                }
+            }
+            document.getElementById('total-count').textContent=total;
+            document.getElementById('total-tickets').textContent=tickets;
+            document.getElementById('verified-count').textContent=used;
+            filterAndRenderList();
+        }
+
+        function showView(vn){
+            var av=document.querySelectorAll('.vw');for(var i=0;i<av.length;i++)av[i].style.display='none';
+            var t=document.getElementById('view-'+vn);if(t){t.style.display='flex';void t.offsetHeight;}
+            if(vn!=='scanner'&&scannerOn)stopScanner();
+            if(vn==='admin')setTimeout(function(){genDoorQR();},250);
+            if(vn==='verify'){
+                var vr=document.getElementById('verify-result');vr.style.display='none';vr.innerHTML='';
+                document.getElementById('verify-dni').value='';
+                setTimeout(function(){document.getElementById('verify-dni').focus();},350);
+            }
+            if(vn==='admin'){
+                var ar=document.getElementById('admin-verify-result');ar.style.display='none';ar.innerHTML='';
+                document.getElementById('admin-dni-input').value='';
+            }
+            if(vn==='scanner'){
+                document.getElementById('scanner-result').style.display='none';document.getElementById('scanner-result').innerHTML='';
+                document.getElementById('scanner-dni-input').value='';
+            }
+            window.scrollTo(0,0);
+        }
+
+        // --- EXPORTAR MÉTRICAS DE AUDITORÍA (CSV) ---
+        function exportAuditMetrics() {
+            if(!attendees.length){showToast('No hay registros para exportar', 'e'); return;}
+            var csv = "\ufeff"; 
+            csv += "Nombre,Cedula,Cantidad Comprada,Fase,Telefono,Pagado,Ticket Individual,Estatus Puerta,Hora de Ingreso\n";
+            
+            for(var i=0;i<attendees.length;i++){
+                var a = attendees[i];
+                for(var j=1;j<=a.C;j++){
+                    var uid = nD(a.D)+'-'+j;
+                    var hasEntered = usedIDs.has(uid);
+                    var entryTime = hasEntered ? usedIDs.get(uid) : "N/A";
+                    var paidText = isPaid(a.P) ? "Pagado" : "Pago Pendiente";
+                    
+                    csv += '"' + a.N.replace(/"/g, '""') + '",' +
+                           '"' + a.D.replace(/"/g, '""') + '",' +
+                           a.C + ',' +
+                           '"' + a.E.replace(/"/g, '""') + '",' +
+                           '"' + (a.T || '').replace(/"/g, '""') + '",' +
+                           '"' + paidText + '",' +
+                           '"Entrada ' + j + ' de ' + a.C + '",' +
+                           '"' + (hasEntered ? "ADMITIDO" : "PENDIENTE PUERTA") + '",' +
+                           '"' + entryTime + '"\n';
+                }
+            }
+
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "auditoria_bleedit_loud_" + new Date().toISOString().slice(0,10) + ".csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Métricas de auditoría exportadas con éxito', 's');
+        }
+
+        // --- FILTRADO DE LA LISTA ---
+        function changeListFilter(filterType, element) {
+            currentListFilter = filterType;
+            var buttons = document.querySelectorAll('#filters-container button');
+            buttons.forEach(function(btn) {
+                btn.classList.remove('bg-zinc-900', 'border-zinc-600', 'text-white');
+            });
+            element.classList.add('bg-zinc-900', 'border-zinc-600', 'text-white');
+            filterAndRenderList();
+        }
+
+        function filterAndRenderList() {
+            var s = nS(document.getElementById('list-search').value);
+            var body = document.getElementById('list-tbody');
+            body.innerHTML = '';
+
+            for(var i=0; i<attendees.length; i++) {
+                var a = attendees[i];
+                var rawDni = nD(a.D);
+                var matchSearch = !s || nS(a.N).includes(s) || rawDni.includes(s);
+
+                if(!matchSearch) continue;
+
+                var totalPaid = isPaid(a.P);
+                var totalTickets = a.C;
+                var ticketsUsed = 0;
+                for(var j=1; j<=totalTickets; j++) {
+                    if(usedIDs.has(rawDni + '-' + j)) ticketsUsed++;
+                }
+
+                // Filtrado Avanzado
+                if (currentListFilter === 'remaining' && ticketsUsed === totalTickets) continue; 
+                if (currentListFilter === 'scanned' && ticketsUsed === 0) continue; 
+                if (currentListFilter === 'unpaid' && totalPaid) continue; 
+                if (currentListFilter === 'preventa' && !nS(a.E).includes('preventa')) continue;
+                if (currentListFilter === 'cortesias' && !nS(a.E).includes('cortesia')) continue;
+
+                var statusBadge = totalPaid ? '<span class="bd bg-pagado rounded-sm">Pagado</span>' : '<span class="bd bg-pendiente rounded-sm">Pendiente</span>';
+                var stageBadge = '<span class="bd ' + getStageClass(a.E) + ' rounded-sm">' + esc(a.E) + '</span>';
+                var verificationProgress = ticketsUsed + ' / ' + totalTickets + ' ingresados';
+
+                // Verificar si es un registro editable
+                var isLocalAttendee = manualAttendees.some(function(ma) { return nD(ma.D) === rawDni; });
+                var actionBtn = '';
+                if(isLocalAttendee) {
+                    actionBtn = '<button class="bs text-xs px-2.5 py-1 rounded-sm border-zinc-700 hover:border-red-600 hover:text-white" onclick="openEditModal(\'' + rawDni + '\')">' +
+                                '<i class="fa-solid fa-pen-to-square mr-1 text-red-600"></i>Editar</button>';
+                } else {
+                    actionBtn = '<span class="text-[10px] text-zinc-600 uppercase tracking-wider"><i class="fa-solid fa-cloud mr-1"></i>Nube</span>';
+                }
+
+                var row = document.createElement('tr');
+                row.innerHTML = '<td><strong class="text-white block">' + esc(a.N) + '</strong><span class="text-xs" style="color:var(--muted)">' + (a.T || 'S/N') + '</span></td>' +
+                                '<td>' + esc(a.D) + '</td>' +
+                                '<td>' + totalTickets + '</td>' +
+                                '<td class="space-y-1">' + stageBadge + '<br>' + statusBadge + '</td>' +
+                                '<td>' + (ticketsUsed === totalTickets ? '<span class="text-emerald-500 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Entraron todos</span>' : '<span class="text-amber-500"><i class="fa-solid fa-clock mr-1"></i>' + verificationProgress + '</span>') + '</td>' +
+                                '<td class="text-center">' + actionBtn + '</td>';
+                body.appendChild(row);
+            }
+        }
+
+        // --- CONTROL MODAL DE EDICIÓN ---
+        function openEditModal(rawDni) {
+            var target = manualAttendees.find(function(ma) { return nD(ma.D) === rawDni; });
+            if(!target) {
+                showToast('Asistente no encontrado o no es editable', 'e');
+                return;
+            }
+
+            document.getElementById('edit-original-dni').value = rawDni;
+            document.getElementById('edit-name').value = target.N;
+            document.getElementById('edit-dni').value = target.D;
+            document.getElementById('edit-phone').value = target.T || '';
+            document.getElementById('edit-stage').value = target.E;
+            document.getElementById('edit-qty').value = target.C;
+            document.getElementById('edit-paid').value = isPaid(target.P) ? 'Si' : 'No';
+
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        function updateAttendeeData() {
+            var origDni = document.getElementById('edit-original-dni').value;
+            var name = document.getElementById('edit-name').value.trim();
+            var dni = document.getElementById('edit-dni').value.trim();
+            var phone = document.getElementById('edit-phone').value.trim();
+            var stage = document.getElementById('edit-stage').value.trim();
+            var qty = parseInt(document.getElementById('edit-qty').value) || 1;
+            var paid = document.getElementById('edit-paid').value;
+
+            if(!name || !dni) {
+                showToast('Nombre completo y Cédula son obligatorios', 'e');
+                return;
+            }
+
+            if(nD(dni) !== origDni) {
+                var collision = attendees.some(function(a) { return nD(a.D) === nD(dni); });
+                if(collision) {
+                    showToast('La nueva cédula ingresada ya existe en los registros', 'e');
+                    return;
+                }
+            }
+
+            var mIndex = manualAttendees.findIndex(function(ma) { return nD(ma.D) === origDni; });
+            if(mIndex !== -1) {
+                manualAttendees[mIndex] = { N: name, D: dni, C: qty, E: stage, T: phone, P: paid };
+                localStorage.setItem('bleedit_manual', JSON.stringify(manualAttendees));
+            }
+
+            var aIndex = attendees.findIndex(function(a) { return nD(a.D) === origDni; });
+            if(aIndex !== -1) {
+                attendees[aIndex] = { N: name, D: dni, C: qty, E: stage, T: phone, P: paid };
+            }
+
+            if(nD(dni) !== origDni) {
+                for(var j = 1; j <= 100; j++) {
+                    var oldUid = origDni + '-' + j;
+                    if(usedIDs.has(oldUid)) {
+                        var timeVal = usedIDs.get(oldUid);
+                        usedIDs.set(nD(dni) + '-' + j, timeVal);
+                        usedIDs.delete(oldUid);
+                    }
+                }
+                localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs.entries())));
+            }
+
+            closeEditModal();
+            updateUI();
+            showToast('Datos actualizados de manera limpia', 's');
+        }
+
+        // --- VERIFICACIÓN ---
+        function verifyEntry(input, cid){
+            var raw=input.trim();
+            var isQR = raw.includes('-');
+            var dni = nD(raw);
+            if(!dni){showToast('Ingresa una cédula o QR','e');return;}
+            var a=null;
+            for(var i=0;i<attendees.length;i++){
+                if(nD(attendees[i].D)===dni){a=attendees[i];break;}
+            }
+            var c=document.getElementById(cid);
+            c.style.display='block';
+            if(!a){c.innerHTML=mkCard('e','NO ENCONTRADO','No existe compra con la cédula <strong>'+esc(raw)+'</strong>');showFlash('e');return;}
+            if(!isPaid(a.P)){
+                c.innerHTML=mkCard('u','PAGO PENDIENTE','<strong>'+esc(a.N)+'</strong> tiene un pago pendiente. No se puede verificar.');
+                showFlash('e');return;
+            }
+            var stageClass = getStageClass(a.E);
+            var ticketIdx = -1;
+            if(isQR){
+                if(usedIDs.has(raw)){
+                    c.innerHTML=mkCard('u','ENTRADA YA USADA','El código <strong>'+esc(raw)+'</strong> ya fue escaneado.<br><span class="text-xs text-gray-500">Ingreso registrado el: '+usedIDs.get(raw)+'</span>');
+                    showFlash('e');return;
+                }
+                var parts = raw.split('-');
+                ticketIdx = parseInt(parts[1],10);
+                if(ticketIdx > a.C){
+                    c.innerHTML=mkCard('e','ENTRADA INVALIDA','El índice de entrada ('+ticketIdx+') supera el total comprado ('+a.C+').');
+                    showFlash('e');return;
+                }
+            }else{
+                var fidx=-1;
+                for(var j=1;j<=a.C;j++){
+                    if(!usedIDs.has(dni+'-'+j)){fidx=j;break;}
+                }
+                if(fidx===-1){
+                    c.innerHTML=mkCard('u','TODAS LAS ENTRADAS USADAS','Las '+a.C+' entradas de <strong>'+esc(a.N)+'</strong> ya fueron utilizadas.');
+                    showFlash('e');return;
+                }
+                ticketIdx = fidx;
+            }
+
+            var uniqueTicketID = dni+'-'+ticketIdx;
+            var currentTimeString = new Date().toLocaleTimeString('es-VE', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            usedIDs.set(uniqueTicketID, currentTimeString);
+            localStorage.setItem('bleedit_used',JSON.stringify(Array.from(usedIDs.entries())));
+            updateUI();
+            showFlash('s');
+            c.innerHTML=mkCard('s','ACCESO AUTORIZADO','<strong>'+esc(a.N)+'</strong><br><span class="bd '+stageClass+' rounded-sm mt-2 inline-block">'+esc(a.E)+'</span><br><br><span class="text-sm">Entrada <strong>'+ticketIdx+' de '+a.C+'</strong> validada con éxito.</span>');
+            showToast('Entrada verificada','s');
+        }
+
+        function mkCard(t,tit,desc){
+            var c=t==='s'?'rc-s':t==='e'?'rc-e':'rc-u';
+            var ic=t==='s'?'fa-circle-check':t==='e'?'fa-circle-xmark':'fa-triangle-exclamation';
+            var col=t==='s'?'var(--success)':t==='e'?'var(--accent-bright)':'#cc8800';
+            return '<div class="rc '+c+' rounded-sm">'+
+                   '<i class="fa-solid '+ic+' text-5xl mb-4" style="color:'+col+'"></i>'+
+                   '<h3 class="font-display text-2xl font-bold tracking-wider mb-2" style="color:'+col+'">'+tit+'</h3>'+
+                   '<p class="text-sm leading-relaxed">'+desc+'</p>'+
+                   '</div>';
+        }
+
+        function verifyDNI(){verifyEntry(document.getElementById('verify-dni').value,'verify-result');}
+        function adminVerify(){verifyEntry(document.getElementById('admin-dni-input').value,'admin-verify-result');}
+        function verifyFromScanner(){verifyEntry(document.getElementById('scanner-dni-input').value,'scanner-result');}
+
+        // --- ESCANER QR ---
+        function openScanner(){
+            showView('scanner');
+            document.getElementById('scanner-status').innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2" style="color:var(--accent)"></i>Activando cámara...';
+            setTimeout(function(){
+                if(!scannerInst) scannerInst=new Html5Qrcode('scanner-reader');
+                scannerOn=true;
+                scannerInst.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},onScanOk,onScanErr)
+                .then(function(){
+                    document.getElementById('scanner-status').innerHTML='<i class="fa-solid fa-circle-notch fa-spin mr-2" style="color:var(--success)"></i>Buscando código QR...';
+                    document.getElementById('scan-line-anim').style.display='block';
+                }).catch(function(e){
+                    document.getElementById('scanner-status').innerHTML='<i class="fa-solid fa-circle-exmark mr-2" style="color:var(--accent)"></i>Error de hardware.';
+                    document.getElementById('scan-line-anim').style.display='none';
+                });
+            },450);
+        }
+
+        function onScanErr(){}
+
+        function stopScanner(){
+            if(scannerInst&&scannerOn){
+                scannerOn=false;
+                scannerInst.stop().then(function(){scannerInst.clear();}).catch(function(){});
+            }
+        }
+
+        function onScanOk(dt){
+            var now=Date.now();
+            var clean=dt.trim();
+            if(clean===lastScan&&now-lastTime<3000)return;
+            lastScan=clean;
+            lastTime=now;
+            if(scannerOn){
+                scannerInst.pause(true);
+                setTimeout(function(){if(scannerOn)scannerInst.resume().catch(function(){});},4000);
+            }
+            document.getElementById('scanner-status').innerHTML='<i class="fa-solid fa-qrcode mr-2" style="color:var(--accent)"></i>Código leído: '+esc(clean);
+            verifyEntry(clean,'scanner-result');
+        }
+
+        // --- QR PUERTA ---
+        function genDoorQR(){
+            var c=document.getElementById('door-qr');
+            c.innerHTML='';
+            try{
+                new QRCode(c,{text:window.location.href.split('#')[0]+'#verificar',width:220,height:220,colorDark:"#0a0a0a",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+            }catch(e){}
+        }
+
+        function downloadDoorQR(){
+            var cv=document.querySelector('#door-qr canvas');
+            if(!cv){showToast('Genera el QR de puerta primero','e');return;}
+            var a=document.createElement('a');
+            a.download='bleedit-qr-puerta.png';
+            a.href=cv.toDataURL('image/png');
+            document.body.appendChild(a);a.click();document.body.removeChild(a);
+            showToast('QR descargado con éxito','s');
+        }
+
+        // --- GENERADOR DE QR OPTIMIZADO (PAGINACIÓN VIRTUAL) ---
+        function initBatchGeneration(onlyRemaining) {
+            if(!attendees.length){showToast('No hay datos disponibles','e');return;}
+            
+            document.getElementById('batch-loading').style.display='block';
+            document.getElementById('batch-grid').innerHTML='';
+            document.getElementById('batch-actions').style.display='none';
+            document.getElementById('batch-load-more-container').style.display='none';
+            
+            batchListQueue=[];
+            batchPointer=0;
+
+            for(var i=0;i<attendees.length;i++){
+                var a=attendees[i];
+                for(var j=1;j<=a.C;j++){
+                    var uid=nD(a.D)+'-'+j;
+                    if(onlyRemaining && usedIDs.has(uid)) continue; 
+                    batchListQueue.push({a:a,uid:uid,ticketNum:j});
+                }
+            }
+
+            if(!batchListQueue.length){
+                document.getElementById('batch-loading').style.display='none';
+                showToast(onlyRemaining?'Todas las entradas ya han sido validadas':'Sin datos en lista','i');
+                return;
+            }
+
+            renderNextBatch();
+        }
+
+        function renderNextBatch() {
+            document.getElementById('batch-loading').style.display='block';
+            document.getElementById('batch-load-more-container').style.display='none';
+            document.getElementById('batch-loading-text').textContent = "Generando lote (" + (batchPointer + 1) + " al " + Math.min(batchPointer + BATCH_SIZE, batchListQueue.length) + ")...";
+
+            var end = Math.min(batchPointer + BATCH_SIZE, batchListQueue.length);
+            var grid = document.getElementById('batch-grid');
+
+            function renderSingle(i) {
+                if (i >= end) {
+                    batchPointer = end;
+                    document.getElementById('batch-loading').style.display='none';
+                    document.getElementById('batch-actions').style.display='flex';
+                    document.getElementById('batch-stats').textContent = "Visualizando " + batchPointer + " de " + batchListQueue.length + " QRs";
+                    
+                    if (batchPointer < batchListQueue.length) {
+                        document.getElementById('batch-load-more-container').style.display='block';
+                    }
+                    showToast('Lote de códigos QR procesados', 's');
+                    return;
+                }
+
+                var item = batchListQueue[i];
+                var cid = 'bq-' + i;
+                
+                var card = document.createElement('div');
+                card.className = 'qc animate-fade-in';
+                
+                var qd = document.createElement('div');
+                qd.id = cid;
+                qd.style.cssText = 'width:140px;height:140px;margin:0 auto';
+                card.appendChild(qd);
+
+                var np = document.createElement('div');
+                np.className = 'qn';np.textContent = item.a.N;
+                card.appendChild(np);
+
+                var dp = document.createElement('div');
+                dp.className = 'qd';dp.textContent = item.uid;
+                card.appendChild(dp);
+
+                var cp = document.createElement('div');
+                cp.className = 'qct';cp.textContent = 'Entrada ' + item.ticketNum + ' de ' + item.a.C + ' (' + item.a.E + ')';
+                card.appendChild(cp);
+
+                var db = document.createElement('button');
+                db.className = 'qdl';
+                db.innerHTML = '<i class="fa-solid fa-download mr-1"></i>Descargar';
+                db.onclick = function(){dlBatchItem(cid, item.uid);};
+                card.appendChild(db);
+
+                var sBlock = document.createElement('div');
+                sBlock.className = 'qsend';
+                
+                var shareButton = document.createElement('button');
+                shareButton.className = 'qnative';
+                shareButton.innerHTML = '<i class="fa-solid fa-share-nodes mr-1"></i>Enviar Entrada';
+                shareButton.onclick = function(){shareQR(cid, item.uid, item.a.N, item.a.T);};
+                sBlock.appendChild(shareButton);
+                
+                card.appendChild(sBlock);
+                grid.appendChild(card);
+
+                try {
+                    new QRCode(document.getElementById(cid), {
+                        text: item.uid,
+                        width: 140,
+                        height: 140,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                } catch(e) {
+                    console.error("No se pudo renderizar QR individual", e);
+                }
+
+                setTimeout(function(){ renderSingle(i + 1); }, 40);
+            }
+
+            renderSingle(batchPointer);
+        }
+
+        function dlBatchItem(cid,uid){
+            var cv=document.querySelector('#'+cid+' canvas');
+            if(!cv){showToast('Error al procesar el código de descarga','e');return;}
+            var a=document.createElement('a');
+            a.download='qr-'+uid+'.png';
+            a.href=cv.toDataURL('image/png');
+            document.body.appendChild(a);a.click();document.body.removeChild(a);
+        }
+
+        function dlAllBatch(){
+            var activeItems = document.querySelectorAll('#batch-grid .qc');
+            if(!activeItems.length){showToast('No hay QRs renderizados en este momento','e');return;}
+            
+            var delay = 0;
+            activeItems.forEach(function(card){
+                var qd = card.querySelector('.qd').textContent;
+                var cid = card.querySelector('[id^="bq-"]').id;
+                setTimeout(function(){
+                    dlBatchItem(cid, qd);
+                }, delay);
+                delay += 300; 
+            });
+            showToast('Iniciando descarga en bloque...','s');
+        }
+
+        // --- SISTEMA DE COMPARTIR NATIVO INTEGRADO ---
+        function shareQR(cid, uid, name, phone) {
+            var canvas = document.querySelector('#' + cid + ' canvas');
+            if(!canvas) {
+                showToast('El código QR no se ha renderizado por completo', 'e');
+                return;
+            }
+
+            var text = "⚡ *TRIBUTO LINKIN PARK - BLEEDIT LOUD* ⚡\n\n" +
+                       "Hola *" + name + "*, aquí tienes tu pase de acceso oficial.\n" +
+                       "🎫 *Código de Entrada:* " + uid + "\n\n" +
+                       "_Presenta la imagen QR adjunta en la entrada el día del evento._";
+
+            canvas.toBlob(function(blob) {
+                if(!blob) {
+                    showToast('Error al procesar la imagen del QR', 'e');
+                    return;
+                }
+                
+                var file = new File([blob], "entrada-" + uid + ".png", { type: "image/png" });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Entrada BLEEDIT LOUD',
+                        text: text
+                    }).then(function() {
+                        showToast('¡Entrada compartida con éxito!', 's');
+                    }).catch(function(err) {
+                        if(err.name !== 'AbortError') {
+                            showToast('Error al intentar compartir nativamente', 'e');
+                        }
+                    });
+                } else {
+                    var formattedPhone = phone ? phone.replace(/[^0-9]/g,'') : '';
+                    var fallbackUrl = "https://wa.me/" + formattedPhone + "?text=" + encodeURIComponent(text);
+                    window.open(fallbackUrl, '_blank');
+                    showToast('API nativa no soportada. Abriendo WhatsApp...', 'i');
+                }
+            }, 'image/png');
+        }
+
+        function printBatch(){
+            var w=window.open();
+            w.document.write('<html><head><title>Imprimir Entradas QR - BLEEDIT LOUD</title><style>body{font-family:sans-serif;background:#fff;color:#000;margin:0;padding:20px}html{background:#fff}.ph{display:flex;flex-wrap:wrap;gap:20px}.pi{border:1px solid #ccc;padding:15px;width:200px;text-align:center;page-break-inside:avoid}img{display:block;margin:0 auto}</style></head><body>');
+            w.document.write('<h1>ENTRADAS QR - BLEEDIT LOUD</h1><div class="ph">');
+            var activeCards = document.querySelectorAll('#batch-grid .qc');
+            activeCards.forEach(function(card){
+                var title = card.querySelector('.qn').textContent;
+                var code = card.querySelector('.qd').textContent;
+                var details = card.querySelector('.qct').textContent;
+                var canvas = card.querySelector('canvas');
+                if(canvas){
+                    var dataUrl = canvas.toDataURL('image/png');
+                    w.document.write('<div class="pi"><img src="'+dataUrl+'" width="140" height="140"><h3>'+esc(title)+'</h3><p style="font-family:monospace;font-size:12px;margin:5px 0">'+esc(code)+'</p><p style="font-size:11px;color:#444">'+esc(details)+'</p></div>');
+                }
+            });
+            w.document.write('</div><script>window.onload=function(){window.print();window.close();};<\/script></body></html>');
+            w.document.close();
+        }
+
+        // --- ADMINISTRACIÓN ---
+        function requestAdminAccess(){
+            document.getElementById('pin-modal').style.display='flex';
+            document.getElementById('pin-input').value='';
+            document.getElementById('pin-error').style.display='none';
+            setTimeout(function(){document.getElementById('pin-input').focus();},250);
+        }
+
+        function closePINModal(){document.getElementById('pin-modal').style.display='none';}
+
+        function checkPIN(){
+            var input=document.getElementById('pin-input').value.trim();
+            if(input===CFG.PIN){
+                closePINModal();
+                showView('admin');
+            }else{
+                var err=document.getElementById('pin-error');
+                err.style.display='block';
+                document.getElementById('pin-input').value='';
+            }
+        }
+
+        function switchTab(tn,btn){
+            var tabs=document.querySelectorAll('.tab-c');for(var i=0;i<tabs.length;i++)tabs[i].style.display='none';
+            var t=document.getElementById(tn);if(t)t.style.display='block';
+            var btns=document.querySelectorAll('.at');for(var j=0;j<btns.length;j++)btns[j].classList.remove('ac');
+            btn.classList.add('ac');
+        }
+
+        function saveEventInfo(){
+            var d=document.getElementById('config-date').value.trim();
+            var c=document.getElementById('config-city').value.trim();
+            if(!d||!c){showToast('Completa fecha y ciudad','e');return;}
+            CFG.ED=d;CFG.CI=c;
+            localStorage.setItem('bleedit_event_date',d);
+            localStorage.setItem('bleedit_event_city',c);
+            document.getElementById('landing-date').textContent=d;
+            document.getElementById('landing-city').textContent=c;
+            var s=document.getElementById('event-status');
+            s.style.display='block';s.innerHTML='<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>Datos del evento actualizados';
+            showToast('Evento actualizado','s');
+        }
+
+        function saveAndLoadSheet(){
+            var sid=document.getElementById('config-sheet-id').value.trim();
+            if(!sid){showToast('Ingresa un ID válido','e');return;}
+            CFG.SID=sid;localStorage.setItem('bleedit_sheet_id',sid);
+            loadData();
+        }
+
+        function resetToDemo(){
+            CFG.SID='';localStorage.removeItem('bleedit_sheet_id');
+            document.getElementById('config-sheet-id').value='';
+            attendees=DEMO.slice();
+            mergeManual();updateUI();
+            showToast('Datos demo restaurados','i');
+            var st=document.getElementById('sheet-status');
+            st.style.display='block';st.innerHTML='<i class="fa-solid fa-circle-info mr-2" style="color:var(--muted)"></i>Usando datos demo';
+        }
+
+        function clearUsedEntries(){
+            usedIDs.clear();localStorage.removeItem('bleedit_used');
+            updateUI();showToast('Control de entradas reiniciado','i');
+        }
+
+        // --- EFECTOS AUXILIARES ---
+        function showFlash(t){
+            var f=document.createElement('div');
+            f.className='fo fo-'+t;
+            document.body.appendChild(f);
+            setTimeout(function(){f.remove();},600);
+        }
+
+        function showToast(m,t){
+            t=t||'i';
+            var c=document.getElementById('toast-container');
+            var tt=document.createElement('div');
+            var ic=t==='s'?'fa-circle-check':t==='e'?'fa-circle-xmark':'fa-circle-info';
+            var cl=t==='s'?'tt-s':t==='e'?'tt-e':'tt-i';
+            tt.className=cl+' tt';
+            tt.innerHTML='<i class="fa-solid '+ic+' mr-2"></i>'+esc(m);
+            c.appendChild(tt);
+            setTimeout(function(){tt.remove();},3000);
+        }
+    </script>
+</body>
+</html>
