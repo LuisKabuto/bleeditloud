@@ -485,8 +485,36 @@
         // URL de Google Apps Script (Base de Datos Centralizada)
         const API_URL = 'https://script.google.com/macros/s/AKfycbyC_ZjmYsSJioZayIJJVbXPQsLvNpXB8oLo5r876f8Z0wz4ukiQFg7nFTDaN7biDFCj/exec';
 
-        // Hash SHA-256 exacto para el PIN "2025"
-        const ADMIN_PIN_HASH = '02242c08d99cbb2a1291176b6fec9183307613589b27b9c9f4d45548db92bc93';
+// 1. Asegúrate de tener el hash correcto al inicio del script:
+const ADMIN_PIN_HASH = '02242c08d99cbb2a1291176b6fec9183307613589b27b9c9f4d45548db92bc93';
+
+// 2. Reemplaza la función checkPIN por esta versión asíncrona corregida:
+async function checkPIN() {
+    var input = document.getElementById('pin-input').value.trim();
+    if (!input) return;
+    
+    try {
+        // Forzamos la espera de la conversión del hash de forma estricta
+        var hashedInput = await sha256(input);
+        
+        if (hashedInput === ADMIN_PIN_HASH) {
+            closePINModal();
+            showView('admin');
+        } else {
+            document.getElementById('pin-error').style.display = 'block';
+            document.getElementById('pin-input').value = '';
+        }
+    } catch (e) {
+        // Fallback de seguridad por si el navegador bloquea la API criptográfica en local
+        if (input === '2025') {
+            closePINModal();
+            showView('admin');
+        } else {
+            document.getElementById('pin-error').style.display = 'block';
+            document.getElementById('pin-input').value = '';
+        }
+    }
+}
 
         var CFG={ED:'26 / 06 / 2026',CI:'San Cristobal, Venezuela'};
 
