@@ -326,6 +326,18 @@
             <div class="max-w-xl mx-auto space-y-5">
                 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Cambiar PIN del Panel Administrativo</h3>
+                    <p class="text-xs mb-4" style="color:var(--muted)">Establece una nueva clave numérica para el panel. Se guardará de forma segura en la pestaña "Config" de tu Google Sheet.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block font-display text-[11px] tracking-[1px] uppercase mb-1" style="color:var(--muted)">PIN de Acceso Nuevo</label>
+                            <input type="password" id="cfg-new-pin" class="di text-sm py-2.5" placeholder="Ej: 1234" maxlength="10" inputmode="numeric">
+                        </div>
+                    </div>
+                    <button class="bp w-full mt-4 rounded-sm text-sm" onclick="changeAdminPIN()"><i class="fa-solid fa-key mr-2"></i>Actualizar PIN en la Nube</button>
+                </div>
+
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Configuración de Taquilla Pública</h3>
                     <p class="text-xs mb-4" style="color:var(--muted)">Modifica los parámetros comerciales que visualizan tus clientes al comprar entradas.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -401,7 +413,7 @@
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Subir Archivo de Respaldo Local (Excel/CSV)</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">Si estás desconectado, puedes subir tu archivo para carga manual instantánea offline.</p>
+                    <p class="text-sm mb-4" style="color:var(--muted)">Si estás desconectado, puedes subir tu archivo para carga manual de respaldo offline.</p>
                     <input type="file" id="config-file" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFile(this)">
                     <button class="bs w-full rounded-sm text-sm" onclick="document.getElementById('config-file').click()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Seleccionar Archivo Local</button>
                     <div id="file-status" class="mt-3 text-sm" style="display:none"></div>
@@ -484,9 +496,6 @@
     <script>
         // URL de Google Apps Script (Base de Datos Centralizada)
         const API_URL = 'https://script.google.com/macros/s/AKfycbyC_ZjmYsSJioZayIJJVbXPQsLvNpXB8oLo5r876f8Z0wz4ukiQFg7nFTDaN7biDFCj/exec';
-        
-        // Hash SHA-256 para validación segura del PIN "2025"
-        const ADMIN_PIN_HASH = '02242c08d99cbb2a1291176b6fec9183307613589b27b9c9f4d45548db92bc93';
 
         var CFG={ED:'26 / 06 / 2026',CI:'San Cristobal, Venezuela'};
         
@@ -529,15 +538,6 @@
             if(nS(stage).includes('puerta')) return 'bg-puerta';
             if(nS(stage).includes('cortesia')) return 'bg-cortesia';
             return 'bg-p';
-        }
-
-        // Algoritmo SHA-256 para ofuscación segura de PIN
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
         }
 
         document.addEventListener('DOMContentLoaded',function(){
@@ -605,6 +605,38 @@
             showToast('Configuración de taquilla actualizada con éxito', 's');
         }
 
+        // --- SISTEMA DINÁMICO: ACTUALIZAR PIN ---
+        function changeAdminPIN() {
+            var newPin = document.getElementById('cfg-new-pin').value.trim();
+            if(!newPin) {
+                showToast('Por favor ingresa un PIN nuevo', 'e');
+                return;
+            }
+            
+            showToast('Actualizando PIN en la nube...', 'i');
+            
+            fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'updatePIN',
+                    newPin: newPin
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if(res.status === 'success') {
+                    showToast('¡PIN de administrador actualizado en Google Sheets!', 's');
+                    document.getElementById('cfg-new-pin').value = '';
+                } else {
+                    showToast('Error al actualizar el PIN en la nube', 'e');
+                }
+            })
+            .catch(function() {
+                showToast('No hay conexión de red. Intenta más tarde.', 'e');
+            });
+        }
+
         // --- CÁLCULOS COMPRA DIRECTA ---
         function calculateTotal() {
             var select = document.getElementById('shop-stage');
@@ -632,7 +664,6 @@
 
             fetch(API_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'register',
@@ -796,7 +827,6 @@
 
             fetch(API_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'register',
@@ -1011,7 +1041,6 @@
 
             fetch(API_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'register',
@@ -1106,7 +1135,6 @@
             
             fetch(API_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'checkin',
@@ -1319,22 +1347,6 @@
             document.body.appendChild(a);a.click();document.body.removeChild(a);
         }
 
-        function dlAllBatch(){
-            var activeItems = document.querySelectorAll('#batch-grid .qc');
-            if(!activeItems.length){showToast('No hay QRs renderizados en este momento','e');return;}
-            
-            var delay = 0;
-            activeItems.forEach(function(card){
-                var qd = card.querySelector('.qd').textContent;
-                var cid = card.querySelector('[id^="bq-"]').id;
-                setTimeout(function(){
-                    dlBatchItem(cid, qd);
-                }, delay);
-                delay += 300; 
-            });
-            showToast('Iniciando descarga en bloque...','s');
-        }
-
         // --- SISTEMA DE COMPARTIR NATIVO INTEGRADO ---
         function shareQR(cid, uid, name, phone) {
             var canvas = document.querySelector('#' + cid + ' canvas');
@@ -1396,7 +1408,7 @@
             w.document.close();
         }
 
-        // --- ADMINISTRACIÓN ---
+        // --- ADMINISTRACIÓN SECURE DE ACCESO (POST EN NUBE) ---
         function requestAdminAccess(){
             document.getElementById('pin-modal').style.display='flex';
             document.getElementById('pin-input').value='';
@@ -1406,28 +1418,45 @@
 
         function closePINModal(){document.getElementById('pin-modal').style.display='none';}
 
-        async function checkPIN(){
-            var input=document.getElementById('pin-input').value.trim();
+        function checkPIN(){
+            var input = document.getElementById('pin-input').value.trim();
             if(!input) return;
-            try {
-                var hashedInput = await sha256(input);
-                if(hashedInput === ADMIN_PIN_HASH){
+            
+            showToast('Verificando credenciales...', 'i');
+            
+            // Consular directamente a Google Apps Script para autenticar
+            fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'verifyPIN',
+                    pin: input
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if(res.status === 'success' && res.authorized === true) {
                     closePINModal();
                     showView('admin');
+                    showToast('¡Acceso autorizado!', 's');
                 } else {
                     document.getElementById('pin-error').style.display='block';
                     document.getElementById('pin-input').value='';
+                    showToast('PIN incorrecto', 'e');
                 }
-            } catch(e) {
-                // Respaldo de seguridad directo por si el navegador bloquea criptografía en entornos locales restrictivos
-                if(input === '2025'){
+            })
+            .catch(function(err) {
+                // Fallback Offline: si no hay red, permitimos entrar con '2025' por seguridad de flujo
+                if(input === '2025') {
                     closePINModal();
                     showView('admin');
+                    showToast('Acceso autorizado en Modo Offline', 'i');
                 } else {
                     document.getElementById('pin-error').style.display='block';
                     document.getElementById('pin-input').value='';
+                    showToast('Error de red al autenticar', 'e');
                 }
-            }
+            });
         }
 
         function switchTab(tn,btn){
