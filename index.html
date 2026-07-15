@@ -132,7 +132,7 @@
                         <input type="number" id="shop-qty" class="di" min="1" value="1" oninput="calculateTotal()">
                     </div>
                 </div>
-
+                
                 <div class="p-4 rounded-sm border" style="border-color:var(--border); background:#050505">
                     <div class="flex justify-between items-center">
                         <span class="font-display tracking-wider text-sm" style="color:var(--muted)">MONTO TOTAL A PAGAR:</span>
@@ -238,12 +238,12 @@
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-xs tracking-[3px] uppercase mb-2" style="color:var(--accent)">Generar Códigos QR por Lotes</h3>
                     <p class="text-sm mb-4" style="color:var(--muted)">Genera los QR de forma progresiva optimizada en memoria para evitar colgar el dispositivo.</p>
-
+                    
                     <div class="flex flex-wrap gap-3 mb-4">
                         <button class="bp rounded-sm text-sm" onclick="initBatchGeneration(false)"><i class="fa-solid fa-qrcode mr-2"></i>Generar Todos</button>
                         <button class="bs sm rounded-sm" onclick="initBatchGeneration(true)"><i class="fa-solid fa-clock mr-1"></i>Solo Pendientes</button>
                     </div>
-
+                    
                     <div id="batch-actions" style="display:none" class="flex flex-wrap gap-3 mb-4 justify-between items-center border-b pb-4" style="border-color:var(--border)">
                         <div class="flex gap-3">
                             <button class="bs sm rounded-sm" onclick="printBatch()"><i class="fa-solid fa-print mr-1"></i>Imprimir Lote</button>
@@ -324,7 +324,7 @@
 
         <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
-
+                
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Configuración de Taquilla Pública</h3>
                     <p class="text-xs mb-4" style="color:var(--muted)">Modifica los parámetros comerciales que visualizan tus clientes al comprar entradas.</p>
@@ -484,41 +484,13 @@
     <script>
         // URL de Google Apps Script (Base de Datos Centralizada)
         const API_URL = 'https://script.google.com/macros/s/AKfycbyC_ZjmYsSJioZayIJJVbXPQsLvNpXB8oLo5r876f8Z0wz4ukiQFg7nFTDaN7biDFCj/exec';
-
-// 1. Asegúrate de tener el hash correcto al inicio del script:
-const ADMIN_PIN_HASH = '02242c08d99cbb2a1291176b6fec9183307613589b27b9c9f4d45548db92bc93';
-
-// 2. Reemplaza la función checkPIN por esta versión asíncrona corregida:
-async function checkPIN() {
-    var input = document.getElementById('pin-input').value.trim();
-    if (!input) return;
-    
-    try {
-        // Forzamos la espera de la conversión del hash de forma estricta
-        var hashedInput = await sha256(input);
         
-        if (hashedInput === ADMIN_PIN_HASH) {
-            closePINModal();
-            showView('admin');
-        } else {
-            document.getElementById('pin-error').style.display = 'block';
-            document.getElementById('pin-input').value = '';
-        }
-    } catch (e) {
-        // Fallback de seguridad por si el navegador bloquea la API criptográfica en local
-        if (input === '2025') {
-            closePINModal();
-            showView('admin');
-        } else {
-            document.getElementById('pin-error').style.display = 'block';
-            document.getElementById('pin-input').value = '';
-        }
-    }
-}
+        // Hash SHA-256 para validación segura del PIN "2025"
+        const ADMIN_PIN_HASH = '02242c08d99cbb2a1291176b6fec9183307613589b27b9c9f4d45548db92bc93';
 
         var CFG={ED:'26 / 06 / 2026',CI:'San Cristobal, Venezuela'};
-
-        // Configuración inicial editable de la taquilla pública
+        
+        // Configuración inicial de la taquilla pública
         var SHOP_CFG={
             P_PRE: 10.00,
             P_PUE: 15.00,
@@ -534,7 +506,7 @@ async function checkPIN() {
             {N:'Jose Perez',D:'V-34567890',C:1,E:'Cortesia',T:'',P:'No'},
             {N:'Ana Martinez',D:'V45.678.901',C:3,E:'Preventa',T:'+584121112233',P:'Si'}
         ];
-
+        
         var attendees=[],usedIDs,manualAttendees=[];
         try{usedIDs=new Map(JSON.parse(localStorage.getItem('bleedit_used')||'[]'));}catch(e){usedIDs=new Map();}
         try{manualAttendees=JSON.parse(localStorage.getItem('bleedit_manual')||'[]');}catch(e){manualAttendees=[];}
@@ -542,7 +514,7 @@ async function checkPIN() {
         // Paginación y Cola del Generador de QR Masivo
         var batchListQueue=[];
         var batchPointer=0;
-        const BATCH_SIZE=12;
+        const BATCH_SIZE=12; 
         var currentListFilter='all';
 
         var scannerInst=null,scannerOn=false,doorQR=null,lastScan='',lastTime=0;
@@ -551,7 +523,7 @@ async function checkPIN() {
         function nS(s){return s?s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim():'';}
         function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
         function isPaid(val){var v=nS(val);return v==='si'||v==='true'||v==='1'||v==='pagado'||v==='pagada'||v==='yes';}
-
+        
         function getStageClass(stage){
             if(nS(stage).includes('preventa')) return 'bg-pre';
             if(nS(stage).includes('puerta')) return 'bg-puerta';
@@ -571,7 +543,7 @@ async function checkPIN() {
         document.addEventListener('DOMContentLoaded',function(){
             CFG.ED=localStorage.getItem('bleedit_event_date')||CFG.ED;
             CFG.CI=localStorage.getItem('bleedit_event_city')||CFG.CI;
-
+            
             if(localStorage.getItem('bleedit_shop_cfg')) {
                 try { SHOP_CFG = JSON.parse(localStorage.getItem('bleedit_shop_cfg')); } catch(e){}
             }
@@ -580,7 +552,7 @@ async function checkPIN() {
             document.getElementById('config-city').value=CFG.CI;
             document.getElementById('landing-date').textContent=CFG.ED;
             document.getElementById('landing-city').textContent=CFG.CI;
-
+            
             initAdminShopInputs();
             syncPublicShopUI();
             loadData();
@@ -600,11 +572,11 @@ async function checkPIN() {
             var select = document.getElementById('shop-stage');
             select.innerHTML = '<option value="Preventa - $' + SHOP_CFG.P_PRE + '" data-price="' + SHOP_CFG.P_PRE + '">Preventa ($' + SHOP_CFG.P_PRE + ' USD)</option>' +
                                '<option value="Puerta - $' + SHOP_CFG.P_PUE + '" data-price="' + SHOP_CFG.P_PUE + '">Fase Puerta ($' + SHOP_CFG.P_PUE + ' USD)</option>';
-
+            
             document.getElementById('lbl-shop-bank').textContent = SHOP_CFG.BANK;
             document.getElementById('lbl-shop-id').textContent = SHOP_CFG.ID_DEST;
             document.getElementById('lbl-shop-phone').textContent = SHOP_CFG.PHONE_DEST;
-
+            
             calculateTotal();
         }
 
@@ -658,10 +630,9 @@ async function checkPIN() {
                 return;
             }
 
-            // Registrar la preventa directamente en la nube
             fetch(API_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Evita bloqueos de origen cruzado de Google
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'register',
@@ -670,7 +641,7 @@ async function checkPIN() {
                     cantidad: parseInt(qty),
                     etapa: stage,
                     telefono: phone,
-                    pagado: 'No' // Se crea pendiente de confirmación
+                    pagado: 'No'
                 })
             }).then(function(){
                 showToast('Registro enviado a la nube', 's');
@@ -692,16 +663,15 @@ async function checkPIN() {
             window.open(waLink, '_blank');
         }
 
-        // --- CARGA SÍNCRONA DESDE LA NUBE ---
+        // --- CARGA DESDE LA NUBE ---
         function loadData(){
             var st=document.getElementById('sheet-status');
             st.style.display='block';st.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sincronizando con Google Sheets...';
-
+            
             fetch(API_URL)
             .then(function(r){ return r.json(); })
             .then(function(res){
                 if(res.status === 'success') {
-                    // Mapear el formato de la nube al formato plano local de la app
                     attendees = res.data.map(function(item){
                         return {
                             N: item.Nombre || '',
@@ -712,8 +682,7 @@ async function checkPIN() {
                             P: item.Pagado || 'Si'
                         };
                     });
-
-                    // Sincronizar también el historial de entradas usadas desde la hoja
+                    
                     res.data.forEach(function(item){
                         var cleanDni = nD(item.Cedula);
                         if(item.Estatus_Puerta && item.Estatus_Puerta.indexOf('ADMITIDO') !== -1) {
@@ -825,7 +794,6 @@ async function checkPIN() {
                 }
             }
 
-            // Enviar registro asíncronamente a Google Sheets
             fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -902,9 +870,9 @@ async function checkPIN() {
         // --- EXPORTAR MÉTRICAS DE AUDITORÍA (CSV) ---
         function exportAuditMetrics() {
             if(!attendees.length){showToast('No hay registros para exportar', 'e'); return;}
-            var csv = "\ufeff";
+            var csv = "\ufeff"; 
             csv += "Nombre,Cedula,Cantidad Comprada,Fase,Telefono,Pagado,Ticket Individual,Estatus Puerta,Hora de Ingreso\n";
-
+            
             for(var i=0;i<attendees.length;i++){
                 var a = attendees[i];
                 for(var j=1;j<=a.C;j++){
@@ -912,7 +880,7 @@ async function checkPIN() {
                     var hasEntered = usedIDs.has(uid);
                     var entryTime = hasEntered ? usedIDs.get(uid) : "N/A";
                     var paidText = isPaid(a.P) ? "Pagado" : "Pago Pendiente";
-
+                    
                     csv += '"' + a.N.replace(/"/g, '""') + '",' +
                            '"' + a.D.replace(/"/g, '""') + '",' +
                            a.C + ',' +
@@ -966,9 +934,9 @@ async function checkPIN() {
                     if(usedIDs.has(rawDni + '-' + j)) ticketsUsed++;
                 }
 
-                if (currentListFilter === 'remaining' && ticketsUsed === totalTickets) continue;
-                if (currentListFilter === 'scanned' && ticketsUsed === 0) continue;
-                if (currentListFilter === 'unpaid' && totalPaid) continue;
+                if (currentListFilter === 'remaining' && ticketsUsed === totalTickets) continue; 
+                if (currentListFilter === 'scanned' && ticketsUsed === 0) continue; 
+                if (currentListFilter === 'unpaid' && totalPaid) continue; 
                 if (currentListFilter === 'preventa' && !nS(a.E).includes('preventa')) continue;
                 if (currentListFilter === 'cortesias' && !nS(a.E).includes('cortesia')) continue;
 
@@ -1041,7 +1009,6 @@ async function checkPIN() {
                 }
             }
 
-            // Guardar cambios en el Google Sheet
             fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -1132,13 +1099,11 @@ async function checkPIN() {
 
             var uniqueTicketID = dni+'-'+ticketIdx;
             var currentTimeString = new Date().toLocaleTimeString('es-VE', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-
-            // 1. Guardar de manera local (Offline-first / Respaldo)
+            
             usedIDs.set(uniqueTicketID, currentTimeString);
             localStorage.setItem('bleedit_used',JSON.stringify(Array.from(usedIDs.entries())));
             updateUI();
-
-            // 2. Reportar la validación a la base de datos central en la nube
+            
             fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -1236,12 +1201,12 @@ async function checkPIN() {
         // --- GENERADOR DE QR OPTIMIZADO (PAGINACIÓN VIRTUAL) ---
         function initBatchGeneration(onlyRemaining) {
             if(!attendees.length){showToast('No hay datos disponibles','e');return;}
-
+            
             document.getElementById('batch-loading').style.display='block';
             document.getElementById('batch-grid').innerHTML='';
             document.getElementById('batch-actions').style.display='none';
             document.getElementById('batch-load-more-container').style.display='none';
-
+            
             batchListQueue=[];
             batchPointer=0;
 
@@ -1249,7 +1214,7 @@ async function checkPIN() {
                 var a=attendees[i];
                 for(var j=1;j<=a.C;j++){
                     var uid=nD(a.D)+'-'+j;
-                    if(onlyRemaining && usedIDs.has(uid)) continue;
+                    if(onlyRemaining && usedIDs.has(uid)) continue; 
                     batchListQueue.push({a:a,uid:uid,ticketNum:j});
                 }
             }
@@ -1277,7 +1242,7 @@ async function checkPIN() {
                     document.getElementById('batch-loading').style.display='none';
                     document.getElementById('batch-actions').style.display='flex';
                     document.getElementById('batch-stats').textContent = "Visualizando " + batchPointer + " de " + batchListQueue.length + " QRs";
-
+                    
                     if (batchPointer < batchListQueue.length) {
                         document.getElementById('batch-load-more-container').style.display='block';
                     }
@@ -1287,10 +1252,10 @@ async function checkPIN() {
 
                 var item = batchListQueue[i];
                 var cid = 'bq-' + i;
-
+                
                 var card = document.createElement('div');
                 card.className = 'qc animate-fade-in';
-
+                
                 var qd = document.createElement('div');
                 qd.id = cid;
                 qd.style.cssText = 'width:140px;height:140px;margin:0 auto';
@@ -1316,13 +1281,13 @@ async function checkPIN() {
 
                 var sBlock = document.createElement('div');
                 sBlock.className = 'qsend';
-
+                
                 var shareButton = document.createElement('button');
                 shareButton.className = 'qnative';
                 shareButton.innerHTML = '<i class="fa-solid fa-share-nodes mr-1"></i>Enviar Entrada';
                 shareButton.onclick = function(){shareQR(cid, item.uid, item.a.N, item.a.T);};
                 sBlock.appendChild(shareButton);
-
+                
                 card.appendChild(sBlock);
                 grid.appendChild(card);
 
@@ -1357,7 +1322,7 @@ async function checkPIN() {
         function dlAllBatch(){
             var activeItems = document.querySelectorAll('#batch-grid .qc');
             if(!activeItems.length){showToast('No hay QRs renderizados en este momento','e');return;}
-
+            
             var delay = 0;
             activeItems.forEach(function(card){
                 var qd = card.querySelector('.qd').textContent;
@@ -1365,7 +1330,7 @@ async function checkPIN() {
                 setTimeout(function(){
                     dlBatchItem(cid, qd);
                 }, delay);
-                delay += 300;
+                delay += 300; 
             });
             showToast('Iniciando descarga en bloque...','s');
         }
@@ -1388,7 +1353,7 @@ async function checkPIN() {
                     showToast('Error al procesar la imagen del QR', 'e');
                     return;
                 }
-
+                
                 var file = new File([blob], "entrada-" + uid + ".png", { type: "image/png" });
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1431,7 +1396,7 @@ async function checkPIN() {
             w.document.close();
         }
 
-        // --- ADMINISTRACIÓN SEGURA (PIN COMPARADO POR HASH SHA-256) ---
+        // --- ADMINISTRACIÓN ---
         function requestAdminAccess(){
             document.getElementById('pin-modal').style.display='flex';
             document.getElementById('pin-input').value='';
@@ -1443,15 +1408,25 @@ async function checkPIN() {
 
         async function checkPIN(){
             var input=document.getElementById('pin-input').value.trim();
-            // Convertir la entrada ingresada en Hash SHA256 y compararla con el hash de seguridad
-            var hashedInput = await sha256(input);
-            if(hashedInput === ADMIN_PIN_HASH){
-                closePINModal();
-                showView('admin');
-            }else{
-                var err=document.getElementById('pin-error');
-                err.style.display='block';
-                document.getElementById('pin-input').value='';
+            if(!input) return;
+            try {
+                var hashedInput = await sha256(input);
+                if(hashedInput === ADMIN_PIN_HASH){
+                    closePINModal();
+                    showView('admin');
+                } else {
+                    document.getElementById('pin-error').style.display='block';
+                    document.getElementById('pin-input').value='';
+                }
+            } catch(e) {
+                // Respaldo de seguridad directo por si el navegador bloquea criptografía en entornos locales restrictivos
+                if(input === '2025'){
+                    closePINModal();
+                    showView('admin');
+                } else {
+                    document.getElementById('pin-error').style.display='block';
+                    document.getElementById('pin-input').value='';
+                }
             }
         }
 
