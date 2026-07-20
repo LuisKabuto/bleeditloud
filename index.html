@@ -127,7 +127,6 @@
         .fb-disconnected{background:rgba(204,0,0,.15);color:var(--accent-bright);border:1px solid rgba(204,0,0,.3)}
         .fb-config{background:rgba(51,153,255,.15);color:var(--info);border:1px solid rgba(51,153,255,.3)}
     </style>
-<base target="_blank">
 </head>
 <body class="grid-bg scanlines min-h-screen">
 
@@ -1780,6 +1779,46 @@
     document.getElementById('kiosk-pin-modal').addEventListener('click', function(e) {
         if (e.target === e.currentTarget) closeKioskPinModal();
     });
-    </script>
+    
+
+    // ============================================================
+    // EXPONER FUNCIONES AL SCOPE GLOBAL (para onclick en HTML)
+    // ============================================================
+    window.showView = showView;
+    window.verifyDNI = verifyDNI;
+    window.requestAdminAccess = requestAdminAccess;
+    window.openScanner = openScanner;
+    window.stopScanner = stopScanner;
+    window.verifyFromScanner = verifyFromScanner;
+    window.adminVerify = adminVerify;
+    window.switchTab = switchTab;
+    window.genBatch = genBatch;
+    window.genDoorQR = genDoorQR;
+    window.downloadDoorQR = downloadDoorQR;
+    window.printBatch = printBatch;
+    window.dlAllBatch = dlAllBatch;
+    window.exportCSV = exportCSV;
+    window.exportUsedList = exportUsedList;
+    window.handleFileUpload = handleFileUpload;
+    window.saveAndLoadSheet = saveAndLoadSheet;
+    window.resetToDemo = resetToDemo;
+    window.saveEventInfo = saveEventInfo;
+    window.addManualAttendee = addManualAttendee;
+    window.clearManualAttendees = clearManualAttendees;
+    window.clearUsedEntries = clearUsedEntries;
+    window.clearLog = clearLog;
+    window.openPinSetup = openPinSetup;
+    window.savePIN = savePIN;
+    window.saveFirebaseConfig = saveFirebaseConfig;
+    window.disconnectFirebase = disconnectFirebase;
+    window.toggleTheme = toggleTheme;
+    window.enterKioskMode = enterKioskMode;
+    window.exitKioskMode = exitKioskMode;
+    window.checkKioskPIN = checkKioskPIN;
+    window.closeKioskPinModal = closeKioskPinModal;
+    window.closePINModal = closePINModal;
+    window.checkPIN = checkPIN;
+    window.closePinSetupModal = closePinSetupModal;
+</script>
 </body>
 </html>
