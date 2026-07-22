@@ -549,6 +549,43 @@
     var currentTheme = localStorage.getItem('bleedit_theme') || 'dark';
 
     // ============================================================
+    // RESETEAR PARA NUEVO EVENTO
+    // ============================================================
+    function clearAllDataForNewEvent() {
+        if (confirm('⚠️ ¿ESTÁS SEGURO?\n\nEsto borrará TODOS los asistentes, entradas usadas e historial. Esta acción no se puede deshacer.')) {
+            if (confirm('Última confirmación: ¿Deseas borrar TODOS los datos del evento actual?')) {
+                // Borrar arreglos en memoria
+                attendees = [];
+                manualAttendees = [];
+                usedIDs.clear();
+                verificationLog = [];
+                
+                // Borrar de LocalStorage
+                localStorage.removeItem('bleedit_used');
+                localStorage.removeItem('bleedit_manual');
+                localStorage.removeItem('bleedit_log');
+                localStorage.removeItem('bleedit_sheet_id');
+                
+                // Limpiar Firebase si está conectado
+                if (fbConnected) {
+                    var usedRef = fbDB.ref('events/' + fbEventId + '/used');
+                    usedRef.set([]); // Limpia las entradas en la nube
+                }
+                
+                // Resetear interfaz
+                CFG.SID = '';
+                document.getElementById('config-sheet-id').value = '';
+                
+                updateUI();
+                showToast('Datos borrados. Listo para un nuevo evento.', 's');
+                
+                // Regresar a la pantalla de inicio automáticamente
+                showView('landing');
+            }
+        }
+    }
+        
+    // ============================================================
     // UTILIDADES
     // ============================================================
     function nD(d) { return d ? d.replace(/[^0-9]/g, '') : ''; }
