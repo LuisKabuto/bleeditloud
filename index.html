@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <!-- FIREBASE COMPAT (Arregla el problema de los botones) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
     <script>tailwind.config={theme:{extend:{fontFamily:{display:['Oswald','sans-serif'],body:['Roboto Condensed','sans-serif']}}}}</script>
     <style>
         /* ===== VARIABLES CSS ===== */
@@ -502,25 +507,9 @@
 
     <div class="tc" id="toast-container" aria-live="polite"></div>
 
-    <script type="module">
+    <script>
     // ============================================================
-    // IMPORTS FIREBASE v11 (ES Modules desde CDN)
-    // ============================================================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, onDisconnect, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-
-    // ============================================================
-    // EXPONER FIREBASE AL SCOPE GLOBAL PARA LAS FUNCIONES NO-MODULE
-    // ============================================================
-    window._firebase = { initializeApp, getDatabase, ref, set, onValue, onDisconnect, push, serverTimestamp };
-    window._fbApp = null;
-    window._fbDB = null;
-    window._fbConnected = false;
-    window._fbEventId = '';
-    window._fbUnsub = null;
-
-    // ============================================================
-    // CONFIGURACION Y ESTADO GLOBAL
+    // CONFIGURACION Y ESTADO GLOBAL (Sin type="module")
     // ============================================================
     var CFG = {
         PIN: '',
@@ -548,43 +537,13 @@
     var kioskScannerInst = null, kioskScannerOn = false, kioskLastScan = '', kioskLastTime = 0;
     var currentTheme = localStorage.getItem('bleedit_theme') || 'dark';
 
-    // ============================================================
-    // RESETEAR PARA NUEVO EVENTO
-    // ============================================================
-    function clearAllDataForNewEvent() {
-        if (confirm('⚠️ ¿ESTÁS SEGURO?\n\nEsto borrará TODOS los asistentes, entradas usadas e historial. Esta acción no se puede deshacer.')) {
-            if (confirm('Última confirmación: ¿Deseas borrar TODOS los datos del evento actual?')) {
-                // Borrar arreglos en memoria
-                attendees = [];
-                manualAttendees = [];
-                usedIDs.clear();
-                verificationLog = [];
-                
-                // Borrar de LocalStorage
-                localStorage.removeItem('bleedit_used');
-                localStorage.removeItem('bleedit_manual');
-                localStorage.removeItem('bleedit_log');
-                localStorage.removeItem('bleedit_sheet_id');
-                
-                // Limpiar Firebase si está conectado
-                if (fbConnected) {
-                    var usedRef = fbDB.ref('events/' + fbEventId + '/used');
-                    usedRef.set([]); // Limpia las entradas en la nube
-                }
-                
-                // Resetear interfaz
-                CFG.SID = '';
-                document.getElementById('config-sheet-id').value = '';
-                
-                updateUI();
-                showToast('Datos borrados. Listo para un nuevo evento.', 's');
-                
-                // Regresar a la pantalla de inicio automáticamente
-                showView('landing');
-            }
-        }
-    }
-        
+    // Variables de Firebase
+    var fbApp = null;
+    var fbDB = null;
+    var fbConnected = false;
+    var fbEventId = '';
+    var fbUnsub = null;
+
     // ============================================================
     // UTILIDADES
     // ============================================================
@@ -650,7 +609,6 @@
         window.addEventListener('online', updateConnectionStatus);
         window.addEventListener('offline', updateConnectionStatus);
 
-        // Inicializar Firebase si hay config
         if (CFG.FB_API_KEY && CFG.FB_DB_URL) {
             initFirebase();
         }
@@ -670,30 +628,29 @@
     }
 
     // ============================================================
-    // FIREBASE SYNC
+    // FIREBASE SYNC (Usando API Compat - Global Scope)
     // ============================================================
     function initFirebase() {
         try {
-            var fb = window._firebase;
-            var appConfig = {
-                apiKey: CFG.FB_API_KEY,
-                databaseURL: CFG.FB_DB_URL
-            };
-            window._fbApp = fb.initializeApp(appConfig, 'bleedit-app');
-            window._fbDB = fb.getDatabase(window._fbApp);
-            window._fbEventId = CFG.FB_EVENT_ID || 'bleedit-default';
-            window._fbConnected = true;
+            if (!fbApp) {
+                var appConfig = { apiKey: CFG.FB_API_KEY, databaseURL: CFG.FB_DB_URL };
+                fbApp = firebase.initializeApp(appConfig, 'bleedit-app');
+            }
+            fbDB = fbApp.database();
+            fbEventId = CFG.FB_EVENT_ID || 'bleedit-default';
+            fbConnected = true;
 
             updateFirebaseBadge('connected');
             showToast('Firebase conectado', 's');
 
-            // Escuchar cambios de entradas usadas desde otros dispositivos
-            var usedRef = fb.ref(window._fbDB, 'events/' + window._fbEventId + '/used');
-            window._fbUnsub = fb.onValue(usedRef, function(snapshot) {
+            var usedRef = fbDB.ref('events/' + fbEventId + '/used');
+            if (fbUnsub) fbUnsub();
+
+            var cb = function(snapshot) {
                 var data = snapshot.val();
                 if (data) {
-                    var remoteUsed = new Set(data);
-                    // Merge: agregar las entradas remotas que no tengamos localmente
+                    var remoteArr = Array.isArray(data) ? data : Object.values(data);
+                    var remoteUsed = new Set(remoteArr);
                     var changed = false;
                     remoteUsed.forEach(function(id) {
                         if (!usedIDs.has(id)) {
@@ -707,9 +664,12 @@
                         showPushNotif('Entrada verificada desde otro dispositivo', 'warn');
                     }
                 }
-            });
+            };
 
-            // Sincronizar entradas locales al iniciar
+            // En compat, on() devuelve la funcion callback para desuscribir
+            usedRef.on('value', cb);
+            fbUnsub = function() { usedRef.off('value', cb); };
+
             syncUsedToFirebase();
 
         } catch(e) {
@@ -720,10 +680,9 @@
     }
 
     function syncUsedToFirebase() {
-        if (!window._fbConnected || !window._fbDB) return;
-        var fb = window._firebase;
-        var usedRef = fb.ref(window._fbDB, 'events/' + window._fbEventId + '/used');
-        fb.set(usedRef, Array.from(usedIDs));
+        if (!fbConnected || !fbDB) return;
+        var usedRef = fbDB.ref('events/' + fbEventId + '/used');
+        usedRef.set(Array.from(usedIDs));
     }
 
     function updateFirebaseBadge(status) {
@@ -759,19 +718,19 @@
         localStorage.setItem('bleedit_fb_db_url', dbUrl);
         localStorage.setItem('bleedit_fb_event_id', eventId);
 
-        // Desconectar anterior si existe
-        if (window._fbUnsub) { window._fbUnsub(); window._fbUnsub = null; }
+        if (fbUnsub) { fbUnsub(); fbUnsub = null; }
 
+        fbApp = null; // Reset para forzar nueva inicializacion
         initFirebase();
+
         st.style.display = 'block';
         st.innerHTML = '<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>Firebase configurado y conectado';
     }
 
     function disconnectFirebase() {
-        if (window._fbUnsub) { window._fbUnsub(); window._fbUnsub = null; }
-        if (window._fbApp) { window._fbApp = null; }
-        window._fbDB = null;
-        window._fbConnected = false;
+        if (fbUnsub) { fbUnsub(); fbUnsub = null; }
+        fbDB = null;
+        fbConnected = false;
         CFG.FB_API_KEY = '';
         CFG.FB_DB_URL = '';
         CFG.FB_EVENT_ID = '';
@@ -785,6 +744,43 @@
         showToast('Firebase desconectado', 'i');
     }
 
+    // ============================================================
+    // RESETEAR PARA NUEVO EVENTO
+    // ============================================================
+    function clearAllDataForNewEvent() {
+        if (confirm('⚠️ ¿ESTÁS SEGURO?\n\nEsto borrará TODOS los asistentes, entradas usadas e historial. Esta acción no se puede deshacer.')) {
+            if (confirm('Última confirmación: ¿Deseas borrar TODOS los datos del evento actual?')) {
+                // Borrar arreglos en memoria
+                attendees = [];
+                manualAttendees = [];
+                usedIDs.clear();
+                verificationLog = [];
+                
+                // Borrar de LocalStorage
+                localStorage.removeItem('bleedit_used');
+                localStorage.removeItem('bleedit_manual');
+                localStorage.removeItem('bleedit_log');
+                localStorage.removeItem('bleedit_sheet_id');
+                
+                // Limpiar Firebase si está conectado
+                if (fbConnected) {
+                    var usedRef = fbDB.ref('events/' + fbEventId + '/used');
+                    usedRef.set([]); // Limpia las entradas en la nube
+                }
+                
+                // Resetear interfaz
+                CFG.SID = '';
+                document.getElementById('config-sheet-id').value = '';
+                
+                updateUI();
+                showToast('Datos borrados. Listo para un nuevo evento.', 's');
+                
+                // Regresar a la pantalla de inicio automáticamente
+                showView('landing');
+            }
+        }
+    }
+        
     // ============================================================
     // NOTIFICACIONES PUSH
     // ============================================================
@@ -937,9 +933,7 @@
         usedIDs.add(uniqueID);
         try { localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs))); } catch(e) {}
 
-        // Sync a Firebase
         syncUsedToFirebase();
-
         updateUI();
 
         var remaining = a.C;
@@ -1238,9 +1232,7 @@
         usedIDs.add(uniqueID);
         try { localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs))); } catch(e) {}
 
-        // Sync a Firebase
         syncUsedToFirebase();
-
         updateUI();
 
         var remaining = a.C;
@@ -1735,7 +1727,7 @@
     }
 
     // ============================================================
-    // GOOGLE SHEETS
+    // GUARDAR SHEET
     // ============================================================
     function saveAndLoadSheet() {
         var sid = document.getElementById('config-sheet-id').value.trim();
@@ -1816,46 +1808,6 @@
     document.getElementById('kiosk-pin-modal').addEventListener('click', function(e) {
         if (e.target === e.currentTarget) closeKioskPinModal();
     });
-    
-
-    // ============================================================
-    // EXPONER FUNCIONES AL SCOPE GLOBAL (para onclick en HTML)
-    // ============================================================
-    window.showView = showView;
-    window.verifyDNI = verifyDNI;
-    window.requestAdminAccess = requestAdminAccess;
-    window.openScanner = openScanner;
-    window.stopScanner = stopScanner;
-    window.verifyFromScanner = verifyFromScanner;
-    window.adminVerify = adminVerify;
-    window.switchTab = switchTab;
-    window.genBatch = genBatch;
-    window.genDoorQR = genDoorQR;
-    window.downloadDoorQR = downloadDoorQR;
-    window.printBatch = printBatch;
-    window.dlAllBatch = dlAllBatch;
-    window.exportCSV = exportCSV;
-    window.exportUsedList = exportUsedList;
-    window.handleFileUpload = handleFileUpload;
-    window.saveAndLoadSheet = saveAndLoadSheet;
-    window.resetToDemo = resetToDemo;
-    window.saveEventInfo = saveEventInfo;
-    window.addManualAttendee = addManualAttendee;
-    window.clearManualAttendees = clearManualAttendees;
-    window.clearUsedEntries = clearUsedEntries;
-    window.clearLog = clearLog;
-    window.openPinSetup = openPinSetup;
-    window.savePIN = savePIN;
-    window.saveFirebaseConfig = saveFirebaseConfig;
-    window.disconnectFirebase = disconnectFirebase;
-    window.toggleTheme = toggleTheme;
-    window.enterKioskMode = enterKioskMode;
-    window.exitKioskMode = exitKioskMode;
-    window.checkKioskPIN = checkKioskPIN;
-    window.closeKioskPinModal = closeKioskPinModal;
-    window.closePINModal = closePINModal;
-    window.checkPIN = checkPIN;
-    window.closePinSetupModal = closePinSetupModal;
-</script>
+    </script>
 </body>
 </html>
