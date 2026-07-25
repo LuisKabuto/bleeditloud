@@ -3,186 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BLEEDIT LOUD - Verificacion de Entradas</title>
+    <title>BLEEDIT LOUD - Entradas</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-    <!-- FIREBASE COMPAT (Arregla el problema de los botones) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
     <script>tailwind.config={theme:{extend:{fontFamily:{display:['Oswald','sans-serif'],body:['Roboto Condensed','sans-serif']}}}}</script>
     <style>
-        /* ===== VARIABLES CSS ===== */
-        :root{
-            --bg:#0a0a0a;--card:#111111;--border:#1e1e1e;
-            --accent:#cc0000;--accent-bright:#ff1a1a;--accent-glow:rgba(204,0,0,0.4);
-            --text:#e8e8e8;--muted:#555555;
-            --success:#00cc44;--success-glow:rgba(0,204,68,0.4);
-            --warning:#cc8800;--info:#3399ff;
-            --surface:#0d0d0d;--input-bg:#0d0d0d;
-        }
-        /* LIGHT MODE */
-        [data-theme="light"]{
-            --bg:#f5f5f5;--card:#ffffff;--border:#e0e0e0;
-            --accent:#cc0000;--accent-bright:#cc0000;--accent-glow:rgba(204,0,0,0.15);
-            --text:#1a1a1a;--muted:#888888;
-            --success:#00aa33;--success-glow:rgba(0,170,51,0.2);
-            --warning:#cc7700;--info:#2266cc;
-            --surface:#fafafa;--input-bg:#ffffff;
-        }
-
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{background:var(--bg);color:var(--text);font-family:'Roboto Condensed',sans-serif;-webkit-text-size-adjust:100%;transition:background .3s,color .3s}
+        :root{--bg:#0a0a0a;--card:#111111;--border:#1e1e1e;--accent:#cc0000;--accent-bright:#ff1a1a;--accent-glow:rgba(204,0,0,0.4);--text:#e8e8e8;--muted:#555555;--success:#00cc44;--success-glow:rgba(0,204,68,0.4);--warning:#cc8800;--info:#3399ff;--surface:#0d0d0d;--input-bg:#0d0d0d}
+        [data-theme="light"]{--bg:#f5f5f5;--card:#ffffff;--border:#e0e0e0;--accent:#cc0000;--accent-bright:#cc0000;--accent-glow:rgba(204,0,0,0.15);--text:#1a1a1a;--muted:#888888;--success:#00aa33;--success-glow:rgba(0,170,51,0.2);--warning:#cc7700;--info:#2266cc;--surface:#fafafa;--input-bg:#ffffff}
+        *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Roboto Condensed',sans-serif;-webkit-text-size-adjust:100%;transition:background .3s,color .3s}
         .grid-bg{background-image:linear-gradient(rgba(204,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(204,0,0,0.04) 1px,transparent 1px);background-size:24px 24px}
         .scanlines::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9998}
         [data-theme="light"] .scanlines::after{display:none}
-
         .glitch{position:relative;display:inline-block}.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}.glitch::before{color:var(--accent);animation:ga 3s infinite linear alternate-reverse;clip-path:polygon(0 0,100% 0,100% 33%,0 33%)}.glitch::after{color:rgba(255,255,255,0.6);animation:gb 2.5s infinite linear alternate-reverse;clip-path:polygon(0 67%,100% 67%,100% 100%,0 100%)}
         @keyframes ga{0%,90%{transform:translate(0)}92%{transform:translate(-3px,1px)}94%{transform:translate(2px,-1px)}96%{transform:translate(-1px,2px)}98%{transform:translate(3px,0)}100%{transform:translate(0)}}
         @keyframes gb{0%,88%{transform:translate(0)}90%{transform:translate(2px,-1px)}93%{transform:translate(-3px,2px)}96%{transform:translate(1px,-2px)}100%{transform:translate(0)}}
-
         .ab{border:1px solid var(--border);box-shadow:inset 0 0 30px rgba(204,0,0,0.05),0 0 15px rgba(204,0,0,0.05);transition:border-color .3s,box-shadow .3s,background .3s}.ab:hover{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(204,0,0,0.1),0 0 20px var(--accent-glow)}
         .bp{background:linear-gradient(135deg,var(--accent),#990000);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;-webkit-tap-highlight-color:transparent}.bp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}.bp:hover::before{transform:translateX(100%)}.bp:hover{box-shadow:0 0 30px var(--accent-glow),0 4px 15px rgba(0,0,0,.5);transform:translateY(-1px)}.bp:active{transform:translateY(1px)}
         .bs{background:transparent;color:var(--muted);font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}.bs:hover{color:var(--text);border-color:var(--muted);background:rgba(255,255,255,.03)}
-        .sm{padding:6px 14px;font-size:11px;letter-spacing:1px}
         .di{background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:'Roboto Condensed',sans-serif;font-size:18px;padding:14px 18px;width:100%;outline:none;transition:border-color .3s,box-shadow .3s,background .3s;-webkit-appearance:none;border-radius:2px}.di:focus{border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}.di::placeholder{color:#333}
-        [data-theme="light"] .di::placeholder{color:#aaa}
-
-        .vf{position:relative;width:280px;height:280px;margin:0 auto}
-        .vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
+        .vf{position:relative;width:280px;height:280px;margin:0 auto}.vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
         .sl{position:absolute;left:5%;width:90%;height:2px;background:linear-gradient(90deg,transparent,var(--accent-bright),transparent);box-shadow:0 0 12px var(--accent-bright);animation:sm 2.5s ease-in-out infinite;z-index:10}@keyframes sm{0%,100%{top:5%}50%{top:92%}}
         .rc{border:2px solid;padding:24px;text-align:center;animation:ri .4s ease-out}.rc-s{border-color:var(--success);background:rgba(0,204,68,.06);box-shadow:0 0 40px var(--success-glow)}.rc-e{border-color:var(--accent);background:rgba(204,0,0,.06);box-shadow:0 0 40px var(--accent-glow)}.rc-u{border-color:var(--warning);background:rgba(204,136,0,.06);box-shadow:0 0 40px rgba(204,136,0,.3)}@keyframes ri{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-        .fo{position:fixed;inset:0;pointer-events:none;z-index:9997;animation:fl .5s ease-out forwards}.fo-s{background:rgba(0,204,68,.15)}.fo-e{background:rgba(204,0,0,.15)}@keyframes fl{from{opacity:1}to{opacity:0}}
         .at{padding:10px 20px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .3s;background:none;-webkit-tap-highlight-color:transparent}.at:hover{color:var(--text)}.at.ac{color:var(--accent-bright);border-bottom-color:var(--accent)}
-        .tb{width:100%;border-collapse:collapse}.tb th{text-align:left;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.tb td{padding:10px;border-bottom:1px solid rgba(30,30,30,.5);font-size:13px}.tb tr:hover td{background:rgba(255,255,255,.02)}
-        .bg-pre{background:rgba(0,102,255,.15);color:#3399ff;border:1px solid rgba(0,102,255,.3)}
-        .bg-puerta{background:rgba(204,136,0,.15);color:var(--warning);border:1px solid rgba(204,136,0,.3)}
-        .bg-cortesia{background:rgba(153,0,204,.15);color:#cc00cc;border:1px solid rgba(153,0,204,.3)}
-        .bg-pagado{background:rgba(0,204,68,.15);color:var(--success);border:1px solid rgba(0,204,68,.3)}
-        .bg-pendiente{background:rgba(204,0,0,.15);color:var(--accent-bright);border:1px solid rgba(204,0,0,.3)}
         .bd{display:inline-block;padding:3px 10px;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
         .mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center}.mb{background:var(--card);border:1px solid var(--border);padding:40px;max-width:380px;width:90%;text-align:center}
-        .tc{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
-        .tt{padding:14px 22px;font-size:14px;animation:ti .4s ease,to .4s ease 2.6s forwards;max-width:340px}
-        .tt-s{background:rgba(0,204,68,.15);border:1px solid rgba(0,204,68,.3);color:var(--success)}.tt-e{background:rgba(204,0,0,.15);border:1px solid rgba(204,0,0,.3);color:var(--accent-bright)}.tt-i{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text)}
+        .tt{padding:14px 22px;font-size:14px;animation:ti .4s ease,to .4s ease 2.6s forwards;max-width:340px}.tt-s{background:rgba(0,204,68,.15);border:1px solid rgba(0,204,68,.3);color:var(--success)}.tt-e{background:rgba(204,0,0,.15);border:1px solid rgba(204,0,0,.3);color:var(--accent-bright)}.tt-i{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text)}
         @keyframes ti{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes to{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
-        .hi{position:relative;display:inline-block}.hi::after{content:'';position:absolute;inset:-1px;border:1px solid var(--accent);opacity:.4;pointer-events:none}.hi img{display:block;max-height:55vh;width:auto;max-width:90vw;filter:contrast(1.1) brightness(.95)}
-        @keyframes rp{0%,100%{box-shadow:0 0 20px rgba(204,0,0,.1)}50%{box-shadow:0 0 40px rgba(204,0,0,.25)}}.rp{animation:rp 3s ease-in-out infinite}
+        .hi{position:relative;display:inline-block}.hi img{display:block;max-height:55vh;width:auto;max-width:90vw;filter:contrast(1.1) brightness(.95)}
         .vw{display:none}
-        @keyframes fp{0%,100%{transform:translate(0,0);opacity:.15}25%{transform:translate(30px,-20px);opacity:.35}50%{transform:translate(-15px,-40px);opacity:.2}75%{transform:translate(20px,-10px);opacity:.3}}
-        @keyframes sk{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
-        .qg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}@media(min-width:640px){.qg{grid-template-columns:repeat(3,1fr)}}@media(min-width:1024px){.qg{grid-template-columns:repeat(4,1fr)}}
-        .qc{background:#fff;border-radius:4px;padding:12px;text-align:center;color:#111}.qc img,.qc canvas{display:block!important;margin:0 auto}.qc .qn{color:#111;font-size:12px;font-weight:700;margin-top:8px;line-height:1.2}.qc .qd{color:#666;font-family:monospace;font-size:11px;margin-top:2px}.qc .qct{color:var(--accent);font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;margin-top:4px}
-        .qc .qdl{display:flex;align-items:center;justify-content:center;margin-top:8px;padding:6px 0;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;background:#0a0a0a;color:#fff;border:none;cursor:pointer;border-radius:2px;-webkit-tap-highlight-color:transparent;text-decoration:none;width:100%}
-        .qc .qdl:hover{background:var(--accent)}
-        .qc .qsend{display:flex;gap:6px;justify-content:center;margin-top:8px;width:100%}
-        .qc .qwa{background:#25D366;color:#fff;flex:1}.qc .qwa:hover{background:#128C7E}
-        .qc .qtg{background:#0088cc;color:#fff;flex:1}.qc .qtg:hover{background:#005580}
-        #scanner-reader video{border-radius:4px!important}#scanner-reader{border:none!important}
-        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#222;border-radius:3px}
-        @media(max-width:640px){.hi img{max-height:40vh}.vf{width:220px;height:220px}.at{padding:8px 10px;font-size:11px;letter-spacing:1px}.mb{padding:28px 20px}.tb th{font-size:10px;padding:8px 6px}.tb td{font-size:12px;padding:8px 6px}}
-        @media(prefers-reduced-motion:reduce){.glitch::before,.glitch::after{animation:none}.sl{animation:none}.scanlines::after{display:none}.rp{animation:none}}
-
-        /* ===== NUEVOS ESTILOS V3 ===== */
-        .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:2px;text-align:center;transition:all .3s}
-        .stat-card:hover{border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}
-        .stat-num{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:var(--accent-bright)}
-        .stat-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+        .kiosk-mode{position:fixed;inset:0;z-index:99999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}.kiosk-mode.active{display:flex}
+        .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:2px;text-align:center}
         .log-row{padding:8px 12px;border-bottom:1px solid rgba(30,30,30,.5);font-size:12px;display:flex;justify-content:space-between;align-items:center}
-        .log-row:hover{background:rgba(255,255,255,.02)}
-        .log-time{color:var(--muted);font-family:monospace;font-size:11px}
-        .log-ok{color:var(--success)}.log-err{color:var(--accent-bright)}.log-warn{color:var(--warning)}
-        .badge-online{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--success)}
-        .badge-online::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite}
-        .badge-offline{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--accent-bright)}
-        .badge-offline::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent-bright)}
-        .badge-syncing{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--info)}
-        .badge-syncing::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--info);animation:pulse 1s infinite}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-        .export-btn-group{display:flex;gap:8px;flex-wrap:wrap}
-        .progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:8px}
-        .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-bright));transition:width .5s ease}
-
-        /* MODO SOLO ESCANEAR */
-        .kiosk-mode{position:fixed;inset:0;z-index:99999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-        .kiosk-mode.active{display:flex}
-        .kiosk-result{font-size:clamp(24px,5vw,48px);font-family:'Oswald',sans-serif;text-align:center;padding:30px;border-radius:4px;margin:20px 0;animation:ri .3s ease-out}
-        .kiosk-btn-exit{position:fixed;top:20px;right:20px;z-index:100000}
-        .kiosk-scanner{position:relative;width:min(350px,80vw);height:min(350px,80vw)}
-
-        /* NOTIFICACIONES PUSH */
-        .push-notif{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10001;padding:14px 24px;border-radius:4px;font-size:14px;animation:pushIn .4s ease,pushOut .4s ease 4.6s forwards;max-width:90vw;text-align:center}
-        .push-err{background:rgba(204,0,0,.9);color:#fff;border:1px solid var(--accent)}
-        .push-warn{background:rgba(204,136,0,.9);color:#fff;border:1px solid var(--warning)}
-        @keyframes pushIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-        @keyframes pushOut{from{opacity:1}to{opacity:0;transform:translateX(-50%) translateY(20px)}}
-
-        /* THEME TOGGLE */
-        .theme-toggle{position:fixed;bottom:20px;right:20px;z-index:9990;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;box-shadow:0 4px 15px rgba(0,0,0,.3)}
-        .theme-toggle:hover{border-color:var(--accent);box-shadow:0 0 20px var(--accent-glow)}
-
-        /* FIREBASE STATUS */
-        .firebase-status{padding:4px 10px;border-radius:2px;font-size:10px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase}
-        .fb-connected{background:rgba(0,204,68,.15);color:var(--success);border:1px solid rgba(0,204,68,.3)}
-        .fb-disconnected{background:rgba(204,0,0,.15);color:var(--accent-bright);border:1px solid rgba(204,0,0,.3)}
-        .fb-config{background:rgba(51,153,255,.15);color:var(--info);border:1px solid rgba(51,153,255,.3)}
+        .theme-toggle{position:fixed;bottom:20px;right:20px;z-index:9990;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
+        .tc{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
     </style>
 </head>
 <body class="grid-bg scanlines min-h-screen">
-
-    <!-- THEME TOGGLE -->
-    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="theme-btn">
-        <i class="fa-solid fa-sun" id="theme-icon"></i>
-    </button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
 
     <!-- LANDING -->
     <section id="view-landing" class="vw flex-col items-center justify-center min-h-screen px-4 py-10 relative" style="display:flex">
-        <div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-            <div class="absolute top-1/4 left-1/4 w-1 h-1 bg-red-600 rounded-full opacity-30" style="animation:fp 8s ease-in-out infinite"></div>
-            <div class="absolute top-1/2 right-1/3 w-0.5 h-0.5 bg-red-700 rounded-full opacity-20" style="animation:fp 11s ease-in-out infinite 2s"></div>
-            <div class="absolute bottom-1/3 left-1/2 w-1 h-1 bg-red-500 rounded-full opacity-25" style="animation:fp 9s ease-in-out infinite 4s"></div>
-            <div class="absolute top-1/3 right-1/4 w-0.5 h-0.5 bg-red-800 rounded-full opacity-15" style="animation:fp 13s ease-in-out infinite 1s"></div>
-        </div>
         <div class="relative z-10 flex flex-col items-center gap-8 max-w-2xl w-full">
-            <div class="hi rp rounded-sm">
-                <img src="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2" alt="BLEEDIT LOUD" onerror="this.style.display='none';document.getElementById('ft').style.display='block'">
-            </div>
+            <div class="hi"><img src="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2" alt="BLEEDIT LOUD" onerror="this.style.display='none';document.getElementById('ft').style.display='block'"></div>
             <div id="ft" style="display:none" class="text-center">
                 <h1 class="font-display text-5xl sm:text-7xl font-bold tracking-wider glitch" data-text="BLEEDIT LOUD">BLEEDIT LOUD</h1>
                 <p class="font-display text-sm tracking-[6px] mt-2" style="color:var(--muted)">TRIBUTO OFICIAL DE VENEZUELA</p>
             </div>
             <div class="text-center space-y-2">
-                <p class="font-display text-sm tracking-[5px] uppercase" style="color:var(--muted)">Verificacion de Entradas</p>
                 <div class="flex items-center justify-center gap-6 text-sm" style="color:var(--muted)">
                     <span><i class="fa-regular fa-calendar mr-2" style="color:var(--accent)"></i><span id="landing-date">26 / 06 / 2026</span></span>
                     <span><i class="fa-solid fa-location-dot mr-2" style="color:var(--accent)"></i><span id="landing-city">San Cristobal, Venezuela</span></span>
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-                <button class="bp flex-1 text-center rounded-sm" onclick="showView('verify')"><i class="fa-solid fa-qrcode mr-2"></i>Verificar Entrada</button>
-                <button class="bs flex-1 text-center rounded-sm" onclick="requestAdminAccess()"><i class="fa-solid fa-lock mr-2"></i>Administrador</button>
+                <button class="bp flex-1 text-center rounded-sm" onclick="showView('buy')"><i class="fa-solid fa-ticket mr-2"></i>Comprar Entradas</button>
+                <button class="bs flex-1 text-center rounded-sm" onclick="showView('verify')"><i class="fa-solid fa-qrcode mr-2"></i>Ya tengo mi entrada</button>
             </div>
         </div>
         <footer class="absolute bottom-4 text-center w-full" style="color:#2a2a2a;font-size:11px;letter-spacing:2px">BLEEDIT LOUD &mdash; TRIBUTO OFICIAL LINKIN PARK VENEZUELA</footer>
     </section>
 
-    <!-- VERIFICAR -->
+    <!-- COMPRAR ENTRADAS -->
+    <section id="view-buy" class="vw flex-col items-center min-h-screen px-4 py-10">
+        <div class="w-full max-w-lg space-y-6">
+            <button class="bs text-sm rounded-sm mb-2" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
+            <div class="text-center">
+                <h2 class="font-display text-3xl font-bold tracking-wider">COMPRAR ENTRADAS</h2>
+            </div>
+            
+            <div id="buy-stages" class="space-y-4"></div>
+
+            <div id="buy-checkout" style="display:none" class="ab rounded-sm p-6" style="background:var(--card)">
+                <h3 class="font-display text-lg tracking-wider mb-4" style="color:var(--accent)">DATOS DE PAGO</h3>
+                <div id="payment-info" class="text-sm mb-4 p-4 border" style="border-color:var(--border);background:var(--bg)"></div>
+                
+                <div class="space-y-3">
+                    <input type="text" id="buy-name" class="di" placeholder="Nombre completo del comprador">
+                    <input type="text" id="buy-dni" class="di" placeholder="Cedula (Ej: 12345678)">
+                    <input type="text" id="buy-phone" class="di" placeholder="Telefono (Ej: 4141234567)">
+                    <input type="number" id="buy-qty" class="di" placeholder="Cantidad de entradas" min="1" value="1" oninput="updateTotal()">
+                    <input type="text" id="buy-ref" class="di" placeholder="ID / Referencia de Pago">
+                </div>
+                
+                <div class="mt-4 p-4 text-center" style="background:var(--bg);border:1px solid var(--accent)">
+                    <p class="text-sm" style="color:var(--muted)">Total a pagar</p>
+                    <p class="font-display text-3xl font-bold" id="buy-total" style="color:var(--accent-bright)">$0</p>
+                </div>
+
+                <button class="bp w-full mt-4 rounded-sm" onclick="submitPurchase()"><i class="fa-solid fa-paper-plane mr-2"></i>Enviar Comprobante</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VERIFICAR ENTRADA -->
     <section id="view-verify" class="vw flex-col items-center justify-center min-h-screen px-4 py-10">
         <div class="w-full max-w-md space-y-6">
             <button class="bs text-sm rounded-sm mb-2" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
             <div class="text-center">
                 <h2 class="font-display text-3xl font-bold tracking-wider">VERIFICAR ENTRADA</h2>
-                <p class="text-sm mt-1" style="color:var(--muted)">Ingresa tu numero de cedula (solo numeros)</p>
+                <p class="text-sm mt-1" style="color:var(--muted)">Ingresa tu cedula</p>
             </div>
             <div class="ab rounded-sm p-6" style="background:var(--card)">
-                <label class="block font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">Numero de Cedula</label>
-                <input type="text" id="verify-dni" class="di" placeholder="Ej: 12345678" inputmode="numeric" autocomplete="off" autocapitalize="off" autocorrect="off" onkeydown="if(event.key==='Enter')verifyDNI()">
-                <button class="bp w-full mt-4 rounded-sm text-sm" onclick="verifyDNI()">Verificar</button>
+                <input type="text" id="verify-dni" class="di" placeholder="12345678" inputmode="numeric" onkeydown="if(event.key==='Enter')verifyDNI()">
+                <button class="bp w-full mt-4 rounded-sm" onclick="verifyDNI()">Verificar</button>
             </div>
             <div id="verify-result" style="display:none"></div>
         </div>
@@ -199,43 +131,24 @@
             <div class="ab rounded-sm p-4" style="background:var(--card)">
                 <div class="vf mx-auto">
                     <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
-                    <div class="sl" id="scan-line-anim"></div>
                     <div id="scanner-reader" style="width:280px;height:280px;overflow:hidden;border-radius:4px"></div>
                 </div>
-                <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...</p>
+                <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando...</p>
             </div>
             <div id="scanner-result" style="display:none"></div>
             <div class="ab rounded-sm p-4" style="background:var(--card)">
-                <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">Verificacion Manual</p>
-                <div class="flex gap-3">
-                    <input type="text" id="scanner-dni-input" class="di flex-1" placeholder="12345678" inputmode="numeric" autocapitalize="off" autocorrect="off" onkeydown="if(event.key==='Enter')verifyFromScanner()">
-                    <button class="bp rounded-sm text-sm px-5" onclick="verifyFromScanner()"><i class="fa-solid fa-check"></i></button>
-                </div>
+                <input type="text" id="scanner-dni-input" class="di" placeholder="Verificacion manual cedula" onkeydown="if(event.key==='Enter')verifyFromScanner()">
+                <button class="bp w-full mt-3 rounded-sm" onclick="verifyFromScanner()"><i class="fa-solid fa-check"></i></button>
             </div>
         </div>
     </section>
 
-    <!-- MODO KIOSK / SOLO ESCANEAR -->
+    <!-- MODO KIOSK -->
     <div id="kiosk-mode" class="kiosk-mode">
-        <button class="bs kiosk-btn-exit rounded-sm" onclick="exitKioskMode()" title="Salir del modo puerta (requiere PIN)">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-        <div class="text-center mb-6">
-            <h2 class="font-display text-2xl font-bold tracking-wider" style="color:var(--accent)">BLEEDIT LOUD</h2>
-            <p class="text-sm mt-1" style="color:var(--muted)">Escanea tu entrada para ingresar</p>
-        </div>
-        <div class="kiosk-scanner">
-            <div class="vc tl" style="position:absolute;top:-4px;left:-4px;z-index:10"></div>
-            <div class="vc tr" style="position:absolute;top:-4px;right:-4px;z-index:10"></div>
-            <div class="vc bl" style="position:absolute;bottom:-4px;left:-4px;z-index:10"></div>
-            <div class="vc br" style="position:absolute;bottom:-4px;right:-4px;z-index:10"></div>
-            <div class="sl" id="kiosk-scan-line" style="position:absolute;left:5%;width:90%"></div>
-            <div id="kiosk-scanner-reader" style="width:100%;height:100%;overflow:hidden;border-radius:4px"></div>
-        </div>
+        <button class="bs absolute top-4 right-4 rounded-sm" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
+        <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">BLEEDIT LOUD</h2>
+        <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
         <div id="kiosk-result" style="display:none;margin-top:20px;width:100%;max-width:500px"></div>
-        <div id="kiosk-status" class="text-center text-sm mt-4" style="color:var(--muted)">
-            <i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...
-        </div>
     </div>
 
     <!-- ADMIN -->
@@ -243,62 +156,35 @@
         <div class="flex items-center justify-between px-4 py-4 border-b" style="border-color:var(--border);background:var(--card)">
             <button class="bs text-sm rounded-sm" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Salir</button>
             <h2 class="font-display text-lg font-bold tracking-wider">PANEL ADMIN</h2>
-            <div class="flex items-center gap-3">
-                <span id="connection-badge" class="badge-offline"><span>Offline</span></span>
-                <span id="firebase-badge" class="firebase-status fb-config">Firebase: No config</span>
-                <div id="admin-data-count" class="text-xs font-display tracking-wider" style="color:var(--muted)">0 registros</div>
-            </div>
+            <div id="admin-data-count" class="text-xs" style="color:var(--muted)">0 registros</div>
         </div>
         <nav class="flex border-b overflow-x-auto" style="border-color:var(--border);background:rgba(17,17,17,.8)">
-            <button class="at ac" onclick="switchTab('tab-verify',this)"><i class="fa-solid fa-magnifying-glass mr-1"></i> Verificar</button>
-            <button class="at" onclick="switchTab('tab-qr',this)"><i class="fa-solid fa-qrcode mr-1"></i> QR</button>
+            <button class="at ac" onclick="switchTab('tab-payments',this)"><i class="fa-solid fa-money-bill-wave mr-1"></i> Pagos</button>
+            <button class="at" onclick="switchTab('tab-verify',this)"><i class="fa-solid fa-magnifying-glass mr-1"></i> Verificar</button>
             <button class="at" onclick="switchTab('tab-list',this)"><i class="fa-solid fa-list mr-1"></i> Lista</button>
-            <button class="at" onclick="switchTab('tab-stats',this)"><i class="fa-solid fa-chart-pie mr-1"></i> Stats</button>
             <button class="at" onclick="switchTab('tab-config',this)"><i class="fa-solid fa-gear mr-1"></i> Config</button>
         </nav>
 
+        <!-- TAB: PAGOS PENDIENTES -->
+        <div id="tab-payments" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:block">
+            <div class="max-w-3xl mx-auto space-y-4">
+                <h3 class="font-display text-xl tracking-wider" style="color:var(--accent)">PAGOS PENDIENTES</h3>
+                <div id="pending-payments-list" class="space-y-3"></div>
+            </div>
+        </div>
+
         <!-- TAB: VERIFICAR -->
-        <div id="tab-verify" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:block">
+        <div id="tab-verify" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <label class="block font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">Numero de Cedula</label>
                     <div class="flex gap-3">
-                        <input type="text" id="admin-dni-input" class="di flex-1 text-xl" placeholder="12345678" inputmode="numeric" autocapitalize="off" autocorrect="off" onkeydown="if(event.key==='Enter')adminVerify()">
+                        <input type="text" id="admin-dni-input" class="di flex-1 text-xl" placeholder="Cedula" onkeydown="if(event.key==='Enter')adminVerify()">
                         <button class="bp rounded-sm px-6 text-lg" onclick="adminVerify()"><i class="fa-solid fa-check"></i></button>
                     </div>
                 </div>
                 <div id="admin-verify-result" style="display:none"></div>
                 <button class="bs w-full rounded-sm" onclick="openScanner()"><i class="fa-solid fa-camera mr-2"></i>Abrir Escaner QR</button>
-                <button class="bp w-full rounded-sm" style="background:linear-gradient(135deg,#0066cc,#004499)" onclick="enterKioskMode()"><i class="fa-solid fa-door-open mr-2"></i>Modo Puerta (Solo Escanear)</button>
-            </div>
-        </div>
-
-        <!-- TAB: QR -->
-        <div id="tab-qr" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
-            <div class="max-w-4xl mx-auto space-y-6">
-                <div class="ab rounded-sm p-6 text-center" style="background:var(--card)">
-                    <h3 class="font-display text-xs tracking-[3px] uppercase mb-4" style="color:var(--accent)">QR de Puerta</h3>
-                    <div id="door-qr" class="inline-block p-4 rounded-sm" style="background:#fff"></div>
-                    <div class="mt-4"><button class="bp sm rounded-sm" onclick="downloadDoorQR()"><i class="fa-solid fa-download mr-1"></i>Descargar</button></div>
-                </div>
-                <hr style="border-color:var(--border)">
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-xs tracking-[3px] uppercase mb-2" style="color:var(--accent)">Generar y Enviar QR</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">Genera un QR unico por entrada. Si el pago esta confirmado, apareceran botones para enviar por WhatsApp o Telegram.</p>
-                    <div class="flex flex-wrap gap-3 mb-4">
-                        <button class="bp rounded-sm text-sm" onclick="genBatch(false)"><i class="fa-solid fa-qrcode mr-2"></i>Generar Todos</button>
-                        <button class="bs sm rounded-sm" onclick="genBatch(true)"><i class="fa-solid fa-clock mr-1"></i>Solo Pendientes</button>
-                    </div>
-                    <div id="batch-actions" style="display:none" class="flex flex-wrap gap-3 mb-4">
-                        <button class="bs sm rounded-sm" onclick="printBatch()"><i class="fa-solid fa-print mr-1"></i>Imprimir</button>
-                        <button class="bs sm rounded-sm" onclick="dlAllBatch()"><i class="fa-solid fa-download mr-1"></i>Descargar Todos</button>
-                    </div>
-                    <div id="batch-loading" style="display:none" class="text-center py-8">
-                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-3 block" style="color:var(--accent)"></i>
-                        <p class="text-sm" style="color:var(--muted)">Generando codigos QR...</p>
-                    </div>
-                    <div id="batch-grid" class="qg"></div>
-                </div>
+                <button class="bp w-full rounded-sm" style="background:linear-gradient(135deg,#0066cc,#004499)" onclick="enterKioskMode()"><i class="fa-solid fa-door-open mr-2"></i>Modo Puerta</button>
             </div>
         </div>
 
@@ -306,55 +192,12 @@
         <div id="tab-list" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-3xl mx-auto space-y-4">
                 <div class="flex gap-3 items-center">
-                    <div class="relative flex-1">
-                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-sm" style="color:var(--muted)"></i>
-                        <input type="text" id="search-attendee" class="di pl-9" placeholder="Buscar..." oninput="renderList()">
-                    </div>
-                    <div class="text-sm font-display tracking-wider whitespace-nowrap" style="color:var(--muted)"><span id="verified-count" style="color:var(--success)">0</span> / <span id="total-count">0</span></div>
+                    <input type="text" id="search-attendee" class="di" placeholder="Buscar..." oninput="renderList()">
+                    <div class="text-sm whitespace-nowrap" style="color:var(--muted)"><span id="verified-count" style="color:var(--success)">0</span> / <span id="total-count">0</span></div>
                 </div>
                 <div class="ab rounded-sm overflow-hidden" style="background:var(--card)">
-                    <div class="overflow-x-auto">
-                        <table class="tb"><thead><tr><th>Etapa</th><th>Pago</th><th>Nombre</th><th>Cedula</th><th>Usadas</th></tr></thead><tbody id="attendee-tbody"></tbody></table>
-                    </div>
-                    <div id="empty-list" class="text-center py-10" style="color:var(--muted);display:none"><i class="fa-solid fa-database text-2xl mb-3 block"></i><p class="text-sm">No hay datos cargados</p></div>
-                </div>
-                <div class="export-btn-group">
-                    <button class="bs rounded-sm text-sm" onclick="exportCSV()"><i class="fa-solid fa-file-csv mr-2"></i>Exportar CSV</button>
-                    <button class="bs rounded-sm text-sm" onclick="exportUsedList()"><i class="fa-solid fa-list-check mr-2"></i>Exportar Usadas</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: STATS -->
-        <div id="tab-stats" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
-            <div class="max-w-3xl mx-auto space-y-6">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="stat-card">
-                        <div class="stat-num" id="stat-total-tickets">0</div>
-                        <div class="stat-label">Total Entradas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="stat-used-tickets" style="color:var(--success)">0</div>
-                        <div class="stat-label">Verificadas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="stat-pending-tickets" style="color:var(--warning)">0</div>
-                        <div class="stat-label">Pendientes</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="stat-paid-tickets" style="color:var(--info)">0</div>
-                        <div class="stat-label">Pagadas</div>
-                    </div>
-                </div>
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-xs tracking-[3px] uppercase mb-4" style="color:var(--accent)">Por Etapa</h3>
-                    <div id="stage-stats" class="space-y-3"></div>
-                </div>
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-xs tracking-[3px] uppercase mb-4" style="color:var(--accent)">Historial de Verificaciones</h3>
-                    <div id="verification-log" style="max-height:400px;overflow-y:auto">
-                        <p class="text-sm text-center py-6" style="color:var(--muted)">Sin verificaciones registradas</p>
-                    </div>
+                    <table class="w-full text-left"><thead><tr class="border-b" style="border-color:var(--border)"><th class="p-2">Etapa</th><th class="p-2">Pago</th><th class="p-2">Nombre</th><th class="p-2">Cedula</th><th class="p-2">Usadas</th></tr></thead><tbody id="attendee-tbody"></tbody></table>
+                    <div id="empty-list" class="text-center py-10" style="color:var(--muted);display:none">No hay datos</div>
                 </div>
             </div>
         </div>
@@ -362,91 +205,60 @@
         <!-- TAB: CONFIG -->
         <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
+                
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Configuracion de Ventas</h3>
+                    
+                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Datos para pagar (Bancos, Binance, Pago Movil)</label>
+                    <textarea id="config-payment-info" class="di mb-4" rows="4" placeholder="Banco X: 0102...&#10;Binance ID: 1234..."></textarea>
 
-                <!-- AGREGAR MANUAL -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 1 (Nombre)</label>
+                            <input type="text" id="config-s1-name" class="di" placeholder="Preventa 1">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 1 (Precio $)</label>
+                            <input type="number" id="config-s1-price" class="di" placeholder="10">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 2 (Nombre)</label>
+                            <input type="text" id="config-s2-name" class="di" placeholder="Preventa 2">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 2 (Precio $)</label>
+                            <input type="number" id="config-s2-price" class="di" placeholder="15">
+                        </div>
+                    </div>
+
+                    <button class="bp w-full rounded-sm" onclick="saveSalesConfig()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Configuracion</button>
+                </div>
+
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Agregar Asistente Manual</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="text" id="manual-nombre" class="di" placeholder="Nombre completo">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="manual-nombre" class="di" placeholder="Nombre">
                         <input type="text" id="manual-cedula" class="di" placeholder="Cedula">
-                        <input type="number" id="manual-cantidad" class="di" placeholder="Cantidad" min="1" value="1">
-                        <input type="text" id="manual-etapa" class="di" placeholder="Etapa (Preventa, Puerta...)">
-                        <input type="text" id="manual-telefono" class="di" placeholder="Telefono (opcional)">
-                        <select id="manual-pagado" class="di" style="background-color:var(--input-bg)">
-                            <option value="Si" style="background:var(--input-bg)">Pagado: Si</option>
-                            <option value="No" style="background:var(--input-bg)">Pagado: No</option>
-                        </select>
+                        <input type="number" id="manual-cantidad" class="di" placeholder="Cant" value="1" min="1">
+                        <input type="text" id="manual-etapa" class="di" placeholder="Etapa" value="Manual">
                     </div>
-                    <button class="bp w-full mt-4 rounded-sm text-sm" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar a la Lista</button>
-                    <button class="bs w-full mt-2 rounded-sm text-xs" onclick="clearManualAttendees()"><i class="fa-solid fa-trash mr-2"></i>Borrar Manuales Anadidos</button>
-                    <div id="manual-status" class="mt-3 text-sm" style="display:none"></div>
+                    <button class="bp w-full mt-3 rounded-sm" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar</button>
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Datos del Evento</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">Cambia la fecha y ciudad que se muestran en la pagina principal.</p>
-                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">Fecha del Evento</label>
-                    <input type="text" id="config-date" class="di mb-4" placeholder="Ej: 26 / 06 / 2026">
-                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">Ciudad / Lugar</label>
-                    <input type="text" id="config-city" class="di mb-4" placeholder="Ej: San Cristobal, Venezuela">
-                    <button class="bp rounded-sm text-sm" onclick="saveEventInfo()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Datos del Evento</button>
-                    <div id="event-status" class="mt-3 text-sm" style="display:none"></div>
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Firebase (Nube)</h3>
+                    <input type="text" id="fb-api-key" class="di mb-3" placeholder="API Key">
+                    <input type="text" id="fb-db-url" class="di mb-3" placeholder="Database URL">
+                    <input type="text" id="fb-event-id" class="di mb-4" placeholder="ID Evento" value="bleedit-default">
+                    <button class="bp w-full rounded-sm" onclick="saveFirebaseConfig()"><i class="fa-solid fa-plug mr-2"></i>Conectar</button>
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Subir Archivo Local (Excel/CSV)</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">Sube un archivo desde tu telefono u ordenador. Columnas requeridas: <strong style="color:var(--text)">nombre, cedula, cantidad, etapa, telefono, pagado</strong></p>
-                    <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px">
-                    <button class="bp w-full rounded-sm text-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Procesar Archivo</button>
-                    <div id="upload-status" class="mt-4 text-sm" style="display:none"></div>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Conexion con Google Sheets</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">Hoja publicada con columnas: <strong style="color:var(--text)">nombre, cedula, cantidad, etapa, telefono, pagado</strong></p>
-                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">ID de la Hoja</label>
-                    <input type="text" id="config-sheet-id" class="di mb-4" placeholder="Ej: 1aBcDeFgH..." autocapitalize="off" autocorrect="off">
-                    <div class="flex gap-3">
-                        <button class="bp flex-1 rounded-sm text-sm" onclick="saveAndLoadSheet()"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>Cargar Datos</button>
-                        <button class="bs rounded-sm text-sm px-4" onclick="resetToDemo()">Demo</button>
-                    </div>
-                    <div id="sheet-status" class="mt-4 text-sm" style="display:none"></div>
-                </div>
-
-                <!-- FIREBASE SYNC -->
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Sincronizacion Firebase (Multi-Dispositivo)</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">Conecta varios celulares en puerta para compartir entradas usadas en tiempo real. Crea un proyecto gratis en <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> y pega la configuracion aqui.</p>
-                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">API Key</label>
-                    <input type="text" id="fb-api-key" class="di mb-3" placeholder="AIzaSy..." autocapitalize="off">
-                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">Database URL</label>
-                    <input type="text" id="fb-db-url" class="di mb-3" placeholder="https://tu-proyecto-default-rtdb.firebaseio.com" autocapitalize="off">
-                    <label class="block font-display text-xs tracking-[2px] uppercase mb-2" style="color:var(--muted)">ID del Evento (compartido entre dispositivos)</label>
-                    <input type="text" id="fb-event-id" class="di mb-4" placeholder="bleedit-loud-2026" autocapitalize="off">
-                    <div class="flex gap-3">
-                        <button class="bp flex-1 rounded-sm text-sm" onclick="saveFirebaseConfig()"><i class="fa-solid fa-plug mr-2"></i>Conectar</button>
-                        <button class="bs rounded-sm text-sm px-4" onclick="disconnectFirebase()"><i class="fa-solid fa-unlink mr-1"></i>Desconectar</button>
-                    </div>
-                    <div id="firebase-status-msg" class="mt-3 text-sm" style="display:none"></div>
-                    <p class="text-xs mt-3" style="color:#333">Las reglas de seguridad de tu DB deben permitir lectura/escritura publica para este evento.</p>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-3" style="color:var(--accent)">Como funciona la cedula</h3>
-                    <p class="text-sm" style="color:var(--muted)">El sistema lee <strong style="color:var(--text)">solo numeros</strong>. Si en tu hoja esta <code style="color:var(--accent)">V-12.345.678</code> el usuario escribe <strong style="color:var(--text)">12345678</strong>.</p>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-3" style="color:var(--accent)">Seguridad</h3>
-                    <button class="bp w-full rounded-sm text-sm mb-2" onclick="openPinSetup()"><i class="fa-solid fa-key mr-2"></i>Cambiar PIN de Admin</button>
-                    <p class="text-xs mt-2" style="color:#333">El PIN se guarda localmente en este navegador.</p>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-3" style="color:var(--accent)">Datos locales</h3>
-                    <button class="bs w-full rounded-sm text-sm" onclick="clearUsedEntries()"><i class="fa-solid fa-rotate-left mr-2"></i>Reiniciar Entradas Usadas</button>
-                    <button class="bs w-full rounded-sm text-sm mt-2" onclick="clearLog()"><i class="fa-solid fa-eraser mr-2"></i>Borrar Historial</button>
-                    <p class="text-xs mt-3" style="color:#333">Las entradas marcadas como usadas se guardan en este navegador.</p>
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-3" style="color:var(--accent)">Peligro</h3>
+                    <button class="bp w-full rounded-sm" style="background:linear-gradient(135deg,#990000,#660000)" onclick="clearAllDataForNewEvent()"><i class="fa-solid fa-trash-can mr-2"></i>Borrar Nube y Reiniciar App</button>
                 </div>
 
             </div>
@@ -454,1174 +266,279 @@
     </section>
 
     <!-- MODAL PIN -->
-    <div id="pin-modal" class="mo" role="dialog" aria-modal="true">
-        <div class="mb">
-            <div class="mb-6">
-                <i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i>
-                <h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3>
-                <p class="text-sm mt-2" style="color:var(--muted)">Ingrese el PIN de administrador</p>
-            </div>
-            <input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] mb-4" placeholder="----" maxlength="10" autocomplete="off" inputmode="numeric">
-            <div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div>
-            <div class="flex gap-3">
-                <button class="bs flex-1 rounded-sm text-sm" onclick="closePINModal()">Cancelar</button>
-                <button class="bp flex-1 rounded-sm text-sm" onclick="checkPIN()">Acceder</button>
-            </div>
-        </div>
-    </div>
+    <div id="pin-modal" class="mo"><div class="mb"><i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3><input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] my-4" maxlength="10" inputmode="numeric"><div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div><button class="bp w-full rounded-sm" onclick="checkPIN()">Acceder</button></div></div>
 
-    <!-- MODAL CAMBIAR PIN -->
-    <div id="pin-setup-modal" class="mo" role="dialog" aria-modal="true">
-        <div class="mb">
-            <div class="mb-6">
-                <i class="fa-solid fa-key text-3xl mb-3 block" style="color:var(--accent)"></i>
-                <h3 class="font-display text-xl tracking-wider font-bold">CONFIGURAR PIN</h3>
-                <p class="text-sm mt-2" style="color:var(--muted)">Crea un PIN para proteger el panel de administrador</p>
-            </div>
-            <input type="password" id="pin-setup-input" class="di text-center text-2xl tracking-[8px] mb-4" placeholder="Nuevo PIN" maxlength="10" autocomplete="off" inputmode="numeric">
-            <input type="password" id="pin-confirm-input" class="di text-center text-2xl tracking-[8px] mb-4" placeholder="Confirmar PIN" maxlength="10" autocomplete="off" inputmode="numeric">
-            <div id="pin-setup-error" class="text-sm mb-4" style="color:var(--accent);display:none"></div>
-            <div class="flex gap-3">
-                <button class="bs flex-1 rounded-sm text-sm" onclick="closePinSetupModal()">Cancelar</button>
-                <button class="bp flex-1 rounded-sm text-sm" onclick="savePIN()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL SALIR KIOSK -->
-    <div id="kiosk-pin-modal" class="mo" role="dialog" aria-modal="true">
-        <div class="mb">
-            <div class="mb-6">
-                <i class="fa-solid fa-lock text-3xl mb-3 block" style="color:var(--accent)"></i>
-                <h3 class="font-display text-xl tracking-wider font-bold">SALIR MODO PUERTA</h3>
-                <p class="text-sm mt-2" style="color:var(--muted)">Ingrese el PIN para salir del modo puerta</p>
-            </div>
-            <input type="password" id="kiosk-pin-input" class="di text-center text-2xl tracking-[8px] mb-4" placeholder="----" maxlength="10" autocomplete="off" inputmode="numeric">
-            <div id="kiosk-pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div>
-            <div class="flex gap-3">
-                <button class="bs flex-1 rounded-sm text-sm" onclick="closeKioskPinModal()">Cancelar</button>
-                <button class="bp flex-1 rounded-sm text-sm" onclick="checkKioskPIN()">Salir</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="tc" id="toast-container" aria-live="polite"></div>
+    <div class="tc" id="toast-container"></div>
 
     <script>
-    // ============================================================
-    // CONFIGURACION Y ESTADO GLOBAL (Sin type="module")
-    // ============================================================
-    var CFG = {
-        PIN: '',
-        SID: '',
-        ED: '26 / 06 / 2026',
-        CI: 'San Cristobal, Venezuela',
-        FB_API_KEY: '',
-        FB_DB_URL: '',
-        FB_EVENT_ID: ''
-    };
-    var DEFAULT_PIN = '2025';
-    var DEMO = [
-        {N:'Carlos Rodriguez',D:'V-12.345.678',C:4,E:'Preventa',T:'+584141234567',P:'Si'},
-        {N:'Maria Gonzalez',D:'V23,456,789',C:2,E:'Puerta',T:'+584247654321',P:'Si'},
-        {N:'Jose Perez',D:'V-34567890',C:1,E:'Cortesia',T:'',P:'No'},
-        {N:'Ana Martinez',D:'V45.678.901',C:3,E:'Preventa',T:'+584121112233',P:'Si'}
-    ];
-    var attendees = [], usedIDs, manualAttendees = [], verificationLog = [];
-
-    try { usedIDs = new Set(JSON.parse(localStorage.getItem('bleedit_used') || '[]')); } catch(e) { usedIDs = new Set(); }
-    try { manualAttendees = JSON.parse(localStorage.getItem('bleedit_manual') || '[]'); } catch(e) { manualAttendees = []; }
-    try { verificationLog = JSON.parse(localStorage.getItem('bleedit_log') || '[]'); } catch(e) { verificationLog = []; }
-
-    var scannerInst = null, scannerOn = false, doorQR = null, lastScan = '', lastTime = 0, batchItems = [];
-    var kioskScannerInst = null, kioskScannerOn = false, kioskLastScan = '', kioskLastTime = 0;
+    var CFG = { PIN: '2025', ED: '26 / 06 / 2026', CI: 'San Cristobal', FB_API_KEY: '', FB_DB_URL: '', FB_EVENT_ID: 'bleedit-default', PAY_INFO:'', S1_NAME:'Preventa 1', S1_PRICE:10, S2_NAME:'Preventa 2', S2_PRICE:15 };
+    var attendees = [], usedIDs = new Set(), pendingPayments = [], salesConfig = {};
+    try { usedIDs = new Set(JSON.parse(localStorage.getItem('bleedit_used') || '[]')); } catch(e) {}
+    var fbApp = null, fbDB = null, fbConnected = false, fbEventId = '';
     var currentTheme = localStorage.getItem('bleedit_theme') || 'dark';
 
-    // Variables de Firebase
-    var fbApp = null;
-    var fbDB = null;
-    var fbConnected = false;
-    var fbEventId = '';
-    var fbUnsub = null;
-
-    // ============================================================
-    // UTILIDADES
-    // ============================================================
+    // Utilidades
     function nD(d) { return d ? d.replace(/[^0-9]/g, '') : ''; }
-    function nS(s) { return s ? s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim() : ''; }
     function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-    function isPaid(val) { var v = nS(val); return v === 'si' || v === 'true' || v === '1' || v === 'pagado' || v === 'pagada' || v === 'yes'; }
-    function getStageClass(stage) {
-        if (nS(stage).includes('preventa')) return 'bg-pre';
-        if (nS(stage).includes('puerta')) return 'bg-puerta';
-        if (nS(stage).includes('cortesia')) return 'bg-cortesia';
-        return 'bg-pre';
-    }
-    function nowStr() {
-        var d = new Date();
-        return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0') + ':' + d.getSeconds().toString().padStart(2,'0');
-    }
+    function isPaid(val) { return nD(val).toLowerCase() === 'si' || val === true; }
+    function showToast(m, t) { var c = document.getElementById('toast-container'); var tt = document.createElement('div'); tt.className = 'tt ' + (t==='s'?'tt-s':t==='e'?'tt-e':'tt-i'); tt.innerHTML = m; c.appendChild(tt); setTimeout(function() { tt.remove(); }, 3000); }
+    function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); document.getElementById('theme-icon').className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
+    function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; localStorage.setItem('bleedit_theme', currentTheme); applyTheme(currentTheme); }
 
-    // ============================================================
-    // THEME TOGGLE
-    // ============================================================
-    function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        var icon = document.getElementById('theme-icon');
-        if (icon) icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-    }
-    function toggleTheme() {
-        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('bleedit_theme', currentTheme);
-        applyTheme(currentTheme);
-    }
-
-    // ============================================================
-    // INICIALIZACION
-    // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
         applyTheme(currentTheme);
+        CFG.PIN = localStorage.getItem('bleedit_pin') || CFG.PIN;
+        
+        // OCULTAR ADMIN: Solo se accede con #admin en la URL
+        if (window.location.hash === '#admin') {
+            document.getElementById('pin-modal').style.display = 'flex';
+        } else if (window.location.hash === '#verificar') {
+            showView('verify');
+        } else {
+            showView('landing');
+        }
 
-        CFG.ED = localStorage.getItem('bleedit_event_date') || CFG.ED;
-        CFG.CI = localStorage.getItem('bleedit_event_city') || CFG.CI;
-        CFG.SID = localStorage.getItem('bleedit_sheet_id') || '';
-        CFG.PIN = localStorage.getItem('bleedit_admin_pin') || '';
-        CFG.FB_API_KEY = localStorage.getItem('bleedit_fb_api_key') || '';
-        CFG.FB_DB_URL = localStorage.getItem('bleedit_fb_db_url') || '';
-        CFG.FB_EVENT_ID = localStorage.getItem('bleedit_fb_event_id') || '';
-
-        document.getElementById('config-sheet-id').value = CFG.SID;
-        document.getElementById('config-date').value = CFG.ED;
-        document.getElementById('config-city').value = CFG.CI;
-        document.getElementById('landing-date').textContent = CFG.ED;
-        document.getElementById('landing-city').textContent = CFG.CI;
-        document.getElementById('fb-api-key').value = CFG.FB_API_KEY;
-        document.getElementById('fb-db-url').value = CFG.FB_DB_URL;
-        document.getElementById('fb-event-id').value = CFG.FB_EVENT_ID;
-
-        var av = document.querySelectorAll('.vw');
-        for (var j = 0; j < av.length; j++) av[j].style.display = 'none';
-        document.getElementById('view-landing').style.display = 'flex';
-
-        if (window.location.hash === '#verificar') showView('verify');
-
-        updateConnectionStatus();
-        window.addEventListener('online', updateConnectionStatus);
-        window.addEventListener('offline', updateConnectionStatus);
-
-        if (CFG.FB_API_KEY && CFG.FB_DB_URL) {
+        // Cargar Firebase si existe
+        var savedKey = localStorage.getItem('fb_key');
+        if (savedKey) {
+            CFG.FB_API_KEY = savedKey;
+            CFG.FB_DB_URL = localStorage.getItem('fb_url');
+            CFG.FB_EVENT_ID = localStorage.getItem('fb_event') || 'bleedit-default';
             initFirebase();
         }
 
-        loadData();
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(function(e){});
     });
-
-    function updateConnectionStatus() {
-        var badge = document.getElementById('connection-badge');
-        if (navigator.onLine) {
-            badge.className = 'badge-online';
-            badge.innerHTML = '<span>Online</span>';
-        } else {
-            badge.className = 'badge-offline';
-            badge.innerHTML = '<span>Offline</span>';
-        }
-    }
-
-    // ============================================================
-    // FIREBASE SYNC (Usando API Compat - Global Scope)
-    // ============================================================
-    function initFirebase() {
-        try {
-            if (!fbApp) {
-                var appConfig = { apiKey: CFG.FB_API_KEY, databaseURL: CFG.FB_DB_URL };
-                fbApp = firebase.initializeApp(appConfig, 'bleedit-app');
-            }
-            fbDB = fbApp.database();
-            fbEventId = CFG.FB_EVENT_ID || 'bleedit-default';
-            fbConnected = true;
-
-            updateFirebaseBadge('connected');
-            showToast('Firebase conectado', 's');
-
-            var usedRef = fbDB.ref('events/' + fbEventId + '/used');
-            if (fbUnsub) fbUnsub();
-
-            var cb = function(snapshot) {
-                var data = snapshot.val();
-                if (data) {
-                    var remoteArr = Array.isArray(data) ? data : Object.values(data);
-                    var remoteUsed = new Set(remoteArr);
-                    var changed = false;
-                    remoteUsed.forEach(function(id) {
-                        if (!usedIDs.has(id)) {
-                            usedIDs.add(id);
-                            changed = true;
-                        }
-                    });
-                    if (changed) {
-                        try { localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs))); } catch(e) {}
-                        updateUI();
-                        showPushNotif('Entrada verificada desde otro dispositivo', 'warn');
-                    }
-                }
-            };
-
-            // En compat, on() devuelve la funcion callback para desuscribir
-            usedRef.on('value', cb);
-            fbUnsub = function() { usedRef.off('value', cb); };
-
-            syncUsedToFirebase();
-
-        } catch(e) {
-            console.error('Firebase init error:', e);
-            updateFirebaseBadge('disconnected');
-            showToast('Error conectando Firebase: ' + e.message, 'e');
-        }
-    }
-
-    function syncUsedToFirebase() {
-        if (!fbConnected || !fbDB) return;
-        var usedRef = fbDB.ref('events/' + fbEventId + '/used');
-        usedRef.set(Array.from(usedIDs));
-    }
-
-    function updateFirebaseBadge(status) {
-        var badge = document.getElementById('firebase-badge');
-        if (status === 'connected') {
-            badge.className = 'firebase-status fb-connected';
-            badge.textContent = 'Firebase: Conectado';
-        } else if (status === 'disconnected') {
-            badge.className = 'firebase-status fb-disconnected';
-            badge.textContent = 'Firebase: Error';
-        } else {
-            badge.className = 'firebase-status fb-config';
-            badge.textContent = 'Firebase: No config';
-        }
-    }
-
-    function saveFirebaseConfig() {
-        var apiKey = document.getElementById('fb-api-key').value.trim();
-        var dbUrl = document.getElementById('fb-db-url').value.trim();
-        var eventId = document.getElementById('fb-event-id').value.trim() || 'bleedit-default';
-        var st = document.getElementById('firebase-status-msg');
-
-        if (!apiKey || !dbUrl) {
-            st.style.display = 'block';
-            st.innerHTML = '<i class="fa-solid fa-circle-xmark mr-2" style="color:var(--accent)"></i>API Key y Database URL son obligatorios';
-            return;
-        }
-
-        CFG.FB_API_KEY = apiKey;
-        CFG.FB_DB_URL = dbUrl;
-        CFG.FB_EVENT_ID = eventId;
-        localStorage.setItem('bleedit_fb_api_key', apiKey);
-        localStorage.setItem('bleedit_fb_db_url', dbUrl);
-        localStorage.setItem('bleedit_fb_event_id', eventId);
-
-        if (fbUnsub) { fbUnsub(); fbUnsub = null; }
-
-        fbApp = null; // Reset para forzar nueva inicializacion
-        initFirebase();
-
-        st.style.display = 'block';
-        st.innerHTML = '<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>Firebase configurado y conectado';
-    }
-
-    function disconnectFirebase() {
-        if (fbUnsub) { fbUnsub(); fbUnsub = null; }
-        fbDB = null;
-        fbConnected = false;
-        CFG.FB_API_KEY = '';
-        CFG.FB_DB_URL = '';
-        CFG.FB_EVENT_ID = '';
-        localStorage.removeItem('bleedit_fb_api_key');
-        localStorage.removeItem('bleedit_fb_db_url');
-        localStorage.removeItem('bleedit_fb_event_id');
-        document.getElementById('fb-api-key').value = '';
-        document.getElementById('fb-db-url').value = '';
-        document.getElementById('fb-event-id').value = '';
-        updateFirebaseBadge('config');
-        showToast('Firebase desconectado', 'i');
-    }
-
-    // ============================================================
-    // RESETEAR PARA NUEVO EVENTO
-    // ============================================================
-    function clearAllDataForNewEvent() {
-        if (confirm('⚠️ ¿ESTÁS SEGURO?\n\nEsto borrará TODOS los asistentes, entradas usadas e historial. Esta acción no se puede deshacer.')) {
-            if (confirm('Última confirmación: ¿Deseas borrar TODOS los datos del evento actual?')) {
-                // Borrar arreglos en memoria
-                attendees = [];
-                manualAttendees = [];
-                usedIDs.clear();
-                verificationLog = [];
-                
-                // Borrar de LocalStorage
-                localStorage.removeItem('bleedit_used');
-                localStorage.removeItem('bleedit_manual');
-                localStorage.removeItem('bleedit_log');
-                localStorage.removeItem('bleedit_sheet_id');
-                
-                // Limpiar Firebase si está conectado
-                if (fbConnected) {
-                    var usedRef = fbDB.ref('events/' + fbEventId + '/used');
-                    usedRef.set([]); // Limpia las entradas en la nube
-                }
-                
-                // Resetear interfaz
-                CFG.SID = '';
-                document.getElementById('config-sheet-id').value = '';
-                
-                updateUI();
-                showToast('Datos borrados. Listo para un nuevo evento.', 's');
-                
-                // Regresar a la pantalla de inicio automáticamente
-                showView('landing');
-            }
-        }
-    }
-        
-    // ============================================================
-    // NOTIFICACIONES PUSH
-    // ============================================================
-    function showPushNotif(message, type) {
-        type = type || 'err';
-        var existing = document.querySelector('.push-notif');
-        if (existing) existing.remove();
-
-        var n = document.createElement('div');
-        n.className = 'push-notif push-' + type;
-        n.innerHTML = '<i class="fa-solid fa-' + (type === 'err' ? 'triangle-exclamation' : 'bell') + ' mr-2"></i>' + esc(message);
-        document.body.appendChild(n);
-        setTimeout(function() { n.remove(); }, 5000);
-    }
-
-    // ============================================================
-    // MODO KIOSK / SOLO ESCANEAR
-    // ============================================================
-    function enterKioskMode() {
-        var kiosk = document.getElementById('kiosk-mode');
-        kiosk.classList.add('active');
-        document.getElementById('kiosk-result').style.display = 'none';
-        document.getElementById('kiosk-result').innerHTML = '';
-        setTimeout(startKioskScanner, 300);
-    }
-
-    function exitKioskMode() {
-        var kioskPinModal = document.getElementById('kiosk-pin-modal');
-        kioskPinModal.style.display = 'flex';
-        document.getElementById('kiosk-pin-input').value = '';
-        document.getElementById('kiosk-pin-error').style.display = 'none';
-        setTimeout(function() { document.getElementById('kiosk-pin-input').focus(); }, 300);
-    }
-
-    function closeKioskPinModal() {
-        document.getElementById('kiosk-pin-modal').style.display = 'none';
-        document.getElementById('kiosk-pin-input').blur();
-    }
-
-    function checkKioskPIN() {
-        var pin = document.getElementById('kiosk-pin-input').value.trim();
-        var validPIN = CFG.PIN || DEFAULT_PIN;
-        if (pin === validPIN) {
-            closeKioskPinModal();
-            stopKioskScanner();
-            document.getElementById('kiosk-mode').classList.remove('active');
-            showToast('Modo puerta cerrado', 'i');
-        } else {
-            document.getElementById('kiosk-pin-error').style.display = 'block';
-            document.getElementById('kiosk-pin-input').value = '';
-        }
-    }
-
-    function startKioskScanner() {
-        if (kioskScannerOn) return;
-        var s = document.getElementById('kiosk-status');
-        s.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...';
-        try {
-            kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader");
-            kioskScannerInst.start({facingMode: "environment"}, {fps: 15, qrbox: {width: 280, height: 280}, aspectRatio: 1.0}, onKioskScan, function(){})
-                .then(function() {
-                    kioskScannerOn = true;
-                    s.innerHTML = '<i class="fa-solid fa-camera mr-2" style="color:var(--accent)"></i>Escanea tu entrada';
-                    document.getElementById('kiosk-scan-line').style.display = 'block';
-                }).catch(function(err) {
-                    s.innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>No se pudo acceder a la camara.';
-                });
-        } catch(e) {
-            s.innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Error de camara.';
-        }
-    }
-
-    function stopKioskScanner() {
-        if (kioskScannerInst && kioskScannerOn) {
-            kioskScannerOn = false;
-            kioskScannerInst.stop().then(function() { kioskScannerInst.clear(); }).catch(function(){});
-        }
-    }
-
-    function onKioskScan(dt) {
-        var now = Date.now();
-        var clean = dt.trim();
-        if (clean === kioskLastScan && now - kioskLastTime < 3000) return;
-        kioskLastScan = clean;
-        kioskLastTime = now;
-
-        if (kioskScannerOn) {
-            kioskScannerInst.pause(true);
-            setTimeout(function() { if (kioskScannerOn) kioskScannerInst.resume().catch(function(){}); }, 4000);
-        }
-
-        verifyKioskEntry(clean);
-    }
-
-    function verifyKioskEntry(raw) {
-        var isQR = raw.includes('-');
-        var dni = nD(raw);
-        var resultDiv = document.getElementById('kiosk-result');
-        resultDiv.style.display = 'block';
-
-        if (!dni) {
-            resultDiv.innerHTML = '<div class="kiosk-result rc-e" style="font-size:32px"><i class="fa-solid fa-circle-xmark text-5xl mb-3 block" style="color:var(--accent-bright)"></i>CODIGO INVALIDO</div>';
-            document.getElementById('kiosk-status').innerHTML = '<span style="color:var(--accent-bright)">Escanea de nuevo</span>';
-            return;
-        }
-
-        var a = null;
-        for (var i = 0; i < attendees.length; i++) {
-            if (nD(attendees[i].D) === dni) { a = attendees[i]; break; }
-        }
-
-        if (!a) {
-            resultDiv.innerHTML = '<div class="kiosk-result rc-e"><i class="fa-solid fa-circle-xmark text-5xl mb-3 block" style="color:var(--accent-bright)"></i>NO ENCONTRADO</div>';
-            document.getElementById('kiosk-status').innerHTML = '<span style="color:var(--accent-bright)">Entrada no registrada</span>';
-            addLog(raw, 'NO ENCONTRADO (KIOSK)', false);
-            return;
-        }
-
-        if (!isPaid(a.P)) {
-            resultDiv.innerHTML = '<div class="kiosk-result rc-u"><i class="fa-solid fa-triangle-exclamation text-5xl mb-3 block" style="color:var(--warning)"></i>PAGO PENDIENTE</div>';
-            document.getElementById('kiosk-status').innerHTML = '<span style="color:var(--warning)">Pago pendiente - ' + esc(a.N) + '</span>';
-            addLog(a.N + ' (' + nD(a.D) + ')', 'PAGO PENDIENTE (KIOSK)', false);
-            return;
-        }
-
-        var ticketIdx = -1;
-        if (isQR) {
-            if (usedIDs.has(raw)) {
-                resultDiv.innerHTML = '<div class="kiosk-result rc-u"><i class="fa-solid fa-triangle-exclamation text-5xl mb-3 block" style="color:var(--warning)"></i>YA USADA</div>';
-                document.getElementById('kiosk-status').innerHTML = '<span style="color:var(--warning)">Entrada ya utilizada</span>';
-                addLog(a.N + ' - ' + raw, 'YA USADA (KIOSK)', false);
-                showPushNotif('ALERTA: Intento de re-uso - ' + a.N, 'err');
-                return;
-            }
-            var parts = raw.split('-');
-            ticketIdx = parseInt(parts[1], 10);
-        } else {
-            for (var j = 1; j <= a.C; j++) {
-                if (!usedIDs.has(dni + '-' + j)) { ticketIdx = j; break; }
-            }
-        }
-
-        if (ticketIdx === -1 || (isQR && (isNaN(ticketIdx) || ticketIdx < 1 || ticketIdx > a.C))) {
-            resultDiv.innerHTML = '<div class="kiosk-result rc-e"><i class="fa-solid fa-circle-xmark text-5xl mb-3 block" style="color:var(--accent-bright)"></i>INVALIDA</div>';
-            document.getElementById('kiosk-status').innerHTML = '<span style="color:var(--accent-bright)">Entrada invalida</span>';
-            return;
-        }
-
-        var uniqueID = dni + '-' + ticketIdx;
-        usedIDs.add(uniqueID);
-        try { localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs))); } catch(e) {}
-
-        syncUsedToFirebase();
-        updateUI();
-
-        var remaining = a.C;
-        for (var k = 1; k <= a.C; k++) { if (usedIDs.has(dni + '-' + k)) remaining--; }
-
-        resultDiv.innerHTML = '<div class="kiosk-result rc-s"><i class="fa-solid fa-circle-check text-5xl mb-3 block" style="color:var(--success)"></i>BIENVENIDO<br><span style="font-size:20px;color:var(--text)">' + esc(a.N) + '</span><br><span style="font-size:16px;color:var(--muted)">Entrada ' + ticketIdx + '/' + a.C + ' &mdash; ' + esc(a.E) + '</span>' + (remaining > 0 ? '<br><span style="font-size:14px;color:var(--success)">Quedan ' + remaining + ' mas</span>' : '') + '</div>';
-        document.getElementById('kiosk-status').innerHTML = '<span style="color:var(--success)">Acceso concedido</span>';
-        addLog(a.N + ' - Entrada ' + ticketIdx + '/' + a.C + ' (KIOSK)', 'OK', true);
-    }
-
-    // ============================================================
-    // CARGA DE DATOS
-    // ============================================================
-    function loadData() {
-        if (CFG.SID) {
-            loadGS().then(function() {
-                showToast('Datos cargados desde Google Sheets', 's');
-            }).catch(function(e) {
-                console.warn('Fallback Demo:', e.message);
-                attendees = DEMO.slice();
-                mergeManual();
-                updateUI();
-                showToast('Error Sheets, usando demo', 'e');
-            });
-        } else {
-            attendees = DEMO.slice();
-            mergeManual();
-            updateUI();
-        }
-    }
-
-    function mergeManual() {
-        for (var i = 0; i < manualAttendees.length; i++) {
-            var exists = false;
-            for (var j = 0; j < attendees.length; j++) {
-                if (nD(attendees[j].D) === nD(manualAttendees[i].D)) { exists = true; break; }
-            }
-            if (!exists) attendees.push(manualAttendees[i]);
-        }
-    }
-
-    // ============================================================
-    // GOOGLE SHEETS
-    // ============================================================
-    function loadGS() {
-        var url = 'https://docs.google.com/spreadsheets/d/' + CFG.SID + '/gviz/tq?tqx=out:csv';
-        return fetch(url).then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.text();
-        }).then(function(t) {
-            if (t.trim().startsWith('<')) throw new Error('La hoja no es publica o el ID es incorrecto');
-            t = t.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-            attendees = parseCSV(t);
-            if (!attendees.length) throw new Error('Sin datos o columnas no coinciden');
-            mergeManual();
-            updateUI();
-        });
-    }
-
-    function parseCSV(t) {
-        var ls = t.split('\n').filter(function(l) { return l.trim(); });
-        if (ls.length < 2) return [];
-        var hs = parseLine(ls[0]), hn = [];
-        for (var h = 0; h < hs.length; h++) hn.push(nS(hs[h]));
-
-        var nI = hn.indexOf('nombre'), dI = hn.indexOf('cedula'), cI = hn.indexOf('cantidad');
-        var eI = hn.indexOf('etapa'), tI = hn.indexOf('telefono'), pI = hn.indexOf('pagado');
-        if (dI === -1 || nI === -1) throw new Error('Columnas requeridas: nombre, cedula, cantidad, etapa, telefono, pagado');
-
-        var d = [];
-        for (var i = 1; i < ls.length; i++) {
-            var v = parseLine(ls[i]);
-            var dni = (v[dI] || '').trim();
-            if (dni) {
-                d.push({
-                    N: (v[nI] || '').trim(),
-                    D: dni,
-                    C: parseInt(v[cI] || '1', 10) || 1,
-                    E: (v[eI] || 'General').trim(),
-                    T: tI !== -1 ? (v[tI] || '').trim() : '',
-                    P: pI !== -1 ? (v[pI] || 'No').trim() : 'No'
-                });
-            }
-        }
-        return d;
-    }
-
-    function parseLine(l) {
-        var r = [], c = '', q = false;
-        for (var i = 0; i < l.length; i++) {
-            var ch = l[i];
-            if (ch === '"') {
-                if (q && i + 1 < l.length && l[i + 1] === '"') { c += '"'; i++; }
-                else q = !q;
-            } else if (ch === ',' && !q) { r.push(c); c = ''; }
-            else c += ch;
-        }
-        r.push(c);
-        return r;
-    }
-
-    // ============================================================
-    // EXCEL UPLOAD
-    // ============================================================
-    function handleFileUpload() {
-        var fileInput = document.getElementById('file-input');
-        var st = document.getElementById('upload-status');
-        if (!fileInput.files.length) { showToast('Selecciona un archivo', 'e'); return; }
-        st.style.display = 'block';
-        st.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2" style="color:var(--accent)"></i>Procesando...';
-
-        var file = fileInput.files[0];
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                var data = new Uint8Array(e.target.result);
-                var wb = XLSX.read(data, {type: 'array'});
-                var ws = wb.Sheets[wb.SheetNames[0]];
-                var csv = XLSX.utils.sheet_to_csv(ws);
-                attendees = parseCSV(csv);
-                if (!attendees.length) throw new Error('Archivo vacio o sin columnas correctas');
-                mergeManual();
-                updateUI();
-                st.innerHTML = '<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>' + attendees.length + ' registros cargados localmente.';
-                showToast(attendees.length + ' registros cargados', 's');
-            } catch(err) {
-                st.innerHTML = '<i class="fa-solid fa-circle-xmark mr-2" style="color:var(--accent)"></i>Error: ' + err.message;
-                showToast('Error al procesar', 'e');
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // ============================================================
-    // AGREGAR MANUAL
-    // ============================================================
-    function addManualAttendee() {
-        var n = document.getElementById('manual-nombre').value.trim();
-        var d = document.getElementById('manual-cedula').value.trim();
-        var c = parseInt(document.getElementById('manual-cantidad').value) || 1;
-        var e = document.getElementById('manual-etapa').value.trim() || 'Manual';
-        var t = document.getElementById('manual-telefono').value.trim();
-        var p = document.getElementById('manual-pagado').value;
-        var st = document.getElementById('manual-status');
-
-        if (!n || !d) { showToast('Nombre y Cedula son obligatorios', 'e'); return; }
-
-        var newAtt = {N: n, D: d, C: c, E: e, T: t, P: p};
-
-        for (var i = 0; i < attendees.length; i++) {
-            if (nD(attendees[i].D) === nD(d)) {
-                showToast('Esta cedula ya esta registrada', 'e');
-                return;
-            }
-        }
-
-        attendees.push(newAtt);
-        manualAttendees.push(newAtt);
-        localStorage.setItem('bleedit_manual', JSON.stringify(manualAttendees));
-
-        updateUI();
-        st.style.display = 'block';
-        st.innerHTML = '<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>Asistente agregado.';
-        showToast('Asistente agregado correctamente', 's');
-
-        document.getElementById('manual-nombre').value = '';
-        document.getElementById('manual-cedula').value = '';
-        document.getElementById('manual-cantidad').value = '1';
-        document.getElementById('manual-etapa').value = '';
-        document.getElementById('manual-telefono').value = '';
-    }
-
-    function clearManualAttendees() {
-        manualAttendees = [];
-        localStorage.removeItem('bleedit_manual');
-        loadData();
-        showToast('Asistentes manuales borrados', 'i');
-    }
-
-    // ============================================================
-    // UI UPDATE
-    // ============================================================
-    function updateUI() {
-        document.getElementById('admin-data-count').textContent = attendees.length + ' registros';
-        var total = 0, used = 0, paid = 0;
-        for (var i = 0; i < attendees.length; i++) {
-            total += attendees[i].C;
-            if (isPaid(attendees[i].P)) paid += attendees[i].C;
-            for (var j = 1; j <= attendees[i].C; j++) {
-                if (usedIDs.has(nD(attendees[i].D) + '-' + j)) used++;
-            }
-        }
-        document.getElementById('total-count').textContent = total;
-        document.getElementById('verified-count').textContent = used;
-
-        document.getElementById('stat-total-tickets').textContent = total;
-        document.getElementById('stat-used-tickets').textContent = used;
-        document.getElementById('stat-pending-tickets').textContent = total - used;
-        document.getElementById('stat-paid-tickets').textContent = paid;
-
-        renderList();
-        renderStats();
-        renderLog();
-    }
 
     function showView(vn) {
         var av = document.querySelectorAll('.vw');
         for (var i = 0; i < av.length; i++) av[i].style.display = 'none';
         var t = document.getElementById('view-' + vn);
-        if (t) { t.style.display = 'flex'; void t.offsetHeight; }
-        if (vn !== 'scanner' && scannerOn) stopScanner();
-        if (vn === 'admin') setTimeout(function() { genDoorQR(); }, 250);
-        if (vn === 'verify') {
-            var vr = document.getElementById('verify-result');
-            vr.style.display = 'none'; vr.innerHTML = '';
-            document.getElementById('verify-dni').value = '';
-            setTimeout(function() { document.getElementById('verify-dni').focus(); }, 350);
-        }
-        if (vn === 'admin') {
-            var ar = document.getElementById('admin-verify-result');
-            ar.style.display = 'none'; ar.innerHTML = '';
-            document.getElementById('admin-dni-input').value = '';
-        }
-        if (vn === 'scanner') {
-            document.getElementById('scanner-result').style.display = 'none';
-            document.getElementById('scanner-result').innerHTML = '';
-            document.getElementById('scanner-dni-input').value = '';
-        }
+        if (t) t.style.display = 'flex';
         window.scrollTo(0, 0);
     }
 
     // ============================================================
-    // VERIFICACION CON LOG
+    // FIREBASE
     // ============================================================
-    function verifyEntry(input, cid) {
-        var raw = input.trim();
-        var isQR = raw.includes('-');
-        var dni = nD(raw);
+    function initFirebase() {
+        try {
+            if (!fbApp) fbApp = firebase.initializeApp({ apiKey: CFG.FB_API_KEY, databaseURL: CFG.FB_DB_URL }, 'bleedit-app');
+            fbDB = fbApp.database();
+            fbConnected = true;
+            showToast('Nube conectada', 's');
 
-        if (!dni) { showToast('Ingresa una cedula o QR', 'e'); return; }
+            // Escuchar Asistentes
+            fbDB.ref('events/' + CFG.FB_EVENT_ID + '/attendees').on('value', function(s) {
+                attendees = s.val() ? Object.values(s.val()) : [];
+                updateUI();
+            });
 
-        var a = null;
-        for (var i = 0; i < attendees.length; i++) {
-            if (nD(attendees[i].D) === dni) { a = attendees[i]; break; }
+            // Escuchar Usadas
+            fbDB.ref('events/' + CFG.FB_EVENT_ID + '/used').on('value', function(s) {
+                var data = s.val();
+                if (data) { usedIDs = new Set(Array.isArray(data) ? data : Object.values(data)); updateUI(); }
+            });
+
+            // Escuchar Config de Ventas
+            fbDB.ref('events/' + CFG.FB_EVENT_ID + '/config').on('value', function(s) {
+                salesConfig = s.val() || {};
+                document.getElementById('config-payment-info').value = salesConfig.payInfo || '';
+                document.getElementById('config-s1-name').value = salesConfig.s1_name || '';
+                document.getElementById('config-s1-price').value = salesConfig.s1_price || '';
+                document.getElementById('config-s2-name').value = salesConfig.s2_name || '';
+                document.getElementById('config-s2-price').value = salesConfig.s2_price || '';
+                renderBuyStages();
+            });
+
+            // Escuchar Pagos Pendientes
+            fbDB.ref('events/' + CFG.FB_EVENT_ID + '/pending').on('value', function(s) {
+                pendingPayments = s.val() ? Object.values(s.val()) : [];
+                renderPendingPayments();
+            });
+
+        } catch(e) { showToast('Error Firebase', 'e'); }
+    }
+
+    function saveFirebaseConfig() {
+        CFG.FB_API_KEY = document.getElementById('fb-api-key').value.trim();
+        CFG.FB_DB_URL = document.getElementById('fb-db-url').value.trim();
+        CFG.FB_EVENT_ID = document.getElementById('fb-event-id').value.trim() || 'bleedit-default';
+        if (!CFG.FB_API_KEY || !CFG.FB_DB_URL) return;
+        localStorage.setItem('fb_key', CFG.FB_API_KEY);
+        localStorage.setItem('fb_url', CFG.FB_DB_URL);
+        localStorage.setItem('fb_event', CFG.FB_EVENT_ID);
+        initFirebase();
+    }
+
+    function saveSalesConfig() {
+        salesConfig = {
+            payInfo: document.getElementById('config-payment-info').value,
+            s1_name: document.getElementById('config-s1-name').value,
+            s1_price: parseFloat(document.getElementById('config-s1-price').value) || 0,
+            s2_name: document.getElementById('config-s2-name').value,
+            s2_price: parseFloat(document.getElementById('config-s2-price').value) || 0
+        };
+        if (fbConnected) fbDB.ref('events/' + CFG.FB_EVENT_ID + '/config').set(salesConfig);
+        showToast('Configuracion guardada', 's');
+        renderBuyStages();
+    }
+
+    // ============================================================
+    // COMPRAS Y PAGOS
+    // ============================================================
+    function renderBuyStages() {
+        var c = document.getElementById('buy-stages');
+        var h = '';
+        if (salesConfig.s1_name) {
+            h += '<div class="ab rounded-sm p-6" style="background:var(--card)"><div class="flex justify-between items-center"><div><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s1_name)+'</h3></div><div class="font-display text-2xl" style="color:var(--accent-bright)">$'+salesConfig.s1_price+'</div></div><button class="bp w-full mt-4 rounded-sm" onclick="selectStage(1)"><i class="fa-solid fa-ticket mr-2"></i>Comprar</button></div>';
+        }
+        if (salesConfig.s2_name) {
+            h += '<div class="ab rounded-sm p-6" style="background:var(--card)"><div class="flex justify-between items-center"><div><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s2_name)+'</h3></div><div class="font-display text-2xl" style="color:var(--accent-bright)">$'+salesConfig.s2_price+'</div></div><button class="bp w-full mt-4 rounded-sm" onclick="selectStage(2)"><i class="fa-solid fa-ticket mr-2"></i>Comprar</button></div>';
+        }
+        c.innerHTML = h || '<p class="text-center" style="color:var(--muted)">Las entradas no estan disponibles aún.</p>';
+    }
+
+    var selectedStage = 0;
+    function selectStage(num) {
+        selectedStage = num;
+        var price = num === 1 ? salesConfig.s1_price : salesConfig.s2_price;
+        var name = num === 1 ? salesConfig.s1_name : salesConfig.s2_name;
+        document.getElementById('buy-stages').style.display = 'none';
+        document.getElementById('buy-checkout').style.display = 'block';
+        document.getElementById('payment-info').innerHTML = '<strong style="color:var(--accent)'+name+'</strong><br><br>' + (salesConfig.payInfo || '').replace(/\n/g, '<br>');
+        updateTotal();
+    }
+
+    function updateTotal() {
+        var qty = parseInt(document.getElementById('buy-qty').value) || 0;
+        var price = selectedStage === 1 ? salesConfig.s1_price : salesConfig.s2_price;
+        document.getElementById('buy-total').textContent = '$' + (qty * price);
+    }
+
+    function submitPurchase() {
+        var n = document.getElementById('buy-name').value.trim();
+        var d = nD(document.getElementById('buy-dni').value);
+        var p = document.getElementById('buy-phone').value.trim();
+        var q = parseInt(document.getElementById('buy-qty').value) || 1;
+        var r = document.getElementById('buy-ref').value.trim();
+        var stageName = selectedStage === 1 ? salesConfig.s1_name : salesConfig.s2_name;
+        var price = selectedStage === 1 ? salesConfig.s1_price : salesConfig.s2_price;
+
+        if (!n || !d || !r) { showToast('Completa todos los datos', 'e'); return; }
+
+        var newPay = {
+            id: 'pay_' + Date.now(),
+            name: n, dni: d, phone: p, qty: q, ref: r,
+            stage: stageName, total: q * price, status: 'pending'
+        };
+
+        if (fbConnected) {
+            fbDB.ref('events/' + CFG.FB_EVENT_ID + '/pending/' + newPay.id).set(newPay);
+        } else {
+            pendingPayments.push(newPay);
+            renderPendingPayments();
         }
 
+        showToast('Comprobante enviado. Espera aprobacion.', 's');
+        showView('landing');
+    }
+
+    function renderPendingPayments() {
+        var c = document.getElementById('pending-payments-list');
+        var h = '';
+        for (var i = 0; i < pendingPayments.length; i++) {
+            var p = pendingPayments[i];
+            h += '<div class="ab rounded-sm p-4" style="background:var(--card)"><div class="flex justify-between mb-2"><span class="font-display text-lg">'+esc(p.name)+'</span><span class="font-display text-lg" style="color:var(--accent-bright)">$'+p.total+'</span></div><div class="text-sm" style="color:var(--muted)">Cedula: '+esc(p.dni)+'<br>Etapa: '+esc(p.stage)+' | Cant: '+p.qty+'<br>Tlf: '+esc(p.phone)+'<br><strong>Ref: '+esc(p.ref)+'</strong></div><div class="flex gap-2 mt-3"><button class="bp flex-1 rounded-sm text-sm" onclick="approvePayment(\''+p.id+'\')"><i class="fa-solid fa-check mr-1"></i>Aprobar</button><button class="bs rounded-sm text-sm" onclick="rejectPayment(\''+p.id+'\')"><i class="fa-solid fa-times mr-1"></i>Rechazar</button></div></div>';
+        }
+        c.innerHTML = h || '<p class="text-center py-10" style="color:var(--muted)">No hay pagos pendientes</p>';
+    }
+
+    function approvePayment(id) {
+        var p = pendingPayments.find(x => x.id === id);
+        if (!p) return;
+        
+        // Agregar a asistentes pagados
+        var newAtt = { N: p.name, D: p.dni, C: p.qty, E: p.stage, T: p.phone, P: 'Si' };
+        attendees.push(newAtt);
+        if (fbConnected) {
+            fbDB.ref('events/' + CFG.FB_EVENT_ID + '/attendees').set(attendees);
+            fbDB.ref('events/' + CFG.FB_EVENT_ID + '/pending/' + id).remove();
+        }
+        updateUI();
+        showToast('Pago aprobado y entrada generada', 's');
+    }
+
+    function rejectPayment(id) {
+        if (fbConnected) fbDB.ref('events/' + CFG.FB_EVENT_ID + '/pending/' + id).remove();
+        else { pendingPayments = pendingPayments.filter(x => x.id !== id); renderPendingPayments(); }
+        showToast('Pago rechazado', 'i');
+    }
+
+    // ============================================================
+    // VERIFICACION Y ADMIN
+    // ============================================================
+    function checkPIN() {
+        var p = document.getElementById('pin-input').value.trim();
+        if (p === CFG.PIN) {
+            document.getElementById('pin-modal').style.display = 'none';
+            showView('admin');
+        } else {
+            document.getElementById('pin-error').style.display = 'block';
+        }
+    }
+
+    function verifyEntry(input, cid) {
+        var dni = nD(input);
+        if (!dni) return;
+        var a = null;
+        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } }
         var c = document.getElementById(cid);
         c.style.display = 'block';
 
-        if (!a) {
-            c.innerHTML = mkCard('e', 'NO ENCONTRADO', 'No existe compra con la cedula <strong>' + esc(raw) + '</strong>');
-            showFlash('e');
-            addLog(raw, 'NO ENCONTRADO', false);
-            return;
-        }
+        if (!a) { c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3></div>'; return; }
+        if (!isPaid(a.P)) { c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p></div>'; return; }
+        
+        var idx = -1;
+        for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
+        if (idx === -1) { c.innerHTML = '<div class="rc rc-e"><h3>AGOTADAS</h3><p>'+esc(a.N)+'</p></div>'; return; }
 
-        if (!isPaid(a.P)) {
-            c.innerHTML = mkCard('u', 'PAGO PENDIENTE', '<strong>' + esc(a.N) + '</strong> tiene un pago pendiente. No se puede verificar.');
-            showFlash('e');
-            addLog(a.N + ' (' + nD(a.D) + ')', 'PAGO PENDIENTE', false);
-            return;
-        }
-
-        var stageClass = getStageClass(a.E);
-        var ticketIdx = -1;
-
-        if (isQR) {
-            if (usedIDs.has(raw)) {
-                c.innerHTML = mkCard('u', 'ENTRADA YA USADA', 'El codigo <strong>' + esc(raw) + '</strong> ya fue escaneado.');
-                showFlash('e');
-                addLog(a.N + ' - ' + raw, 'YA USADA', false);
-                showPushNotif('ALERTA: Re-intento de uso - ' + a.N, 'err');
-                return;
-            }
-            var parts = raw.split('-');
-            ticketIdx = parseInt(parts[1], 10);
-            if (isNaN(ticketIdx) || ticketIdx < 1 || ticketIdx > a.C) {
-                c.innerHTML = mkCard('e', 'QR INVALIDO', 'El codigo no corresponde a una entrada valida.');
-                showFlash('e');
-                addLog(raw, 'QR INVALIDO', false);
-                return;
-            }
-        } else {
-            for (var j = 1; j <= a.C; j++) {
-                if (!usedIDs.has(dni + '-' + j)) { ticketIdx = j; break; }
-            }
-            if (ticketIdx === -1) {
-                c.innerHTML = mkCard('u', 'AGOTADAS', '<strong>' + esc(a.N) + '</strong> ya uso todas sus <strong>' + a.C + '</strong> entrada(s).');
-                showFlash('e');
-                addLog(a.N + ' (' + nD(a.D) + ')', 'AGOTADAS', false);
-                return;
-            }
-        }
-
-        var uniqueID = dni + '-' + ticketIdx;
-        usedIDs.add(uniqueID);
-        try { localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs))); } catch(e) {}
-
-        syncUsedToFirebase();
+        var uid = dni + '-' + idx;
+        usedIDs.add(uid);
+        localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
+        if (fbConnected) fbDB.ref('events/' + CFG.FB_EVENT_ID + '/used').set(Array.from(usedIDs));
         updateUI();
 
-        var remaining = a.C;
-        for (var k = 1; k <= a.C; k++) { if (usedIDs.has(dni + '-' + k)) remaining--; }
-
-        var msg = '<span class="bd ' + stageClass + ' mb-2" style="display:inline-block">' + esc(a.E) + '</span><br><strong>' + esc(a.N) + '</strong><br>Entrada ' + ticketIdx + ' de ' + a.C + ' verificada.<br><span style="color:var(--muted);font-size:13px">Cedula: ' + esc(dni) + '</span>';
-        if (remaining > 0) msg += '<br><span style="color:var(--success);font-size:13px">Quedan ' + remaining + ' entrada(s) disponibles</span>';
-
-        c.innerHTML = mkCard('s', 'ENTRADA VALIDA', msg);
-        showFlash('s');
-        showToast('Entrada verificada', 's');
-        addLog(a.N + ' - Entrada ' + ticketIdx + '/' + a.C + ' (' + a.E + ')', 'OK', true);
+        c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Entrada '+idx+'/'+a.C+'</p></div>';
     }
-
     function verifyDNI() { verifyEntry(document.getElementById('verify-dni').value, 'verify-result'); }
     function adminVerify() { verifyEntry(document.getElementById('admin-dni-input').value, 'admin-verify-result'); }
-    function verifyFromScanner() { verifyEntry(document.getElementById('scanner-dni-input').value, 'scanner-result'); document.getElementById('scanner-dni-input').value = ''; }
+    function verifyFromScanner() { verifyEntry(document.getElementById('scanner-dni-input').value, 'scanner-result'); document.getElementById('scanner-dni-input').value=''; }
 
-    function mkCard(t, ti, ms) {
-        var ic = {s: 'fa-circle-check', e: 'fa-circle-xmark', u: 'fa-triangle-exclamation'};
-        var co = {s: 'var(--success)', e: 'var(--accent-bright)', u: 'var(--warning)'};
-        var cl = {s: 'rc-s', e: 'rc-e', u: 'rc-u'};
-        return '<div class="rc ' + cl[t] + ' rounded-sm"><i class="fa-solid ' + ic[t] + ' text-4xl mb-3" style="color:' + co[t] + '"></i><h3 class="font-display text-2xl font-bold tracking-wider mb-2" style="color:' + co[t] + '">' + ti + '</h3><p class="text-sm" style="color:var(--text)">' + ms + '</p></div>';
-    }
-
-    // ============================================================
-    // HISTORIAL DE VERIFICACIONES
-    // ============================================================
-    function addLog(name, action, success) {
-        verificationLog.unshift({
-            time: nowStr(),
-            name: name,
-            action: action,
-            success: success
-        });
-        if (verificationLog.length > 100) verificationLog = verificationLog.slice(0, 100);
-        try { localStorage.setItem('bleedit_log', JSON.stringify(verificationLog)); } catch(e) {}
-        renderLog();
-    }
-
-    function renderLog() {
-        var container = document.getElementById('verification-log');
-        if (!verificationLog.length) {
-            container.innerHTML = '<p class="text-sm text-center py-6" style="color:var(--muted)">Sin verificaciones registradas</p>';
-            return;
-        }
-        var h = '';
-        for (var i = 0; i < verificationLog.length; i++) {
-            var log = verificationLog[i];
-            var cls = log.success ? 'log-ok' : (log.action === 'PAGO PENDIENTE' || log.action === 'AGOTADAS' ? 'log-warn' : 'log-err');
-            h += '<div class="log-row"><span><span class="log-time">' + esc(log.time) + '</span> &mdash; ' + esc(log.name) + ' <span class="' + cls + '">' + esc(log.action) + '</span></span></div>';
-        }
-        container.innerHTML = h;
-    }
-
-    function clearLog() {
-        verificationLog = [];
-        localStorage.removeItem('bleedit_log');
-        renderLog();
-        showToast('Historial borrado', 'i');
-    }
-
-    // ============================================================
-    // ESTADISTICAS
-    // ============================================================
-    function renderStats() {
-        var stageCounts = {};
-        var stageUsed = {};
+    function updateUI() {
+        document.getElementById('admin-data-count').textContent = attendees.length + ' registros';
+        var total = 0, used = 0;
         for (var i = 0; i < attendees.length; i++) {
-            var stage = attendees[i].E || 'General';
-            if (!stageCounts[stage]) { stageCounts[stage] = 0; stageUsed[stage] = 0; }
-            stageCounts[stage] += attendees[i].C;
-            for (var j = 1; j <= attendees[i].C; j++) {
-                if (usedIDs.has(nD(attendees[i].D) + '-' + j)) stageUsed[stage]++;
-            }
+            total += attendees[i].C;
+            for (var j = 1; j <= attendees[i].C; j++) { if (usedIDs.has(nD(attendees[i].D) + '-' + j)) used++; }
         }
-
-        var container = document.getElementById('stage-stats');
-        var h = '';
-        var stages = Object.keys(stageCounts);
-        for (var s = 0; s < stages.length; s++) {
-            var stg = stages[s];
-            var total = stageCounts[stg];
-            var used = stageUsed[stg];
-            var pct = total > 0 ? Math.round((used / total) * 100) : 0;
-            var stageClass = getStageClass(stg);
-            h += '<div><div class="flex justify-between items-center mb-1"><span class="bd ' + stageClass + '">' + esc(stg) + '</span><span style="font-family:monospace;font-size:12px">' + used + '/' + total + ' (' + pct + '%)</span></div>';
-            h += '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>';
-        }
-        container.innerHTML = h || '<p style="color:var(--muted);font-size:13px">Sin datos</p>';
+        document.getElementById('total-count').textContent = total;
+        document.getElementById('verified-count').textContent = used;
+        renderList();
     }
 
-    // ============================================================
-    // EXPORTACION
-    // ============================================================
-    function exportCSV() {
-        if (!attendees.length) { showToast('No hay datos para exportar', 'e'); return; }
-        var csv = 'Nombre,Cedula,Cantidad,Etapa,Telefono,Pagado,Usadas\n';
-        for (var i = 0; i < attendees.length; i++) {
-            var a = attendees[i];
-            var used = 0;
-            for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) used++; }
-            csv += '"' + a.N + '","' + a.D + '",' + a.C + ',"' + a.E + '","' + a.T + '","' + a.P + '",' + used + '\n';
-        }
-        downloadFile(csv, 'bleedit_asistentes.csv', 'text/csv');
-        showToast('CSV descargado', 's');
-    }
-
-    function exportUsedList() {
-        if (!usedIDs.size) { showToast('No hay entradas usadas', 'e'); return; }
-        var csv = 'Nombre,Cedula,Entrada,Etapa,Hora\n';
-        var usedArr = Array.from(usedIDs);
-        for (var i = 0; i < usedArr.length; i++) {
-            var parts = usedArr[i].split('-');
-            var dni = parts[0];
-            var ticketNum = parts[1];
-            var person = null;
-            for (var j = 0; j < attendees.length; j++) {
-                if (nD(attendees[j].D) === dni) { person = attendees[j]; break; }
-            }
-            if (person) {
-                csv += '"' + person.N + '","' + person.D + '",' + ticketNum + ',"' + person.E + '",\n';
-            }
-        }
-        downloadFile(csv, 'bleedit_usadas.csv', 'text/csv');
-        showToast('Lista de usadas descargada', 's');
-    }
-
-    function downloadFile(content, filename, mimeType) {
-        var blob = new Blob([content], {type: mimeType});
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    // ============================================================
-    // ESCANER QR ADMIN
-    // ============================================================
-    function openScanner() { showView('scanner'); setTimeout(startScanner, 450); }
-    function startScanner() {
-        if (scannerOn) return;
-        var s = document.getElementById('scanner-status');
-        s.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...';
-        document.getElementById('scanner-result').style.display = 'none';
-        try {
-            scannerInst = new Html5Qrcode("scanner-reader");
-            scannerInst.start({facingMode: "environment"}, {fps: 15, qrbox: {width: 250, height: 250}, aspectRatio: 1.0}, onScanOk, function(){})
-                .then(function() {
-                    scannerOn = true;
-                    s.innerHTML = '<i class="fa-solid fa-camera mr-2" style="color:var(--accent)"></i>Escaneando...';
-                    document.getElementById('scan-line-anim').style.display = 'block';
-                }).catch(function() {
-                    s.innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>No se pudo acceder a la camara.';
-                    document.getElementById('scan-line-anim').style.display = 'none';
-                });
-        } catch(e) {
-            s.innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Error.';
-            document.getElementById('scan-line-anim').style.display = 'none';
-        }
-    }
-    function stopScanner() {
-        if (scannerInst && scannerOn) {
-            scannerOn = false;
-            scannerInst.stop().then(function() { scannerInst.clear(); }).catch(function(){});
-        }
-    }
-    function onScanOk(dt) {
-        var now = Date.now();
-        var clean = dt.trim();
-        if (clean === lastScan && now - lastTime < 3000) return;
-        lastScan = clean;
-        lastTime = now;
-        if (scannerOn) {
-            scannerInst.pause(true);
-            setTimeout(function() { if (scannerOn) scannerInst.resume().catch(function(){}); }, 4000);
-        }
-        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-qrcode mr-2" style="color:var(--accent)"></i>Leido: ' + esc(clean);
-        verifyEntry(clean, 'scanner-result');
-    }
-
-    // ============================================================
-    // QR PUERTA
-    // ============================================================
-    function genDoorQR() {
-        var c = document.getElementById('door-qr');
-        c.innerHTML = '';
-        try {
-            new QRCode(c, {text: window.location.href.split('#')[0] + '#verificar', width: 220, height: 220, colorDark: "#0a0a0a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H});
-        } catch(e) {}
-    }
-    function downloadDoorQR() {
-        var cv = document.querySelector('#door-qr canvas');
-        if (!cv) { showToast('Genera el QR primero', 'e'); return; }
-        var a = document.createElement('a');
-        a.download = 'bleedit-qr-puerta.png';
-        a.href = cv.toDataURL('image/png');
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        showToast('QR descargado', 's');
-    }
-
-    // ============================================================
-    // QR MASIVOS
-    // ============================================================
-    function genBatch(onlyPend) {
-        if (!attendees.length) { showToast('No hay datos', 'e'); return; }
-        document.getElementById('batch-loading').style.display = 'block';
-        document.getElementById('batch-grid').innerHTML = '';
-        document.getElementById('batch-actions').style.display = 'none';
-        batchItems = [];
-
-        var idx = 0;
-        var list = [];
-        for (var i = 0; i < attendees.length; i++) {
-            var a = attendees[i];
-            for (var j = 1; j <= a.C; j++) {
-                var uid = nD(a.D) + '-' + j;
-                if (onlyPend && usedIDs.has(uid)) continue;
-                list.push({a: a, uid: uid, ticketNum: j});
-            }
-        }
-
-        if (!list.length) { document.getElementById('batch-loading').style.display = 'none'; showToast(onlyPend ? 'Todos verificados' : 'Sin datos', 'i'); return; }
-
-        function next() {
-            if (idx >= list.length) {
-                document.getElementById('batch-loading').style.display = 'none';
-                document.getElementById('batch-actions').style.display = 'flex';
-                showToast(list.length + ' QR generados', 's');
-                return;
-            }
-            var item = list[idx];
-            var cid = 'bq-' + idx;
-            var card = document.createElement('div');
-            card.className = 'qc';
-            var qd = document.createElement('div');
-            qd.id = cid;
-            qd.style.cssText = 'width:140px;height:140px;margin:0 auto';
-            card.appendChild(qd);
-            var np = document.createElement('div');
-            np.className = 'qn';
-            np.textContent = item.a.N;
-            card.appendChild(np);
-            var dp = document.createElement('div');
-            dp.className = 'qd';
-            dp.textContent = item.uid;
-            card.appendChild(dp);
-            var cp = document.createElement('div');
-            cp.className = 'qct';
-            cp.textContent = 'Entrada ' + item.ticketNum + ' de ' + item.a.C + ' (' + item.a.E + ')';
-            card.appendChild(cp);
-
-            var db = document.createElement('button');
-            db.className = 'qdl';
-            db.innerHTML = '<i class="fa-solid fa-download mr-1"></i>Descargar PNG';
-            (function(id, nm, uid) {
-                db.onclick = function() {
-                    var cv = document.querySelector('#' + id + ' canvas');
-                    if (!cv) return;
-                    var lnk = document.createElement('a');
-                    lnk.download = 'entrada-' + nm.replace(/\s+/g, '-') + '-' + uid + '.png';
-                    lnk.href = cv.toDataURL('image/png');
-                    document.body.appendChild(lnk);
-                    lnk.click();
-                    document.body.removeChild(lnk);
-                };
-            })(cid, item.a.N, item.uid);
-            card.appendChild(db);
-
-            var phone = nD(item.a.T);
-            if (isPaid(item.a.P)) {
-                if (phone) {
-                    var msgText = 'Hola ' + item.a.N + ', aqui esta tu entrada para BLEEDIT LOUD. Codigo de verificacion: ' + item.uid + '. Presenta este codigo en la entrada.';
-                    var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msgText);
-                    var tgUrl = 'https://t.me/share/url?url=' + encodeURIComponent(window.location.href.split('#')[0] + '#verificar') + '&text=' + encodeURIComponent(msgText);
-
-                    var sendWrap = document.createElement('div');
-                    sendWrap.className = 'qsend';
-                    var waBtn = document.createElement('a');
-                    waBtn.href = waUrl;
-                    waBtn.target = '_blank';
-                    waBtn.className = 'qdl qwa';
-                    waBtn.innerHTML = '<i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp';
-                    var tgBtn = document.createElement('a');
-                    tgBtn.href = tgUrl;
-                    tgBtn.target = '_blank';
-                    tgBtn.className = 'qdl qtg';
-                    tgBtn.innerHTML = '<i class="fa-brands fa-telegram mr-1"></i>Telegram';
-                    sendWrap.appendChild(waBtn);
-                    sendWrap.appendChild(tgBtn);
-                    card.appendChild(sendWrap);
-                } else {
-                    var warnTag = document.createElement('div');
-                    warnTag.className = 'qdl';
-                    warnTag.style.background = '#555';
-                    warnTag.innerHTML = '<i class="fa-solid fa-exclamation-circle mr-1"></i>Falta Telefono';
-                    card.appendChild(warnTag);
-                }
-            } else {
-                var pTag = document.createElement('div');
-                pTag.className = 'qdl';
-                pTag.style.background = '#cc0000';
-                pTag.innerHTML = '<i class="fa-solid fa-times-circle mr-1"></i>Pago Pendiente';
-                card.appendChild(pTag);
-            }
-
-            document.getElementById('batch-grid').appendChild(card);
-            try {
-                new QRCode(qd, {text: item.uid, width: 140, height: 140, colorDark: "#cc0000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H});
-                batchItems.push({id: cid, uid: item.uid, name: item.a.N});
-            } catch(e) {}
-            idx++;
-            setTimeout(next, 80);
-        }
-        setTimeout(next, 150);
-    }
-
-    function dlAllBatch() {
-        if (!batchItems.length) { showToast('Genera los QR primero', 'e'); return; }
-        batchItems.forEach(function(it, i) {
-            setTimeout(function() {
-                var cv = document.querySelector('#' + it.id + ' canvas');
-                if (!cv) return;
-                var a = document.createElement('a');
-                a.download = 'entrada-' + it.name.replace(/\s+/g, '-') + '-' + it.uid + '.png';
-                a.href = cv.toDataURL('image/png');
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }, i * 400);
-        });
-        showToast('Descargando ' + batchItems.length + ' imagenes...', 'i');
-    }
-
-    function printBatch() {
-        if (!batchItems.length) { showToast('Genera los QR primero', 'e'); return; }
-        var w = window.open('', '_blank');
-        var h = '<html><head><title>Entradas BLEEDIT LOUD</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}.c{border:2px solid #000;padding:10px;text-align:center;break-inside:avoid}.c img{display:block!important;margin:0 auto;width:140px!important;height:140px!important}.nm{font-size:13px;font-weight:700;margin-top:6px}.dn{font-size:11px;color:#555;font-family:monospace}.cn{font-size:11px;color:#cc0000;font-weight:700;margin-top:3px}.hd{text-align:center;padding:16px;border-bottom:2px solid #000;margin-bottom:12px}.hd h1{font-size:22px;letter-spacing:4px}.hd p{font-size:13px;color:#555;margin-top:4px}.ft{text-align:center;padding:12px;font-size:10px;color:#888}</style></head><body>';
-        h += '<div class="hd"><h1>BLEEDIT LOUD</h1><p>' + esc(CFG.ED) + ' &mdash; ' + esc(CFG.CI) + '</p><p>TRIBUTO OFICIAL LINKIN PARK VENEZUELA</p></div><div class="g">';
-        for (var i = 0; i < batchItems.length; i++) {
-            var it = batchItems[i];
-            var cv = document.querySelector('#' + it.id + ' canvas');
-            var src = cv ? cv.toDataURL('image/png') : '';
-            h += '<div class="c"><img src="' + src + '" width="140" height="140"><div class="nm">' + esc(it.name) + '</div><div class="dn">' + esc(it.uid) + '</div></div>';
-        }
-        h += '</div><div class="ft">BLEEDIT LOUD &mdash; Presentar al momento de ingresar</div></body></html>';
-        w.document.write(h);
-        w.document.close();
-        setTimeout(function() { w.print(); }, 600);
-    }
-
-    // ============================================================
-    // LISTA
-    // ============================================================
     function renderList() {
-        var s = nS(document.getElementById('search-attendee').value);
         var tb = document.getElementById('attendee-tbody');
-        var el = document.getElementById('empty-list');
-        var f = [];
+        var h = '';
         for (var i = 0; i < attendees.length; i++) {
             var a = attendees[i];
-            if (nS(a.N).indexOf(s) !== -1 || nD(a.D).indexOf(s) !== -1) f.push(a);
-        }
-        if (!attendees.length) { tb.innerHTML = ''; el.style.display = 'block'; return; }
-        el.style.display = 'none';
-
-        var h = '';
-        for (var j = 0; j < f.length; j++) {
-            var a = f[j];
-            var used = 0;
-            for (var k = 1; k <= a.C; k++) { if (usedIDs.has(nD(a.D) + '-' + k)) used++; }
-
-            var stageClass = getStageClass(a.E);
-            var payClass = isPaid(a.P) ? 'bg-pagado' : 'bg-pendiente';
-
-            h += '<tr><td><span class="bd ' + stageClass + '">' + esc(a.E) + '</span></td><td><span class="bd ' + payClass + '">' + (isPaid(a.P) ? 'Si' : 'No') + '</span></td><td class="font-medium">' + esc(a.N) + '</td><td style="font-family:monospace;color:var(--muted);font-size:12px">' + esc(nD(a.D)) + '</td><td style="font-family:monospace;color:' + (used === a.C ? 'var(--accent-bright)' : 'var(--success)') + ';font-weight:700">' + used + '/' + a.C + '</td></tr>';
+            var u = 0;
+            for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) u++; }
+            h += '<tr class="border-b" style="border-color:var(--border)"><td class="p-2">'+esc(a.E)+'</td><td class="p-2">'+(isPaid(a.P)?'Si':'No')+'</td><td class="p-2">'+esc(a.N)+'</td><td class="p-2">'+esc(nD(a.D))+'</td><td class="p-2">'+u+'/'+a.C+'</td></tr>';
         }
         tb.innerHTML = h;
     }
 
-    // ============================================================
-    // TABS
-    // ============================================================
     function switchTab(id, btn) {
         var ts = document.querySelectorAll('.tab-c');
         for (var i = 0; i < ts.length; i++) ts[i].style.display = 'none';
@@ -1631,183 +548,35 @@
         btn.classList.add('ac');
     }
 
-    // ============================================================
-    // PIN
-    // ============================================================
-    function requestAdminAccess() {
-        var m = document.getElementById('pin-modal');
-        m.style.display = 'flex';
-        document.getElementById('pin-input').value = '';
-        document.getElementById('pin-error').style.display = 'none';
-        setTimeout(function() { document.getElementById('pin-input').focus(); }, 400);
-    }
-    function closePINModal() {
-        var m = document.getElementById('pin-modal');
-        document.getElementById('pin-input').blur();
-        if (document.activeElement) document.activeElement.blur();
-        setTimeout(function() { m.style.display = 'none'; void m.offsetHeight; }, 100);
-    }
-    function checkPIN() {
-        var pi = document.getElementById('pin-input');
-        var p = pi.value.trim();
-        var m = document.getElementById('pin-modal');
-        pi.blur();
-        if (document.activeElement) document.activeElement.blur();
-        var validPIN = CFG.PIN || DEFAULT_PIN;
-        if (p === validPIN) {
-            setTimeout(function() {
-                m.style.display = 'none';
-                void m.offsetHeight;
-                setTimeout(function() { showView('admin'); showToast('Acceso concedido', 's'); }, 150);
-            }, 150);
-        } else {
-            document.getElementById('pin-error').style.display = 'block';
-            pi.value = '';
-            var bx = document.querySelector('.mb');
-            bx.style.animation = 'none';
-            void bx.offsetHeight;
-            bx.style.animation = 'sk 0.4s ease';
-            setTimeout(function() { pi.focus(); }, 500);
-        }
+    function addManualAttendee() {
+        var n = document.getElementById('manual-nombre').value.trim();
+        var d = nD(document.getElementById('manual-cedula').value);
+        var c = parseInt(document.getElementById('manual-cantidad').value) || 1;
+        var e = document.getElementById('manual-etapa').value.trim() || 'Manual';
+        if (!n || !d) return;
+        attendees.push({N:n, D:d, C:c, E:e, P:'Si'});
+        if (fbConnected) fbDB.ref('events/' + CFG.FB_EVENT_ID + '/attendees').set(attendees);
+        updateUI();
+        showToast('Agregado', 's');
     }
 
-    function openPinSetup() {
-        var m = document.getElementById('pin-setup-modal');
-        m.style.display = 'flex';
-        document.getElementById('pin-setup-input').value = '';
-        document.getElementById('pin-confirm-input').value = '';
-        document.getElementById('pin-setup-error').style.display = 'none';
-        setTimeout(function() { document.getElementById('pin-setup-input').focus(); }, 400);
-    }
-    function closePinSetupModal() {
-        var m = document.getElementById('pin-setup-modal');
-        document.getElementById('pin-setup-input').blur();
-        document.getElementById('pin-confirm-input').blur();
-        setTimeout(function() { m.style.display = 'none'; }, 100);
-    }
-    function savePIN() {
-        var p1 = document.getElementById('pin-setup-input').value.trim();
-        var p2 = document.getElementById('pin-confirm-input').value.trim();
-        var err = document.getElementById('pin-setup-error');
+    // Escaner (Básico para no saturar)
+    function openScanner() { showView('scanner'); if (window.Html5Qrcode) { var s = new Html5Qrcode("scanner-reader"); s.start({facingMode: "environment"}, {fps: 10, qrbox: 250}, function(dt){ verifyEntry(dt, 'scanner-result'); s.pause(); }, function(){}).catch(function(){}); } }
+    function stopScanner() {}
+    
+    function enterKioskMode() { document.getElementById('kiosk-mode').classList.add('active'); if (window.Html5Qrcode) { var s = new Html5Qrcode("kiosk-scanner-reader"); s.start({facingMode: "environment"}, {fps: 10, qrbox: 250}, function(dt){ verifyKiosk(dt); }, function(){}).catch(function(){}); } }
+    function exitKioskMode() { document.getElementById('kiosk-mode').classList.remove('active'); }
+    function verifyKiosk(dt) { var dni = nD(dt); var a = null; for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } } var r = document.getElementById('kiosk-result'); r.style.display='block'; if (!a) { r.innerHTML = '<div class="rc rc-e">NO ENCONTRADO</div>'; return; } var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } } if (idx === -1) { r.innerHTML = '<div class="rc rc-e">AGOTADAS</div>'; return; } usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + CFG.FB_EVENT_ID + '/used').set(Array.from(usedIDs)); updateUI(); r.innerHTML = '<div class="rc rc-s"><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p></div>'; }
 
-        if (!p1 || p1.length < 4) {
-            err.style.display = 'block';
-            err.textContent = 'El PIN debe tener al menos 4 digitos';
-            return;
-        }
-        if (p1 !== p2) {
-            err.style.display = 'block';
-            err.textContent = 'Los PIN no coinciden';
-            return;
-        }
-
-        CFG.PIN = p1;
-        localStorage.setItem('bleedit_admin_pin', p1);
-        closePinSetupModal();
-        showToast('PIN actualizado correctamente', 's');
-    }
-
-    // ============================================================
-    // GUARDAR EVENTO
-    // ============================================================
-    function saveEventInfo() {
-        var d = document.getElementById('config-date').value.trim();
-        var c = document.getElementById('config-city').value.trim();
-        if (!d || !c) { showToast('Completa fecha y ciudad', 'e'); return; }
-        CFG.ED = d;
-        CFG.CI = c;
-        localStorage.setItem('bleedit_event_date', d);
-        localStorage.setItem('bleedit_event_city', c);
-        document.getElementById('landing-date').textContent = d;
-        document.getElementById('landing-city').textContent = c;
-        var s = document.getElementById('event-status');
-        s.style.display = 'block';
-        s.innerHTML = '<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>Datos del evento actualizados';
-        showToast('Evento actualizado', 's');
-    }
-
-    // ============================================================
-    // GUARDAR SHEET
-    // ============================================================
-    function saveAndLoadSheet() {
-        var sid = document.getElementById('config-sheet-id').value.trim();
-        var st = document.getElementById('sheet-status');
-        if (!sid) { showToast('Ingresa el ID', 'e'); return; }
-        CFG.SID = sid;
-        localStorage.setItem('bleedit_sheet_id', sid);
-        st.style.display = 'block';
-        st.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2" style="color:var(--accent)"></i>Cargando...';
-        loadGS().then(function() {
-            st.innerHTML = '<i class="fa-solid fa-circle-check mr-2" style="color:var(--success)"></i>' + attendees.length + ' registros cargados';
-            showToast(attendees.length + ' registros cargados', 's');
-        }).catch(function(e) {
-            st.innerHTML = '<i class="fa-solid fa-circle-xmark mr-2" style="color:var(--accent)"></i>Error: ' + esc(e.message);
-            showToast('Error al cargar', 'e');
-            attendees = DEMO.slice();
-            mergeManual();
+    function clearAllDataForNewEvent() {
+        if (confirm('¿Borrar TODO?')) {
+            attendees = []; usedIDs.clear(); pendingPayments = [];
+            if (fbConnected) fbDB.ref('events/' + CFG.FB_EVENT_ID).remove();
             updateUI();
-        });
-    }
-    function resetToDemo() {
-        CFG.SID = '';
-        localStorage.removeItem('bleedit_sheet_id');
-        document.getElementById('config-sheet-id').value = '';
-        attendees = DEMO.slice();
-        mergeManual();
-        updateUI();
-        showToast('Datos demo restaurados', 'i');
-        var st = document.getElementById('sheet-status');
-        st.style.display = 'block';
-        st.innerHTML = '<i class="fa-solid fa-circle-info mr-2" style="color:var(--muted)"></i>Usando datos demo';
-    }
-    function clearUsedEntries() {
-        usedIDs.clear();
-        localStorage.removeItem('bleedit_used');
-        syncUsedToFirebase();
-        updateUI();
-        showToast('Entradas reiniciadas', 'i');
-    }
-
-    // ============================================================
-    // EFECTOS
-    // ============================================================
-    function showFlash(t) {
-        var f = document.createElement('div');
-        f.className = 'fo fo-' + t;
-        document.body.appendChild(f);
-        setTimeout(function() { f.remove(); }, 600);
-    }
-    function showToast(m, t) {
-        t = t || 'i';
-        var c = document.getElementById('toast-container');
-        var tt = document.createElement('div');
-        var ic = t === 's' ? 'fa-circle-check' : t === 'e' ? 'fa-circle-xmark' : 'fa-circle-info';
-        var cl = t === 's' ? 'tt-s' : t === 'e' ? 'tt-e' : 'tt-i';
-        tt.className = cl;
-        tt.innerHTML = '<i class="fa-solid ' + ic + ' mr-2"></i>' + esc(m);
-        c.appendChild(tt);
-        setTimeout(function() { tt.remove(); }, 3200);
-    }
-
-    // ============================================================
-    // EVENTOS GLOBALES
-    // ============================================================
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closePINModal();
-            closePinSetupModal();
-            closeKioskPinModal();
+            showToast('App reiniciada', 's');
+            showView('landing');
         }
-    });
-    document.getElementById('pin-modal').addEventListener('click', function(e) {
-        if (e.target === e.currentTarget) closePINModal();
-    });
-    document.getElementById('pin-setup-modal').addEventListener('click', function(e) {
-        if (e.target === e.currentTarget) closePinSetupModal();
-    });
-    document.getElementById('kiosk-pin-modal').addEventListener('click', function(e) {
-        if (e.target === e.currentTarget) closeKioskPinModal();
-    });
+    }
     </script>
 </body>
 </html>
