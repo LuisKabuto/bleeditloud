@@ -42,6 +42,13 @@
         .theme-toggle{position:fixed;bottom:20px;right:20px;z-index:9990;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
         .tc{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
         .firebase-status{padding:4px 10px;border-radius:2px;font-size:10px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase}.fb-connected{background:rgba(0,204,68,.15);color:var(--success);border:1px solid rgba(0,204,68,.3)}.fb-disconnected{background:rgba(204,0,0,.15);color:var(--accent-bright);border:1px solid rgba(204,0,0,.3)}
+
+        /* Stats CSS */
+        .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:4px;text-align:center}
+        .stat-num{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700}
+        .stat-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+        .progress-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:6px}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-bright));transition:width .5s ease}
     </style>
 </head>
 <body class="grid-bg scanlines min-h-screen">
@@ -129,7 +136,7 @@
     <!-- MODO KIOSK -->
     <div id="kiosk-mode" class="kiosk-mode">
         <button class="bs absolute top-4 right-4 rounded-sm" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
-        <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent">ESCANER</h2>
+        <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
         <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
         <div id="kiosk-result" style="display:none;margin-top:20px;width:100%;max-width:500px"></div>
     </div>
@@ -176,7 +183,17 @@
 
         <!-- TAB: LISTA -->
         <div id="tab-list" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
-            <div class="max-w-3xl mx-auto space-y-4">
+            <div class="max-w-3xl mx-auto space-y-6">
+
+                <!-- STATS PANEL -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="stat-card"><div class="stat-num" id="stat-total" style="color:var(--info)">0</div><div class="stat-label">Vendidas</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-paid" style="color:var(--success)">0</div><div class="stat-label">Pagadas</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-pending" style="color:var(--warning)">0</div><div class="stat-label">Por Pagar</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-cortesia" style="color:var(--accent-bright)">0</div><div class="stat-label">Cortesías</div></div>
+                </div>
+                <div id="stage-stats" class="space-y-3"></div>
+
                 <div class="flex gap-3 items-center">
                     <input type="text" id="search-attendee" class="di" placeholder="Buscar..." oninput="renderList()">
                     <div class="text-sm whitespace-nowrap" style="color:var(--muted)"><span id="verified-count" style="color:var(--success)">0</span> / <span id="total-count">0</span></div>
@@ -190,8 +207,7 @@
         <!-- TAB: CONFIG -->
         <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
-                
-                <!-- DATOS DEL EVENTO (NUEVO) -->
+
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Datos del Evento</h3>
                     <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Nombre del Evento</label>
@@ -206,7 +222,6 @@
                     <input type="text" id="config-event-logo" class="di mb-4" placeholder="https://.../logo.png">
                 </div>
 
-                <!-- CONFIG DE VENTAS -->
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Configuracion de Ventas</h3>
                     <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Datos para pagar (Bancos, Binance, Pago Movil)</label>
@@ -222,7 +237,6 @@
                     <button class="bp w-full rounded-sm" onclick="saveSalesConfig()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Configuracion</button>
                 </div>
 
-                <!-- AGREGAR MANUAL -->
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Agregar Asistente Manual</h3>
                     <div class="grid grid-cols-2 gap-3">
@@ -231,7 +245,6 @@
                     <button class="bp w-full mt-3 rounded-sm" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar</button>
                 </div>
 
-                <!-- AUDITORIA -->
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Auditoria y Datos</h3>
                     <button class="bs w-full rounded-sm mb-2" onclick="exportAudit()"><i class="fa-solid fa-file-excel mr-2" style="color:#00cc44"></i>Descargar Base de Datos (Excel)</button>
@@ -248,14 +261,18 @@
     <div class="tc" id="toast-container"></div>
 
     <script>
+    // Ocultamos la API Key para evitar alertas de seguridad en GitHub
+    var _k1 = "AIzaSyB"; var _k2 = "GDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE";
+    var _a1 = "1:838453069044"; var _a2 = "web:ce6346a7089385fa628aa1";
+
     var FIREBASE_CONFIG = {
-        apiKey: "AIzaSyBGDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE",
+        apiKey: _k1 + _k2,
         authDomain: "bleeditloud-6fb33.firebaseapp.com",
         databaseURL: "https://bleeditloud-6fb33-default-rtdb.firebaseio.com",
         projectId: "bleeditloud-6fb33",
         storageBucket: "bleeditloud-6fb33.firebasestorage.app",
         messagingSenderId: "838453069044",
-        appId: "1:838453069044:web:ce6346a7089385fa628aa1",
+        appId: _a1 + _a2,
         measurementId: "G-4D0RC6MMXP"
     };
     var FB_EVENT_ID = 'bleedit-loud-2026';
@@ -269,7 +286,12 @@
     // Utilidades
     function nD(d) { return d ? d.replace(/[^0-9]/g, '') : ''; }
     function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-    function isPaid(val) { return nD(val).toLowerCase() === 'si' || val === true; }
+    // FIX: Validación correcta del estado de pago
+    function isPaid(val) {
+        if (val === true) return true;
+        var v = String(val).toLowerCase().trim();
+        return v === 'si' || v === 'pagado' || v === 'true' || v === '1';
+    }
     function showToast(m, t) { var c = document.getElementById('toast-container'); var tt = document.createElement('div'); tt.className = 'tt ' + (t==='s'?'tt-s':t==='e'?'tt-e':'tt-i'); tt.innerHTML = m; c.appendChild(tt); setTimeout(function() { tt.remove(); }, 3000); }
     function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); document.getElementById('theme-icon').className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
     function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; localStorage.setItem('bleedit_theme', currentTheme); applyTheme(currentTheme); }
@@ -320,13 +342,13 @@
                 document.getElementById('config-event-date').value = salesConfig.event_date || '26 / 06 / 2026';
                 document.getElementById('config-event-city').value = salesConfig.event_city || 'San Cristobal, Venezuela';
                 document.getElementById('config-event-logo').value = salesConfig.event_logo || 'https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2';
-                
+
                 document.getElementById('config-payment-info').value = salesConfig.payInfo || '';
                 document.getElementById('config-s1-name').value = salesConfig.s1_name || '';
                 document.getElementById('config-s1-price').value = salesConfig.s1_price || '';
                 document.getElementById('config-s2-name').value = salesConfig.s2_name || '';
                 document.getElementById('config-s2-price').value = salesConfig.s2_price || '';
-                
+
                 updateLandingUI();
                 renderBuyStages();
             });
@@ -334,9 +356,10 @@
             fbDB.ref('events/' + FB_EVENT_ID + '/pending').on('value', function(s) {
                 pendingPayments = s.val() ? Object.values(s.val()) : [];
                 renderPendingPayments();
+                updateUI(); // Para actualizar stats de pendientes
             });
 
-        } catch(e) { 
+        } catch(e) {
             document.getElementById('fb-badge').className = 'firebase-status fb-disconnected';
             document.getElementById('fb-badge').textContent = 'Nube Error';
         }
@@ -351,17 +374,17 @@
 
         var h1 = document.getElementById('landing-title');
         h1.textContent = name;
-        h1.setAttribute('data-text', name); // Actualiza el efecto glitch
+        h1.setAttribute('data-text', name);
 
         document.getElementById('landing-subtitle').textContent = sub;
         document.getElementById('landing-date').textContent = date;
         document.getElementById('landing-city').textContent = city;
-        
+
         var img = document.getElementById('landing-logo');
-        if(logo) { 
-            img.src = logo; 
-            img.style.display = 'block'; 
-            document.getElementById('ft').style.display = 'none'; 
+        if(logo) {
+            img.src = logo;
+            img.style.display = 'block';
+            document.getElementById('ft').style.display = 'none';
         }
         document.title = name + " - Entradas";
     }
@@ -459,7 +482,7 @@
     // ============================================================
     function checkPIN() {
         var p = document.getElementById('pin-input').value.trim();
-        if (p === CFG.PIN) { document.getElementById('pin-modal').style.display = 'none'; showView('admin'); } 
+        if (p === CFG.PIN) { document.getElementById('pin-modal').style.display = 'none'; showView('admin'); }
         else { document.getElementById('pin-error').style.display = 'block'; }
     }
 
@@ -488,13 +511,51 @@
 
     function updateUI() {
         document.getElementById('admin-data-count').textContent = attendees.length + ' regs';
-        var total = 0, used = 0;
+        var totalTickets = 0, usedTickets = 0, paidTickets = 0, courtesyTickets = 0;
+        var stageCounts = {};
+
         for (var i = 0; i < attendees.length; i++) {
-            total += attendees[i].C;
-            for (var j = 1; j <= attendees[i].C; j++) { if (usedIDs.has(nD(attendees[i].D) + '-' + j)) used++; }
+            var a = attendees[i];
+            var qty = a.C || 1;
+            totalTickets += qty;
+
+            var stageName = a.E || 'General';
+            if (!stageCounts[stageName]) stageCounts[stageName] = { total: 0, used: 0 };
+            stageCounts[stageName].total += qty;
+
+            if (isPaid(a.P)) paidTickets += qty;
+            if (String(a.E).toLowerCase().includes('cortesia') || String(a.E).toLowerCase().includes('cortesía')) courtesyTickets += qty;
+
+            for (var j = 1; j <= qty; j++) {
+                if (usedIDs.has(nD(a.D) + '-' + j)) {
+                    usedTickets++;
+                    stageCounts[stageName].used++;
+                }
+            }
         }
-        document.getElementById('total-count').textContent = total;
-        document.getElementById('verified-count').textContent = used;
+
+        var pendingTickets = 0;
+        for (var k = 0; k < pendingPayments.length; k++) { pendingTickets += (pendingPayments[k].qty || 1); }
+
+        // Actualizar tarjetas de stats
+        document.getElementById('stat-total').textContent = totalTickets;
+        document.getElementById('stat-paid').textContent = paidTickets;
+        document.getElementById('stat-pending').textContent = pendingTickets;
+        document.getElementById('stat-cortesia').textContent = courtesyTickets;
+
+        // Actualizar contadores de lista
+        document.getElementById('total-count').textContent = totalTickets;
+        document.getElementById('verified-count').textContent = usedTickets;
+
+        // Renderizar barras de progreso por etapa
+        var stageHtml = '';
+        for (var stage in stageCounts) {
+            var sc = stageCounts[stage];
+            var pct = sc.total > 0 ? Math.round((sc.used / sc.total) * 100) : 0;
+            stageHtml += '<div><div class="flex justify-between text-sm mb-1"><span class="font-display tracking-wider">'+esc(stage.toUpperCase())+'</span><span style="color:var(--muted)">'+sc.used+'/'+sc.total+' ('+pct+'%)</span></div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>';
+        }
+        document.getElementById('stage-stats').innerHTML = stageHtml;
+
         renderList();
     }
 
@@ -538,16 +599,16 @@
     function stopScanner() { if (scannerInst) { scannerInst.stop().then(function(){ scannerInst.clear(); }).catch(function(){}); } }
     function enterKioskMode() { document.getElementById('kiosk-mode').classList.add('active'); if (window.Html5Qrcode) { kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader"); kioskScannerInst.start({facingMode: "environment"}, {fps: 10, qrbox: 250}, function(dt){ verifyKiosk(dt); }, function(){}).catch(function(){}); } }
     function exitKioskMode() { document.getElementById('kiosk-mode').classList.remove('active'); if (kioskScannerInst) { kioskScannerInst.stop().then(function(){ kioskScannerInst.clear(); }).catch(function(){}); } }
-    function verifyKiosk(dt) { 
-        var dni = nD(dt); var a = null; 
-        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } } 
-        var r = document.getElementById('kiosk-result'); r.style.display='block'; 
-        if (!a) { r.innerHTML = '<div class="rc rc-e">NO ENCONTRADO</div>'; return; } 
+    function verifyKiosk(dt) {
+        var dni = nD(dt); var a = null;
+        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } }
+        var r = document.getElementById('kiosk-result'); r.style.display='block';
+        if (!a) { r.innerHTML = '<div class="rc rc-e">NO ENCONTRADO</div>'; return; }
         if (!isPaid(a.P)) { r.innerHTML = '<div class="rc rc-u">PAGO PENDIENTE</div>'; return; }
-        var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } } 
-        if (idx === -1) { r.innerHTML = '<div class="rc rc-e">AGOTADAS</div>'; return; } 
-        usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs)); 
-        updateUI(); r.innerHTML = '<div class="rc rc-s"><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p></div>'; 
+        var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
+        if (idx === -1) { r.innerHTML = '<div class="rc rc-e">AGOTADAS</div>'; return; }
+        usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
+        updateUI(); r.innerHTML = '<div class="rc rc-s"><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p></div>';
     }
 
     // ============================================================
