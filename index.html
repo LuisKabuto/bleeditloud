@@ -42,8 +42,6 @@
         .theme-toggle{position:fixed;bottom:20px;right:20px;z-index:9990;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
         .tc{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
         .firebase-status{padding:4px 10px;border-radius:2px;font-size:10px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase}.fb-connected{background:rgba(0,204,68,.15);color:var(--success);border:1px solid rgba(0,204,68,.3)}.fb-disconnected{background:rgba(204,0,0,.15);color:var(--accent-bright);border:1px solid rgba(204,0,0,.3)}
-
-        /* Stats CSS */
         .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:4px;text-align:center}
         .stat-num{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700}
         .stat-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
@@ -184,8 +182,6 @@
         <!-- TAB: LISTA -->
         <div id="tab-list" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-3xl mx-auto space-y-6">
-
-                <!-- STATS PANEL -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div class="stat-card"><div class="stat-num" id="stat-total" style="color:var(--info)">0</div><div class="stat-label">Vendidas</div></div>
                     <div class="stat-card"><div class="stat-num" id="stat-paid" style="color:var(--success)">0</div><div class="stat-label">Pagadas</div></div>
@@ -193,7 +189,6 @@
                     <div class="stat-card"><div class="stat-num" id="stat-cortesia" style="color:var(--accent-bright)">0</div><div class="stat-label">Cortesías</div></div>
                 </div>
                 <div id="stage-stats" class="space-y-3"></div>
-
                 <div class="flex gap-3 items-center">
                     <input type="text" id="search-attendee" class="di" placeholder="Buscar..." oninput="renderList()">
                     <div class="text-sm whitespace-nowrap" style="color:var(--muted)"><span id="verified-count" style="color:var(--success)">0</span> / <span id="total-count">0</span></div>
@@ -207,7 +202,6 @@
         <!-- TAB: CONFIG -->
         <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
-
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Datos del Evento</h3>
                     <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Nombre del Evento</label>
@@ -246,11 +240,11 @@
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Auditoria y Datos</h3>
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Seguridad y Datos</h3>
+                    <button class="bs w-full rounded-sm mb-2" onclick="resetPIN()"><i class="fa-solid fa-key mr-2"></i>Cambiar PIN de Admin</button>
                     <button class="bs w-full rounded-sm mb-2" onclick="exportAudit()"><i class="fa-solid fa-file-excel mr-2" style="color:#00cc44"></i>Descargar Base de Datos (Excel)</button>
                     <button class="bp w-full rounded-sm" style="background:linear-gradient(135deg,#990000,#660000)" onclick="clearAllDataForNewEvent()"><i class="fa-solid fa-trash-can mr-2"></i>Borrar Nube y Reiniciar App</button>
                 </div>
-
             </div>
         </div>
     </section>
@@ -258,13 +252,15 @@
     <!-- MODAL PIN -->
     <div id="pin-modal" class="mo"><div class="mb"><i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3><input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] my-4" maxlength="10" inputmode="numeric"><div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div><button class="bp w-full rounded-sm" onclick="checkPIN()">Acceder</button></div></div>
 
+    <!-- MODAL CREAR PIN -->
+    <div id="pin-setup-modal" class="mo"><div class="mb"><i class="fa-solid fa-key text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">CONFIGURAR PIN</h3><p class="text-sm mt-2 mb-4" style="color:var(--muted)">Crea un PIN para proteger el panel. No lo olvides.</p><input type="password" id="pin-setup-input" class="di text-center text-2xl tracking-[8px] my-4" placeholder="Nuevo PIN" maxlength="10" inputmode="numeric"><div id="pin-setup-error" class="text-sm mb-4" style="color:var(--accent);display:none"></div><button class="bp w-full rounded-sm" onclick="savePIN()">Guardar y Acceder</button></div></div>
+
     <div class="tc" id="toast-container"></div>
 
     <script>
-    // Ocultamos la API Key para evitar alertas de seguridad en GitHub
+    // API Key oculta para evitar alertas de GitHub
     var _k1 = "AIzaSyB"; var _k2 = "GDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE";
     var _a1 = "1:838453069044"; var _a2 = "web:ce6346a7089385fa628aa1";
-
     var FIREBASE_CONFIG = {
         apiKey: _k1 + _k2,
         authDomain: "bleeditloud-6fb33.firebaseapp.com",
@@ -276,7 +272,7 @@
         measurementId: "G-4D0RC6MMXP"
     };
     var FB_EVENT_ID = 'bleedit-loud-2026';
-    var CFG = { PIN: '2025' };
+    var CFG = { PIN: '' }; // El PIN ya no está en el código
     var attendees = [], usedIDs = new Set(), pendingPayments = [], salesConfig = {};
     try { usedIDs = new Set(JSON.parse(localStorage.getItem('bleedit_used') || '[]')); } catch(e) {}
     var fbApp = null, fbDB = null, fbConnected = false;
@@ -286,11 +282,10 @@
     // Utilidades
     function nD(d) { return d ? d.replace(/[^0-9]/g, '') : ''; }
     function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-    // FIX: Validación correcta del estado de pago
-    function isPaid(val) {
+    function isPaid(val) { 
         if (val === true) return true;
         var v = String(val).toLowerCase().trim();
-        return v === 'si' || v === 'pagado' || v === 'true' || v === '1';
+        return v === 'si' || v === 'pagado' || v === 'true' || v === '1'; 
     }
     function showToast(m, t) { var c = document.getElementById('toast-container'); var tt = document.createElement('div'); tt.className = 'tt ' + (t==='s'?'tt-s':t==='e'?'tt-e':'tt-i'); tt.innerHTML = m; c.appendChild(tt); setTimeout(function() { tt.remove(); }, 3000); }
     function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); document.getElementById('theme-icon').className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
@@ -298,10 +293,18 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         applyTheme(currentTheme);
-        CFG.PIN = localStorage.getItem('bleedit_pin') || CFG.PIN;
-        if (window.location.hash === '#admin') document.getElementById('pin-modal').style.display = 'flex';
+        CFG.PIN = localStorage.getItem('bleedit_pin') || ''; // Carga el PIN local
+        
+        if (window.location.hash === '#admin') {
+            if (CFG.PIN === '') {
+                document.getElementById('pin-setup-modal').style.display = 'flex'; // Pedir crear
+            } else {
+                document.getElementById('pin-modal').style.display = 'flex'; // Pedir ingresar
+            }
+        }
         else if (window.location.hash === '#verificar') showView('verify');
         else showView('landing');
+        
         initFirebase();
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(function(e){});
     });
@@ -314,9 +317,6 @@
         window.scrollTo(0, 0);
     }
 
-    // ============================================================
-    // FIREBASE Y CONFIGURACION
-    // ============================================================
     function initFirebase() {
         try {
             if (!fbApp) fbApp = firebase.initializeApp(FIREBASE_CONFIG, 'bleedit-app');
@@ -342,13 +342,11 @@
                 document.getElementById('config-event-date').value = salesConfig.event_date || '26 / 06 / 2026';
                 document.getElementById('config-event-city').value = salesConfig.event_city || 'San Cristobal, Venezuela';
                 document.getElementById('config-event-logo').value = salesConfig.event_logo || 'https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2';
-
                 document.getElementById('config-payment-info').value = salesConfig.payInfo || '';
                 document.getElementById('config-s1-name').value = salesConfig.s1_name || '';
                 document.getElementById('config-s1-price').value = salesConfig.s1_price || '';
                 document.getElementById('config-s2-name').value = salesConfig.s2_name || '';
                 document.getElementById('config-s2-price').value = salesConfig.s2_price || '';
-
                 updateLandingUI();
                 renderBuyStages();
             });
@@ -356,10 +354,10 @@
             fbDB.ref('events/' + FB_EVENT_ID + '/pending').on('value', function(s) {
                 pendingPayments = s.val() ? Object.values(s.val()) : [];
                 renderPendingPayments();
-                updateUI(); // Para actualizar stats de pendientes
+                updateUI();
             });
 
-        } catch(e) {
+        } catch(e) { 
             document.getElementById('fb-badge').className = 'firebase-status fb-disconnected';
             document.getElementById('fb-badge').textContent = 'Nube Error';
         }
@@ -374,17 +372,16 @@
 
         var h1 = document.getElementById('landing-title');
         h1.textContent = name;
-        h1.setAttribute('data-text', name);
-
+        h1.setAttribute('data-text', name); 
         document.getElementById('landing-subtitle').textContent = sub;
         document.getElementById('landing-date').textContent = date;
         document.getElementById('landing-city').textContent = city;
-
+        
         var img = document.getElementById('landing-logo');
-        if(logo) {
-            img.src = logo;
-            img.style.display = 'block';
-            document.getElementById('ft').style.display = 'none';
+        if(logo) { 
+            img.src = logo; 
+            img.style.display = 'block'; 
+            document.getElementById('ft').style.display = 'none'; 
         }
         document.title = name + " - Entradas";
     }
@@ -408,9 +405,6 @@
         showToast('Configuracion guardada en la nube', 's');
     }
 
-    // ============================================================
-    // COMPRAS Y PAGOS
-    // ============================================================
     function renderBuyStages() {
         var c = document.getElementById('buy-stages');
         var h = '';
@@ -477,13 +471,34 @@
         showToast('Pago rechazado', 'i');
     }
 
-    // ============================================================
-    // VERIFICACION Y ESCANER
-    // ============================================================
     function checkPIN() {
         var p = document.getElementById('pin-input').value.trim();
-        if (p === CFG.PIN) { document.getElementById('pin-modal').style.display = 'none'; showView('admin'); }
+        if (p === CFG.PIN) { document.getElementById('pin-modal').style.display = 'none'; showView('admin'); } 
         else { document.getElementById('pin-error').style.display = 'block'; }
+    }
+
+    function savePIN() {
+        var p1 = document.getElementById('pin-setup-input').value.trim();
+        var err = document.getElementById('pin-setup-error');
+        if (!p1 || p1.length < 4) {
+            err.style.display = 'block';
+            err.textContent = 'El PIN debe tener al menos 4 digitos';
+            return;
+        }
+        CFG.PIN = p1;
+        localStorage.setItem('bleedit_pin', p1);
+        document.getElementById('pin-setup-modal').style.display = 'none';
+        showView('admin');
+        showToast('PIN creado con exito', 's');
+    }
+
+    function resetPIN() {
+        if (confirm('¿Deseas cambiar tu PIN de administrador?')) {
+            CFG.PIN = '';
+            localStorage.removeItem('bleedit_pin');
+            document.getElementById('pin-setup-input').value = '';
+            document.getElementById('pin-setup-modal').style.display = 'flex';
+        }
     }
 
     function verifyEntry(input, cid) {
@@ -518,14 +533,11 @@
             var a = attendees[i];
             var qty = a.C || 1;
             totalTickets += qty;
-
             var stageName = a.E || 'General';
             if (!stageCounts[stageName]) stageCounts[stageName] = { total: 0, used: 0 };
             stageCounts[stageName].total += qty;
-
             if (isPaid(a.P)) paidTickets += qty;
             if (String(a.E).toLowerCase().includes('cortesia') || String(a.E).toLowerCase().includes('cortesía')) courtesyTickets += qty;
-
             for (var j = 1; j <= qty; j++) {
                 if (usedIDs.has(nD(a.D) + '-' + j)) {
                     usedTickets++;
@@ -537,17 +549,13 @@
         var pendingTickets = 0;
         for (var k = 0; k < pendingPayments.length; k++) { pendingTickets += (pendingPayments[k].qty || 1); }
 
-        // Actualizar tarjetas de stats
         document.getElementById('stat-total').textContent = totalTickets;
         document.getElementById('stat-paid').textContent = paidTickets;
         document.getElementById('stat-pending').textContent = pendingTickets;
         document.getElementById('stat-cortesia').textContent = courtesyTickets;
-
-        // Actualizar contadores de lista
         document.getElementById('total-count').textContent = totalTickets;
         document.getElementById('verified-count').textContent = usedTickets;
 
-        // Renderizar barras de progreso por etapa
         var stageHtml = '';
         for (var stage in stageCounts) {
             var sc = stageCounts[stage];
@@ -555,7 +563,6 @@
             stageHtml += '<div><div class="flex justify-between text-sm mb-1"><span class="font-display tracking-wider">'+esc(stage.toUpperCase())+'</span><span style="color:var(--muted)">'+sc.used+'/'+sc.total+' ('+pct+'%)</span></div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>';
         }
         document.getElementById('stage-stats').innerHTML = stageHtml;
-
         renderList();
     }
 
@@ -599,21 +606,18 @@
     function stopScanner() { if (scannerInst) { scannerInst.stop().then(function(){ scannerInst.clear(); }).catch(function(){}); } }
     function enterKioskMode() { document.getElementById('kiosk-mode').classList.add('active'); if (window.Html5Qrcode) { kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader"); kioskScannerInst.start({facingMode: "environment"}, {fps: 10, qrbox: 250}, function(dt){ verifyKiosk(dt); }, function(){}).catch(function(){}); } }
     function exitKioskMode() { document.getElementById('kiosk-mode').classList.remove('active'); if (kioskScannerInst) { kioskScannerInst.stop().then(function(){ kioskScannerInst.clear(); }).catch(function(){}); } }
-    function verifyKiosk(dt) {
-        var dni = nD(dt); var a = null;
-        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } }
-        var r = document.getElementById('kiosk-result'); r.style.display='block';
-        if (!a) { r.innerHTML = '<div class="rc rc-e">NO ENCONTRADO</div>'; return; }
+    function verifyKiosk(dt) { 
+        var dni = nD(dt); var a = null; 
+        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } } 
+        var r = document.getElementById('kiosk-result'); r.style.display='block'; 
+        if (!a) { r.innerHTML = '<div class="rc rc-e">NO ENCONTRADO</div>'; return; } 
         if (!isPaid(a.P)) { r.innerHTML = '<div class="rc rc-u">PAGO PENDIENTE</div>'; return; }
-        var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
-        if (idx === -1) { r.innerHTML = '<div class="rc rc-e">AGOTADAS</div>'; return; }
-        usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
-        updateUI(); r.innerHTML = '<div class="rc rc-s"><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p></div>';
+        var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } } 
+        if (idx === -1) { r.innerHTML = '<div class="rc rc-e">AGOTADAS</div>'; return; } 
+        usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs)); 
+        updateUI(); r.innerHTML = '<div class="rc rc-s"><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p></div>'; 
     }
 
-    // ============================================================
-    // AUDITORIA EXCEL
-    // ============================================================
     function exportAudit() {
         if (typeof XLSX === 'undefined') { showToast('Error libreria Excel', 'e'); return; }
         var auditData = [];
