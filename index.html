@@ -62,7 +62,6 @@
 <body class="grid-bg scanlines min-h-screen">
     <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
 
-    <!-- ANIMACIÓN GRANDE KIOSK -->
     <div id="kiosk-anim" class="kiosk-anim"></div>
 
     <!-- LANDING -->
@@ -175,6 +174,8 @@
         <button class="bs absolute top-4 right-4 rounded-sm" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
         <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
         <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
+        
+        <!-- PLAN B KIOSK: Subir imagen del QR -->
         <div class="mt-6 w-full max-w-md text-center">
             <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
             <input type="file" id="kiosk-qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFileKiosk(event)">
@@ -199,7 +200,6 @@
             <button class="at" onclick="switchTab('tab-config',this)"><i class="fa-solid fa-gear mr-1"></i> Config</button>
         </nav>
 
-        <!-- TAB: PAGOS PENDIENTES -->
         <div id="tab-payments" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:block">
             <div class="max-w-3xl mx-auto space-y-4">
                 <h3 class="font-display text-xl tracking-wider" style="color:var(--accent)">PAGOS PENDIENTES</h3>
@@ -207,7 +207,6 @@
             </div>
         </div>
 
-        <!-- TAB: QR MASIVOS -->
         <div id="tab-qr" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-4xl mx-auto space-y-6">
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
@@ -219,7 +218,6 @@
             </div>
         </div>
 
-        <!-- TAB: VERIFICAR -->
         <div id="tab-verify" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
@@ -234,7 +232,6 @@
             </div>
         </div>
 
-        <!-- TAB: LISTA -->
         <div id="tab-list" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-3xl mx-auto space-y-6">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -254,7 +251,6 @@
             </div>
         </div>
 
-        <!-- TAB: CONFIG -->
         <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
                 <div class="ab rounded-sm p-6" style="background:var(--card);border-color:var(--accent)">
@@ -328,7 +324,6 @@
     <div id="pin-modal" class="mo"><div class="mb"><i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3><input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] my-4" maxlength="10" inputmode="numeric"><div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div><button class="bp w-full rounded-sm" onclick="checkPIN()">Acceder</button></div></div>
     <div id="pin-setup-modal" class="mo"><div class="mb"><i class="fa-solid fa-key text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">CONFIGURAR PIN</h3><p class="text-sm mt-2 mb-4" style="color:var(--muted)">Crea un PIN para proteger el panel. No lo olvides.</p><input type="password" id="pin-setup-input" class="di text-center text-2xl tracking-[8px] my-4" placeholder="Nuevo PIN" maxlength="10" inputmode="numeric"><div id="pin-setup-error" class="text-sm mb-4" style="color:var(--accent);display:none"></div><button class="bp w-full rounded-sm" onclick="savePIN()">Guardar y Acceder</button></div></div>
     
-    <!-- MODAL EDITAR ASISTENTE -->
     <div id="edit-modal" class="mo">
         <div class="mb" style="max-width:450px">
             <h3 class="font-display text-xl tracking-wider font-bold mb-6">EDITAR ASISTENTE</h3>
@@ -349,7 +344,6 @@
         </div>
     </div>
 
-    <!-- MODAL QR INDIVIDUAL -->
     <div id="qr-modal" class="mo">
         <div class="mb" style="max-width:350px">
             <h3 class="font-display text-xl tracking-wider font-bold mb-4">ENTRADA QR</h3>
@@ -848,9 +842,6 @@
         showToast(attendees.length + ' QRs generados', 's');
     }
 
-    // ============================================================
-    // ESCANER Y PLAN B (Cámara + Subir Imagen)
-    // ============================================================
     function openScanner() { 
         showView('scanner'); 
         document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...';
@@ -897,7 +888,6 @@
         if (kioskScannerInst) { kioskScannerInst.stop().then(function(){ kioskScannerInst.clear(); }).catch(function(){}); } 
     }
 
-    // PLAN B: Leer QR desde imagen subida (Scanner Admin)
     function scanQRFromFile(event) {
         var file = event.target.files[0];
         if (!file) return;
@@ -916,10 +906,9 @@
                 showToast('No se pudo leer el QR en la imagen', 'e');
                 document.body.removeChild(tempDiv);
             });
-        event.target.value = ''; // Limpiar input
+        event.target.value = '';
     }
 
-    // PLAN B: Leer QR desde imagen subida (Modo Puerta)
     function scanQRFromFileKiosk(event) {
         var file = event.target.files[0];
         if (!file) return;
@@ -938,7 +927,7 @@
                 showToast('No se pudo leer el QR en la imagen', 'e');
                 document.body.removeChild(tempDiv);
             });
-        event.target.value = ''; // Limpiar input
+        event.target.value = '';
     }
     
     function verifyKiosk(dt) { 
