@@ -155,7 +155,7 @@
                 <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...</p>
             </div>
             <div id="scanner-result" style="display:none"></div>
-            
+
             <!-- PLAN B: Subir imagen del QR -->
             <div class="ab rounded-sm p-4" style="background:var(--card)">
                 <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
@@ -174,7 +174,7 @@
         <button class="bs absolute top-4 right-4 rounded-sm" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
         <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
         <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
-        
+
         <!-- PLAN B KIOSK: Subir imagen del QR -->
         <div class="mt-6 w-full max-w-md text-center">
             <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
@@ -242,7 +242,7 @@
                 </div>
                 <div id="stage-stats" class="space-y-3"></div>
                 <div class="flex gap-3 items-center">
-                    <input type="text" id="search-attendee" class="di" placeholder="Buscar..." oninput="renderList()">
+                    <input type="text" id="search-attendee" class="di" placeholder="Buscar por nombre o cédula..." oninput="renderList()">
                     <div class="text-sm whitespace-nowrap" style="color:var(--muted)"><span id="verified-count" style="color:var(--success)">0</span> / <span id="total-count">0</span></div>
                 </div>
                 <div class="ab rounded-sm overflow-hidden" style="background:var(--card)">
@@ -323,7 +323,7 @@
     <!-- MODALES -->
     <div id="pin-modal" class="mo"><div class="mb"><i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3><input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] my-4" maxlength="10" inputmode="numeric"><div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div><button class="bp w-full rounded-sm" onclick="checkPIN()">Acceder</button></div></div>
     <div id="pin-setup-modal" class="mo"><div class="mb"><i class="fa-solid fa-key text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">CONFIGURAR PIN</h3><p class="text-sm mt-2 mb-4" style="color:var(--muted)">Crea un PIN para proteger el panel. No lo olvides.</p><input type="password" id="pin-setup-input" class="di text-center text-2xl tracking-[8px] my-4" placeholder="Nuevo PIN" maxlength="10" inputmode="numeric"><div id="pin-setup-error" class="text-sm mb-4" style="color:var(--accent);display:none"></div><button class="bp w-full rounded-sm" onclick="savePIN()">Guardar y Acceder</button></div></div>
-    
+
     <div id="edit-modal" class="mo">
         <div class="mb" style="max-width:450px">
             <h3 class="font-display text-xl tracking-wider font-bold mb-6">EDITAR ASISTENTE</h3>
@@ -370,7 +370,7 @@
     var currentTheme = localStorage.getItem('bleedit_theme') || 'dark';
     var scannerInst = null, kioskScannerInst = null;
 
-    function nD(d) { return d ? d.replace(/[^0-9]/g, '') : ''; }
+    function nD(d) { return d ? String(d).replace(/[^0-9]/g, '') : ''; }
     function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function isPaid(val) { if (val === true) return true; var v = String(val).toLowerCase().trim(); return v === 'si' || v === 'pagado' || v === 'true' || v === '1'; }
     function showToast(m, t) { var c = document.getElementById('toast-container'); var tt = document.createElement('div'); tt.className = 'tt ' + (t==='s'?'tt-s':t==='e'?'tt-e':'tt-i'); tt.innerHTML = m; c.appendChild(tt); setTimeout(function() { tt.remove(); }, 3000); }
@@ -421,7 +421,7 @@
                 updateLandingUI(); renderBuyStages(); updateSalesUI();
             });
             fbDB.ref('events/' + FB_EVENT_ID + '/pending').on('value', function(s) { pendingPayments = s.val() ? Object.values(s.val()) : []; renderPendingPayments(); updateUI(); });
-        } catch(e) { 
+        } catch(e) {
             document.getElementById('fb-badge').className = 'firebase-status fb-disconnected';
             document.getElementById('fb-badge').textContent = 'Nube Error';
         }
@@ -434,7 +434,7 @@
         var city = document.getElementById('config-event-city').value || '';
         var logo = document.getElementById('config-event-logo').value;
         var h1 = document.getElementById('landing-title');
-        h1.textContent = name; h1.setAttribute('data-text', name); 
+        h1.textContent = name; h1.setAttribute('data-text', name);
         document.getElementById('landing-subtitle').textContent = sub;
         document.getElementById('landing-date').textContent = date;
         document.getElementById('landing-city').textContent = city;
@@ -531,7 +531,7 @@
         var r = [], c = '', q = false;
         for (var i = 0; i < l.length; i++) {
             var ch = l[i];
-            if (ch === '"') { if (q && i + 1 < l.length && l[i + 1] === '"') { c += '"'; i++; } else q = !q; } 
+            if (ch === '"') { if (q && i + 1 < l.length && l[i + 1] === '"') { c += '"'; i++; } else q = !q; }
             else if (ch === ',' && !q) { r.push(c); c = ''; } else c += ch;
         }
         r.push(c); return r;
@@ -578,7 +578,7 @@
         if (!n || !d || !r) { showToast('Completa todos los datos', 'e'); return; }
         var newPay = { id: 'pay_' + Date.now(), name: n, dni: d, phone: p, qty: q, ref: r, stage: stageName, total: q * price, status: 'pending' };
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/pending/' + newPay.id).set(newPay);
-        
+
         var qrContainer = document.getElementById('ticket-qr');
         qrContainer.innerHTML = '';
         new QRCode(qrContainer, { text: d, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
@@ -685,16 +685,35 @@
     }
 
     function renderList() {
-        var s = nD(document.getElementById('search-attendee').value);
-        var nameSearch = document.getElementById('search-attendee').value.toLowerCase().trim();
+        var rawInput = document.getElementById('search-attendee').value.trim();
+        var dniSearch = nD(rawInput);
+        var nameSearch = rawInput.toLowerCase();
         var tb = document.getElementById('attendee-tbody');
         var h = '';
+
         for (var i = 0; i < attendees.length; i++) {
             var a = attendees[i];
-            if(nD(a.D).indexOf(s) !== -1 || a.N.toLowerCase().indexOf(nameSearch) !== -1){
+            var attendeeName = String(a.N || '').toLowerCase();
+            var attendeeDNI = nD(String(a.D || ''));
+
+            var matchesDNI = dniSearch !== '' && attendeeDNI.indexOf(dniSearch) !== -1;
+            var matchesName = nameSearch !== '' && attendeeName.indexOf(nameSearch) !== -1;
+
+            if (rawInput === '' || matchesDNI || matchesName) {
                 var u = 0;
-                for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) u++; }
-                h += '<tr class="border-b" style="border-color:var(--border)"><td class="p-2">'+esc(a.E)+'</td><td class="p-2">'+(isPaid(a.P)?'Si':'No')+'</td><td class="p-2">'+esc(a.N)+'</td><td class="p-2">'+esc(nD(a.D))+'</td><td class="p-2">'+u+'/'+a.C+'</td><td class="p-2"><div class="flex gap-1"><button class="bs sm rounded-sm" onclick="openEditModal('+i+')" style="padding:4px 8px"><i class="fa-solid fa-pen"></i></button><button class="bs sm rounded-sm" onclick="openIndividualQR('+i+')" style="padding:4px 8px"><i class="fa-solid fa-qrcode"></i></button></div></td></tr>';
+                for (var j = 1; j <= a.C; j++) { 
+                    if (usedIDs.has(attendeeDNI + '-' + j)) u++; 
+                }
+                h += '<tr class="border-b" style="border-color:var(--border)">' +
+                     '<td class="p-2">' + esc(a.E || '') + '</td>' +
+                     '<td class="p-2">' + (isPaid(a.P) ? 'Si' : 'No') + '</td>' +
+                     '<td class="p-2">' + esc(a.N || '') + '</td>' +
+                     '<td class="p-2">' + esc(attendeeDNI) + '</td>' +
+                     '<td class="p-2">' + u + '/' + a.C + '</td>' +
+                     '<td class="p-2"><div class="flex gap-1">' +
+                     '<button class="bs sm rounded-sm" onclick="openEditModal(' + i + ')" style="padding:4px 8px"><i class="fa-solid fa-pen"></i></button>' +
+                     '<button class="bs sm rounded-sm" onclick="openIndividualQR(' + i + ')" style="padding:4px 8px"><i class="fa-solid fa-qrcode"></i></button>' +
+                     '</div></td></tr>';
             }
         }
         tb.innerHTML = h;
@@ -729,9 +748,9 @@
         if (isNaN(index)) return;
         var a = attendees[index];
         var cleanDni = nD(a.D);
-        
+
         if(!confirm('¿Reiniciar el estado de entrada para '+a.N+'? Esto permitirá que su QR sea escaneado nuevamente.')) return;
-        
+
         var removed = false;
         for(var j=1; j<=a.C; j++){
             var uid = cleanDni + '-' + j;
@@ -740,7 +759,7 @@
                 removed = true;
             }
         }
-        
+
         if(removed){
             localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
             if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
@@ -757,14 +776,14 @@
         var a = attendees[index];
         var cleanDni = nD(a.D);
         currentIndQRDni = cleanDni;
-        
+
         var container = document.getElementById('ind-qr-container');
         container.innerHTML = '';
-        
+
         new QRCode(container, { text: cleanDni, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
         document.getElementById('ind-qr-name').textContent = a.N;
         document.getElementById('ind-qr-dni').textContent = cleanDni;
-        
+
         var waBtn = document.getElementById('ind-qr-wa');
         var phone = nD(a.T);
         if(phone){
@@ -774,7 +793,7 @@
         } else {
             waBtn.style.display = 'none';
         }
-        
+
         document.getElementById('qr-modal').style.display = 'flex';
     }
 
@@ -842,110 +861,155 @@
         showToast(attendees.length + ' QRs generados', 's');
     }
 
-    function openScanner() { 
-        showView('scanner'); 
-        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...';
+    function openScanner() {
+        showView('scanner');
+        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara...';
         setTimeout(function() {
-            if (window.Html5Qrcode) { 
+            if (window.Html5Qrcode) {
                 if (scannerInst) { scannerInst.clear().catch(function(){}); }
-                scannerInst = new Html5Qrcode("scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } }); 
+                scannerInst = new Html5Qrcode("scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+                
+                var config = { 
+                    fps: 10, 
+                    qrbox: function(viewfinderWidth, viewfinderHeight) {
+                        var minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                        return { width: Math.floor(minEdge * 0.75), height: Math.floor(minEdge * 0.75) };
+                    }
+                };
+
                 scannerInst.start(
-                    { facingMode: "environment" }, 
-                    { fps: 15, qrbox: { width: 200, height: 200 } }, 
-                    function(dt){ 
-                        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-check mr-2" style="color:var(--success)"></i>QR Detectado!';
-                        verifyEntry(dt, 'scanner-result'); 
-                        scannerInst.pause(true); 
-                    }, 
+                    { facingMode: "environment" },
+                    config,
+                    function(dt){
+                        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-check mr-2" style="color:var(--success)"></i>¡QR Detectado!';
+                        verifyEntry(dt, 'scanner-result');
+                        scannerInst.pause(true);
+                    },
                     function(err){}
                 ).catch(function(err){
-                    document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Camara bloqueada. Usa el botón de Subir Imagen abajo.';
-                }); 
+                    scannerInst.start({ facingMode: "user" }, config, function(dt){
+                        verifyEntry(dt, 'scanner-result');
+                        scannerInst.pause(true);
+                    }).catch(function(e){
+                        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Permiso de cámara denegado o no disponible. Usa el botón de Subir Imagen.';
+                    });
+                });
             }
         }, 300);
     }
     function stopScanner() { if (scannerInst) { scannerInst.stop().then(function(){ scannerInst.clear(); }).catch(function(){}); } }
-    
-    function enterKioskMode() { 
-        document.getElementById('kiosk-mode').classList.add('active'); 
+
+    function enterKioskMode() {
+        document.getElementById('kiosk-mode').classList.add('active');
         setTimeout(function() {
-            if (window.Html5Qrcode) { 
+            if (window.Html5Qrcode) {
                 if (kioskScannerInst) { kioskScannerInst.clear().catch(function(){}); }
-                kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } }); 
+                kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+                
+                var config = { 
+                    fps: 10, 
+                    qrbox: function(viewfinderWidth, viewfinderHeight) {
+                        var minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                        return { width: Math.floor(minEdge * 0.75), height: Math.floor(minEdge * 0.75) };
+                    }
+                };
+
                 kioskScannerInst.start(
-                    { facingMode: "environment" }, 
-                    { fps: 15, qrbox: { width: 250, height: 250 } }, 
-                    function(dt){ verifyKiosk(dt); }, 
+                    { facingMode: "environment" },
+                    config,
+                    function(dt){ verifyKiosk(dt); },
                     function(err){}
                 ).catch(function(err){
-                    showToast('Camara bloqueada. Usa subir imagen abajo.', 'e');
-                }); 
+                    kioskScannerInst.start({ facingMode: "user" }, config, function(dt){
+                        verifyKiosk(dt);
+                    }).catch(function(e){
+                        showToast('Cámara bloqueada o no disponible. Usa subir imagen abajo.', 'e');
+                    });
+                });
             }
         }, 300);
     }
-    function exitKioskMode() { 
-        document.getElementById('kiosk-mode').classList.remove('active'); 
-        if (kioskScannerInst) { kioskScannerInst.stop().then(function(){ kioskScannerInst.clear(); }).catch(function(){}); } 
+    function exitKioskMode() {
+        document.getElementById('kiosk-mode').classList.remove('active');
+        if (kioskScannerInst) { kioskScannerInst.stop().then(function(){ kioskScannerInst.clear(); }).catch(function(){}); }
+    }
+
+    function processFileForQR(file, targetResultId, isKiosk) {
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var maxDim = 800;
+                var width = img.width;
+                var height = img.height;
+
+                if (width > height) {
+                    if (width > maxDim) { height *= maxDim / width; width = maxDim; }
+                } else {
+                    if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(function(blob) {
+                    var resizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+                    var tempDiv = document.createElement('div');
+                    tempDiv.id = 'temp-qr-reader-' + Date.now();
+                    tempDiv.style.display = 'none';
+                    document.body.appendChild(tempDiv);
+
+                    var tempScanner = new Html5Qrcode(tempDiv.id);
+                    tempScanner.scanFile(resizedFile, true)
+                        .then(function(decodedText) {
+                            if (isKiosk) {
+                                verifyKiosk(decodedText);
+                            } else {
+                                verifyEntry(decodedText, targetResultId);
+                            }
+                            document.body.removeChild(tempDiv);
+                        })
+                        .catch(function(err) {
+                            showToast('No se pudo leer el QR. Asegúrate de que la foto tenga buena luz.', 'e');
+                            document.body.removeChild(tempDiv);
+                        });
+                }, 'image/jpeg', 0.9);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
 
     function scanQRFromFile(event) {
-        var file = event.target.files[0];
-        if (!file) return;
-        var tempDiv = document.createElement('div');
-        tempDiv.id = 'temp-qr-reader';
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-
-        var tempScanner = new Html5Qrcode("temp-qr-reader");
-        tempScanner.scanFile(file, true)
-            .then(function(decodedText) {
-                verifyEntry(decodedText, 'scanner-result');
-                document.body.removeChild(tempDiv);
-            })
-            .catch(function(err) {
-                showToast('No se pudo leer el QR en la imagen', 'e');
-                document.body.removeChild(tempDiv);
-            });
+        processFileForQR(event.target.files[0], 'scanner-result', false);
         event.target.value = '';
     }
 
     function scanQRFromFileKiosk(event) {
-        var file = event.target.files[0];
-        if (!file) return;
-        var tempDiv = document.createElement('div');
-        tempDiv.id = 'temp-qr-reader-kiosk';
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-
-        var tempScanner = new Html5Qrcode("temp-qr-reader-kiosk");
-        tempScanner.scanFile(file, true)
-            .then(function(decodedText) {
-                verifyKiosk(decodedText);
-                document.body.removeChild(tempDiv);
-            })
-            .catch(function(err) {
-                showToast('No se pudo leer el QR en la imagen', 'e');
-                document.body.removeChild(tempDiv);
-            });
+        processFileForQR(event.target.files[0], null, true);
         event.target.value = '';
     }
-    
-    function verifyKiosk(dt) { 
-        var dni = nD(dt); var a = null; 
-        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } } 
-        if (!a) { showKioskAnim('error', 'NO ENCONTRADO', 'No registrado'); return; } 
+
+    function verifyKiosk(dt) {
+        var dni = nD(dt); var a = null;
+        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } }
+        if (!a) { showKioskAnim('error', 'NO ENCONTRADO', 'No registrado'); return; }
         if (!isPaid(a.P)) { showKioskAnim('warn', 'PAGO PENDIENTE', a.N); return; }
-        var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } } 
-        if (idx === -1) { showKioskAnim('error', 'AGOTADAS', a.N); return; } 
-        usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs)); 
-        updateUI(); showKioskAnim('success', 'BIENVENIDO', a.N + ' (Entrada ' + idx + '/' + a.C + ')'); 
+        var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
+        if (idx === -1) { showKioskAnim('error', 'AGOTADAS', a.N); return; }
+        usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
+        updateUI(); showKioskAnim('success', 'BIENVENIDO', a.N + ' (Entrada ' + idx + '/' + a.C + ')');
     }
 
     function showKioskAnim(type, title, text) {
         var animDiv = document.getElementById('kiosk-anim');
         var icon = ''; var color = '';
-        if(type === 'success'){ color = 'var(--success)'; icon = '<i class="fa-solid fa-circle-check anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } 
-        else if(type === 'error'){ color = 'var(--accent-bright)'; icon = '<i class="fa-solid fa-circle-xmark anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); } 
+        if(type === 'success'){ color = 'var(--success)'; icon = '<i class="fa-solid fa-circle-check anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate([100, 50, 100]); }
+        else if(type === 'error'){ color = 'var(--accent-bright)'; icon = '<i class="fa-solid fa-circle-xmark anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); }
         else { color = 'var(--warning)'; icon = '<i class="fa-solid fa-triangle-exclamation anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate(300); }
         animDiv.style.background = color;
         animDiv.innerHTML = '<div style="color:#fff">' + icon + '<div class="anim-title">'+title+'</div><div class="anim-text">'+esc(text)+'</div></div>';
