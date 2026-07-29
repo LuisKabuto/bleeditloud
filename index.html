@@ -576,7 +576,8 @@
         
         var qrContainer = document.getElementById('ticket-qr');
         qrContainer.innerHTML = '';
-        new QRCode(qrContainer, { text: d, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+        // Corrección de Densidad: Nivel M en lugar de H
+        new QRCode(qrContainer, { text: d, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
         document.getElementById('ticket-name').textContent = n;
         document.getElementById('ticket-dni').textContent = d;
         window.currentTicketDNI = d;
@@ -756,7 +757,7 @@
         var container = document.getElementById('ind-qr-container');
         container.innerHTML = '';
         
-        new QRCode(container, { text: cleanDni, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+        new QRCode(container, { text: cleanDni, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
         document.getElementById('ind-qr-name').textContent = a.N;
         document.getElementById('ind-qr-dni').textContent = cleanDni;
         
@@ -832,22 +833,21 @@
                 sendWrap.appendChild(waBtn); card.appendChild(sendWrap);
             }
             grid.appendChild(card);
-            new QRCode(qrDiv, { text: cleanDni, width: 140, height: 140, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+            new QRCode(qrDiv, { text: cleanDni, width: 140, height: 140, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
         }
         showToast(attendees.length + ' QRs generados', 's');
     }
 
     // ============================================================
-    // ESCANER OPTIMIZADO (Retardo de pintado y formato qrbox estricto)
+    // ESCANER MÁXIMA POTENCIA (Detector Nativo)
     // ============================================================
     function openScanner() { 
         showView('scanner'); 
         document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...';
-        // Retardo de 300ms para asegurar que la vista esté pintada antes de iniciar la cámara
         setTimeout(function() {
             if (window.Html5Qrcode) { 
                 if (scannerInst) { scannerInst.clear().catch(function(){}); }
-                scannerInst = new Html5Qrcode("scanner-reader"); 
+                scannerInst = new Html5Qrcode("scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } }); 
                 scannerInst.start(
                     { facingMode: "environment" }, 
                     { fps: 15, qrbox: { width: 200, height: 200 } }, 
@@ -870,7 +870,7 @@
         setTimeout(function() {
             if (window.Html5Qrcode) { 
                 if (kioskScannerInst) { kioskScannerInst.clear().catch(function(){}); }
-                kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader"); 
+                kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } }); 
                 kioskScannerInst.start(
                     { facingMode: "environment" }, 
                     { fps: 15, qrbox: { width: 250, height: 250 } }, 
