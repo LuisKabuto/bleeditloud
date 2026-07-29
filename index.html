@@ -156,6 +156,13 @@
                 <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...</p>
             </div>
             <div id="scanner-result" style="display:none"></div>
+            
+            <!-- PLAN B: Subir imagen del QR -->
+            <div class="ab rounded-sm p-4" style="background:var(--card)">
+                <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
+                <input type="file" id="qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFile(event)">
+            </div>
+
             <div class="ab rounded-sm p-4" style="background:var(--card)">
                 <input type="text" id="scanner-dni-input" class="di" placeholder="Verificacion manual cedula" onkeydown="if(event.key==='Enter')verifyFromScanner()">
                 <button class="bp w-full mt-3 rounded-sm" onclick="verifyFromScanner()"><i class="fa-solid fa-check"></i></button>
@@ -168,6 +175,10 @@
         <button class="bs absolute top-4 right-4 rounded-sm" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
         <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
         <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
+        <div class="mt-6 w-full max-w-md text-center">
+            <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
+            <input type="file" id="kiosk-qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFileKiosk(event)">
+        </div>
     </div>
 
     <!-- ADMIN -->
@@ -576,7 +587,6 @@
         
         var qrContainer = document.getElementById('ticket-qr');
         qrContainer.innerHTML = '';
-        // Corrección de Densidad: Nivel M en lugar de H
         new QRCode(qrContainer, { text: d, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
         document.getElementById('ticket-name').textContent = n;
         document.getElementById('ticket-dni').textContent = d;
@@ -839,7 +849,7 @@
     }
 
     // ============================================================
-    // ESCANER MÁXIMA POTENCIA (Detector Nativo)
+    // ESCANER Y PLAN B (Cámara + Subir Imagen)
     // ============================================================
     function openScanner() { 
         showView('scanner'); 
@@ -858,7 +868,7 @@
                     }, 
                     function(err){}
                 ).catch(function(err){
-                    document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Camara bloqueada. Ve a ajustes del navegador y permite la camara para esta pagina.';
+                    document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Camara bloqueada. Usa el botón de Subir Imagen abajo.';
                 }); 
             }
         }, 300);
@@ -877,7 +887,7 @@
                     function(dt){ verifyKiosk(dt); }, 
                     function(err){}
                 ).catch(function(err){
-                    showToast('Camara bloqueada. Revisa permisos.', 'e');
+                    showToast('Camara bloqueada. Usa subir imagen abajo.', 'e');
                 }); 
             }
         }, 300);
@@ -885,6 +895,50 @@
     function exitKioskMode() { 
         document.getElementById('kiosk-mode').classList.remove('active'); 
         if (kioskScannerInst) { kioskScannerInst.stop().then(function(){ kioskScannerInst.clear(); }).catch(function(){}); } 
+    }
+
+    // PLAN B: Leer QR desde imagen subida (Scanner Admin)
+    function scanQRFromFile(event) {
+        var file = event.target.files[0];
+        if (!file) return;
+        var tempDiv = document.createElement('div');
+        tempDiv.id = 'temp-qr-reader';
+        tempDiv.style.display = 'none';
+        document.body.appendChild(tempDiv);
+
+        var tempScanner = new Html5Qrcode("temp-qr-reader");
+        tempScanner.scanFile(file, true)
+            .then(function(decodedText) {
+                verifyEntry(decodedText, 'scanner-result');
+                document.body.removeChild(tempDiv);
+            })
+            .catch(function(err) {
+                showToast('No se pudo leer el QR en la imagen', 'e');
+                document.body.removeChild(tempDiv);
+            });
+        event.target.value = ''; // Limpiar input
+    }
+
+    // PLAN B: Leer QR desde imagen subida (Modo Puerta)
+    function scanQRFromFileKiosk(event) {
+        var file = event.target.files[0];
+        if (!file) return;
+        var tempDiv = document.createElement('div');
+        tempDiv.id = 'temp-qr-reader-kiosk';
+        tempDiv.style.display = 'none';
+        document.body.appendChild(tempDiv);
+
+        var tempScanner = new Html5Qrcode("temp-qr-reader-kiosk");
+        tempScanner.scanFile(file, true)
+            .then(function(decodedText) {
+                verifyKiosk(decodedText);
+                document.body.removeChild(tempDiv);
+            })
+            .catch(function(err) {
+                showToast('No se pudo leer el QR en la imagen', 'e');
+                document.body.removeChild(tempDiv);
+            });
+        event.target.value = ''; // Limpiar input
     }
     
     function verifyKiosk(dt) { 
