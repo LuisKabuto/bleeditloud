@@ -30,8 +30,8 @@
         .bp{background:linear-gradient(135deg,var(--accent),#990000);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;-webkit-tap-highlight-color:transparent}.bp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}.bp:hover::before{transform:translateX(100%)}.bp:hover{box-shadow:0 0 30px var(--accent-glow),0 4px 15px rgba(0,0,0,.5);transform:translateY(-1px)}.bp:active{transform:translateY(1px)}
         .bs{background:transparent;color:var(--muted);font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}.bs:hover{color:var(--text);border-color:var(--muted);background:rgba(255,255,255,.03)}
         .di{background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:'Roboto Condensed',sans-serif;font-size:18px;padding:14px 18px;width:100%;outline:none;transition:border-color .3s,box-shadow .3s,background .3s;-webkit-appearance:none;border-radius:2px}.di:focus{border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}.di::placeholder{color:#333}
-        .vf{position:relative;width:280px;height:280px;margin:0 auto}.vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid;z-index:10;pointer-events:none}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
-        .rc{border:2px solid;padding:24px;text-align:center;animation:ri .4s ease-out}.rc-s{border-color:var(--success);background:rgba(0,204,68,.06);box-shadow:0 0 40px var(--success-glow)}.rc-e{border-color:var(--accent);background:rgba(204,0,0,.06);box-shadow:0 0 40px var(--accent-glow)}.rc-u{border-color:var(--warning);background:rgba(204,136,0,.06);box-shadow:0 0 40px rgba(204,136,0,.3)}@keyframes ri{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+        .vf{position:relative;width:280px;height:280px;margin:0 auto;overflow:hidden;border-radius:4px}.vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid;z-index:10;pointer-events:none}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
+        .rc{border:2px solid;padding:24px;text-align:center;animation:ri .4s ease-out;position:relative}.rc-s{border-color:var(--success);background:rgba(0,204,68,.06);box-shadow:0 0 40px var(--success-glow)}.rc-e{border-color:var(--accent);background:rgba(204,0,0,.06);box-shadow:0 0 40px var(--accent-glow)}.rc-u{border-color:var(--warning);background:rgba(204,136,0,.06);box-shadow:0 0 40px rgba(204,136,0,.3)}@keyframes ri{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
         .at{padding:10px 20px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .3s;background:none;-webkit-tap-highlight-color:transparent}.at:hover{color:var(--text)}.at.ac{color:var(--accent-bright);border-bottom-color:var(--accent)}
         .mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center}.mb{background:var(--card);border:1px solid var(--border);padding:40px;max-width:380px;width:90%;text-align:center}
         .tt{padding:14px 22px;font-size:14px;animation:ti .4s ease,to .4s ease 2.6s forwards;max-width:340px}.tt-s{background:rgba(0,204,68,.15);border:1px solid rgba(0,204,68,.3);color:var(--success)}.tt-e{background:rgba(204,0,0,.15);border:1px solid rgba(204,0,0,.3);color:var(--accent-bright)}.tt-i{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text)}
@@ -57,9 +57,14 @@
         .anim-icon{font-size:160px;margin-bottom:20px}
         .anim-title{font-family:'Oswald',sans-serif;font-size:80px;font-weight:700;letter-spacing:4px;text-transform:uppercase}
         .anim-text{font-size:30px;margin-top:10px}
-        /* Contenedores QR con margen blanco (Quiet Zone) garantizado */
         .qr-wrapper{background:#ffffff;padding:16px;border-radius:4px;display:inline-block}
         #scanner-reader video,#kiosk-scanner-reader video{object-fit:cover!important;width:100%!important;height:100%!important}
+        
+        /* Barra de autoconteo/reseteo tras escaneo */
+        .reset-timer-bar{height:4px;background:var(--accent-bright);width:100%;position:absolute;bottom:0;left:0;animation:shrinkBar 3.5s linear forwards}
+        @keyframes shrinkBar{from{width:100%}to{width:0%}}
+        /* Consola de depuración visual */
+        .debug-console{background:#050505;border:1px solid #222;font-family:monospace;font-size:10px;color:#00ff66;padding:8px;border-radius:4px;max-height:80px;overflow-y:auto;white-space:pre-wrap}
     </style>
 </head>
 <body class="grid-bg scanlines min-h-screen">
@@ -157,7 +162,17 @@
                 <div class="vf mx-auto"><div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div><div id="scanner-reader" style="width:280px;height:280px;overflow:hidden;border-radius:4px"></div></div>
                 <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara...</p>
             </div>
+            
             <div id="scanner-result" style="display:none"></div>
+
+            <!-- Auditoría Visual de Escaneo -->
+            <div class="ab rounded-sm p-3" style="background:var(--card)">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs uppercase font-display" style="color:var(--muted)">Auditoría de Escaneo</span>
+                    <button onclick="clearAuditLog()" class="text-xs text-red-500 uppercase font-display">Limpiar</button>
+                </div>
+                <div id="scanner-debug-log" class="debug-console">Iniciando sistema de diagnóstico...</div>
+            </div>
 
             <!-- PLAN B: Subir imagen del QR -->
             <div class="ab rounded-sm p-4" style="background:var(--card)">
@@ -178,7 +193,6 @@
         <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
         <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
 
-        <!-- PLAN B KIOSK: Subir imagen del QR -->
         <div class="mt-6 w-full max-w-md text-center">
             <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
             <input type="file" id="kiosk-qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFileKiosk(event)">
@@ -372,6 +386,19 @@
     var fbApp = null, fbDB = null, fbConnected = false;
     var currentTheme = localStorage.getItem('bleedit_theme') || 'dark';
     var scannerInst = null, kioskScannerInst = null;
+    var scanResetTimeout = null;
+
+    function logDebug(msg) {
+        var logElem = document.getElementById('scanner-debug-log');
+        if (logElem) {
+            var time = new Date().toLocaleTimeString();
+            logElem.textContent = "[" + time + "] " + msg + "\n" + logElem.textContent;
+        }
+    }
+    function clearAuditLog() {
+        var logElem = document.getElementById('scanner-debug-log');
+        if (logElem) logElem.textContent = "Log limpiado.\n";
+    }
 
     function nD(d) { return d ? String(d).replace(/[^0-9]/g, '') : ''; }
     function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
@@ -637,26 +664,73 @@
         if (!c) return;
         c.style.display = 'block';
 
+        if (scanResetTimeout) clearTimeout(scanResetTimeout);
+
         if (!dni) {
-            c.innerHTML = '<div class="rc rc-e"><h3>NO DETECTADO</h3><p>El código no contiene números válidos</p></div>';
+            c.innerHTML = '<div class="rc rc-e"><h3>NO DETECTADO</h3><p>El código no contiene números válidos</p><div class="reset-timer-bar"></div></div>';
+            logDebug("Error: Código escaneado no contiene números.");
+            scheduleScannerReset(cid);
             return;
         }
 
         var a = null;
         for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } }
         
-        if (!a) { c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3><p>Cédula: '+esc(dni)+'</p></div>'; return; }
-        if (!isPaid(a.P)) { c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p></div>'; return; }
-        if (cid === 'verify-result') { c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>ENTRADA VERIFICADA</h3><p>¡Te esperamos en el evento!</p></div>'; return; }
+        if (!a) { 
+            c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3><p>Cédula: '+esc(dni)+'</p><button class="bs text-xs mt-3 rounded-sm" onclick="manualClearScan(\''+cid+'\')">Siguiente Escaneo</button><div class="reset-timer-bar"></div></div>'; 
+            logDebug("Escaneo sin éxito: Cédula " + dni + " no en lista.");
+            scheduleScannerReset(cid);
+            return; 
+        }
+        if (!isPaid(a.P)) { 
+            c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p><button class="bs text-xs mt-3 rounded-sm" onclick="manualClearScan(\''+cid+'\')">Siguiente Escaneo</button><div class="reset-timer-bar"></div></div>'; 
+            logDebug("Entrada denegada: " + a.N + " tiene pago pendiente.");
+            scheduleScannerReset(cid);
+            return; 
+        }
+        if (cid === 'verify-result') { 
+            c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>ENTRADA VERIFICADA</h3><p>¡Te esperamos en el evento!</p></div>'; 
+            return; 
+        }
+        
         var idx = -1;
         for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
-        if (idx === -1) { c.innerHTML = '<div class="rc rc-e"><h3>AGOTADAS</h3><p>'+esc(a.N)+'</p></div>'; return; }
+        if (idx === -1) { 
+            c.innerHTML = '<div class="rc rc-e"><h3>AGOTADAS</h3><p>'+esc(a.N)+'</p><button class="bs text-xs mt-3 rounded-sm" onclick="manualClearScan(\''+cid+'\')">Siguiente Escaneo</button><div class="reset-timer-bar"></div></div>'; 
+            logDebug("Entrada denegada: " + a.N + " ya usó todas sus entradas.");
+            scheduleScannerReset(cid);
+            return; 
+        }
+        
         var uid = dni + '-' + idx;
         usedIDs.add(uid);
         localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
         updateUI();
-        c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Entrada '+idx+'/'+a.C+'</p></div>';
+        
+        c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Entrada '+idx+'/'+a.C+'</p><button class="bs text-xs mt-3 rounded-sm" onclick="manualClearScan(\''+cid+'\')">Siguiente Escaneo</button><div class="reset-timer-bar"></div></div>';
+        logDebug("ACCESO AUTORIZADO: " + a.N + " (" + dni + "). Ticket " + idx + "/" + a.C);
+        
+        scheduleScannerReset(cid);
+    }
+
+    function scheduleScannerReset(cid) {
+        scanResetTimeout = setTimeout(function() {
+            manualClearScan(cid);
+        }, 3500);
+    }
+
+    function manualClearScan(cid) {
+        if (scanResetTimeout) clearTimeout(scanResetTimeout);
+        var c = document.getElementById(cid);
+        if (c) {
+            c.innerHTML = '';
+            c.style.display = 'none';
+        }
+        if (scannerInst && typeof scannerInst.resume === 'function') {
+            try { scannerInst.resume(); } catch(e){}
+        }
+        logDebug("Escáner listo para la siguiente lectura.");
     }
 
     function verifyDNI() { verifyEntry(document.getElementById('verify-dni').value, 'verify-result'); }
@@ -884,48 +958,88 @@
         showView('scanner');
         var statusElem = document.getElementById('scanner-status');
         statusElem.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara...';
-        
+        logDebug("Iniciando escáner en vivo en contenedor...");
+
         setTimeout(function() {
             if (window.Html5Qrcode) {
                 if (scannerInst) { 
                     scannerInst.clear().catch(function(){}); 
                 }
                 
-                scannerInst = new Html5Qrcode("scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+                scannerInst = new Html5Qrcode("scanner-reader");
                 
-                // Sin qrbox para analizar todo el cuadro de video directamente en iOS
-                var config = { fps: 15 };
+                // Configuración optimizada de cámara para WebKit iOS
+                var config = { 
+                    fps: 10,
+                    qrbox: function(w, h) {
+                        var minEdge = Math.min(w, h);
+                        return { width: Math.floor(minEdge * 0.8), height: Math.floor(minEdge * 0.8) };
+                    },
+                    videoConstraints: {
+                        width: { min: 640, ideal: 1280 },
+                        height: { min: 480, ideal: 720 },
+                        facingMode: "environment"
+                    }
+                };
 
                 var handleSuccess = function(dt) {
+                    logDebug("QR LEÍDO EN VIVO: " + dt);
                     statusElem.innerHTML = '<i class="fa-solid fa-check mr-2" style="color:var(--success)"></i>¡QR Lectura Exitosa!';
                     verifyEntry(dt, 'scanner-result');
-                    if (scannerInst) scannerInst.pause(true);
+                    if (scannerInst) {
+                        try { scannerInst.pause(true); } catch(e){}
+                    }
+                };
+
+                var handleError = function(err) {
+                    // Muestra el log de los frames analizados periódicamente
                 };
 
                 scannerInst.start(
                     { facingMode: "environment" },
                     config,
                     handleSuccess,
-                    function(err){}
-                ).catch(function(err) {
-                    scannerInst.start({ facingMode: "user" }, config, handleSuccess, function(e){}).catch(function(e) {
-                        statusElem.innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Permiso de cámara bloqueado. Usa la opción de subir imagen.';
+                    handleError
+                ).then(function() {
+                    logDebug("Cámara iniciada correctamente (Trasera/Environment).");
+                }).catch(function(err) {
+                    logDebug("Error cámara trasera: " + err + ". Intentando fallback usuario...");
+                    scannerInst.start({ facingMode: "user" }, config, handleSuccess, handleError)
+                    .then(function(){
+                        logDebug("Cámara iniciada con éxito (Frontal/User).");
+                    })
+                    .catch(function(e) {
+                        logDebug("Error crítico cámara: " + e);
+                        statusElem.innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Permiso de cámara denegado. Usa el botón de subir imagen.';
                     });
                 });
+            } else {
+                logDebug("Error: Librería Html5Qrcode no disponible.");
             }
         }, 300);
     }
     
-    function stopScanner() { if (scannerInst) { scannerInst.stop().then(function(){ scannerInst.clear(); }).catch(function(){}); } }
+    function stopScanner() { 
+        if (scannerInst) { 
+            scannerInst.stop().then(function(){ scannerInst.clear(); }).catch(function(){}); 
+        } 
+        logDebug("Escáner detenido.");
+    }
 
     function enterKioskMode() {
         document.getElementById('kiosk-mode').classList.add('active');
         setTimeout(function() {
             if (window.Html5Qrcode) {
                 if (kioskScannerInst) { kioskScannerInst.clear().catch(function(){}); }
-                kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+                kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader");
                 
-                var config = { fps: 15 };
+                var config = { 
+                    fps: 10,
+                    qrbox: function(w, h) {
+                        var minEdge = Math.min(w, h);
+                        return { width: Math.floor(minEdge * 0.8), height: Math.floor(minEdge * 0.8) };
+                    }
+                };
 
                 kioskScannerInst.start(
                     { facingMode: "environment" },
@@ -950,6 +1064,7 @@
 
     function processFileForQR(file, targetResultId, isKiosk) {
         if (!file) return;
+        logDebug("Procesando archivo subido: " + file.name + " (" + file.size + " bytes)");
         var reader = new FileReader();
         reader.onload = function(e) {
             var img = new Image();
@@ -980,6 +1095,7 @@
                     var tempScanner = new Html5Qrcode(tempDiv.id);
                     tempScanner.scanFile(resizedFile, true)
                         .then(function(decodedText) {
+                            logDebug("QR DECODIFICADO DESDE FICHERO: " + decodedText);
                             if (isKiosk) {
                                 verifyKiosk(decodedText);
                             } else {
@@ -988,6 +1104,7 @@
                             document.body.removeChild(tempDiv);
                         })
                         .catch(function(err) {
+                            logDebug("Error decodificando imagen: " + err);
                             showToast('No se pudo leer el QR. Asegúrate de que tenga buena luz.', 'e');
                             document.body.removeChild(tempDiv);
                         });
