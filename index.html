@@ -30,7 +30,7 @@
         .bp{background:linear-gradient(135deg,var(--accent),#990000);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;-webkit-tap-highlight-color:transparent}.bp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}.bp:hover::before{transform:translateX(100%)}.bp:hover{box-shadow:0 0 30px var(--accent-glow),0 4px 15px rgba(0,0,0,.5);transform:translateY(-1px)}.bp:active{transform:translateY(1px)}
         .bs{background:transparent;color:var(--muted);font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}.bs:hover{color:var(--text);border-color:var(--muted);background:rgba(255,255,255,.03)}
         .di{background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:'Roboto Condensed',sans-serif;font-size:18px;padding:14px 18px;width:100%;outline:none;transition:border-color .3s,box-shadow .3s,background .3s;-webkit-appearance:none;border-radius:2px}.di:focus{border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}.di::placeholder{color:#333}
-        .vf{position:relative;width:280px;height:280px;margin:0 auto}.vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
+        .vf{position:relative;width:280px;height:280px;margin:0 auto}.vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid;z-index:10;pointer-events:none}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
         .rc{border:2px solid;padding:24px;text-align:center;animation:ri .4s ease-out}.rc-s{border-color:var(--success);background:rgba(0,204,68,.06);box-shadow:0 0 40px var(--success-glow)}.rc-e{border-color:var(--accent);background:rgba(204,0,0,.06);box-shadow:0 0 40px var(--accent-glow)}.rc-u{border-color:var(--warning);background:rgba(204,136,0,.06);box-shadow:0 0 40px rgba(204,136,0,.3)}@keyframes ri{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
         .at{padding:10px 20px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .3s;background:none;-webkit-tap-highlight-color:transparent}.at:hover{color:var(--text)}.at.ac{color:var(--accent-bright);border-bottom-color:var(--accent)}
         .mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center}.mb{background:var(--card);border:1px solid var(--border);padding:40px;max-width:380px;width:90%;text-align:center}
@@ -57,6 +57,9 @@
         .anim-icon{font-size:160px;margin-bottom:20px}
         .anim-title{font-family:'Oswald',sans-serif;font-size:80px;font-weight:700;letter-spacing:4px;text-transform:uppercase}
         .anim-text{font-size:30px;margin-top:10px}
+        /* Contenedores QR con margen blanco (Quiet Zone) garantizado */
+        .qr-wrapper{background:#ffffff;padding:16px;border-radius:4px;display:inline-block}
+        #scanner-reader video,#kiosk-scanner-reader video{object-fit:cover!important;width:100%!important;height:100%!important}
     </style>
 </head>
 <body class="grid-bg scanlines min-h-screen">
@@ -120,7 +123,7 @@
                 <p class="text-sm mt-2" style="color:var(--muted)">Tu pago está en revisión. Presenta este código QR en la puerta para ingresar.</p>
             </div>
             <div class="ab rounded-sm p-6" style="background:var(--card)">
-                <div id="ticket-qr" class="flex justify-center"></div>
+                <div class="qr-wrapper mx-auto mb-2"><div id="ticket-qr" class="flex justify-center"></div></div>
                 <p class="mt-4 font-display tracking-wider" id="ticket-name" style="color:var(--text)"></p>
                 <p class="text-sm" style="color:var(--muted)">Cédula: <span id="ticket-dni"></span></p>
             </div>
@@ -152,7 +155,7 @@
             </div>
             <div class="ab rounded-sm p-4" style="background:var(--card)">
                 <div class="vf mx-auto"><div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div><div id="scanner-reader" style="width:280px;height:280px;overflow:hidden;border-radius:4px"></div></div>
-                <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...</p>
+                <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara...</p>
             </div>
             <div id="scanner-result" style="display:none"></div>
 
@@ -163,7 +166,7 @@
             </div>
 
             <div class="ab rounded-sm p-4" style="background:var(--card)">
-                <input type="text" id="scanner-dni-input" class="di" placeholder="Verificacion manual cedula" onkeydown="if(event.key==='Enter')verifyFromScanner()">
+                <input type="text" id="scanner-dni-input" class="di" placeholder="Verificación manual cédula" onkeydown="if(event.key==='Enter')verifyFromScanner()">
                 <button class="bp w-full mt-3 rounded-sm" onclick="verifyFromScanner()"><i class="fa-solid fa-check"></i></button>
             </div>
         </div>
@@ -347,7 +350,7 @@
     <div id="qr-modal" class="mo">
         <div class="mb" style="max-width:350px">
             <h3 class="font-display text-xl tracking-wider font-bold mb-4">ENTRADA QR</h3>
-            <div id="ind-qr-container" class="flex justify-center mb-4"></div>
+            <div class="qr-wrapper mb-4"><div id="ind-qr-container" class="flex justify-center"></div></div>
             <p class="font-display tracking-wider" id="ind-qr-name" style="color:var(--text)"></p>
             <p class="text-sm mb-4" style="color:var(--muted)">Cédula: <span id="ind-qr-dni"></span></p>
             <button class="bp w-full rounded-sm mb-2" onclick="downloadIndQR()"><i class="fa-solid fa-download mr-2"></i>Descargar PNG</button>
@@ -485,7 +488,7 @@
         };
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/config').set(salesConfig);
         updateLandingUI(); renderBuyStages(); updateSalesUI();
-        showToast('Configuracion guardada', 's');
+        showToast('Configuración guardada', 's');
     }
 
     function handleFileUpload() {
@@ -625,17 +628,24 @@
     }
 
     function checkPIN() { var p = document.getElementById('pin-input').value.trim(); if (p === CFG.PIN) { document.getElementById('pin-modal').style.display = 'none'; showView('admin'); } else { document.getElementById('pin-error').style.display = 'block'; } }
-    function savePIN() { var p1 = document.getElementById('pin-setup-input').value.trim(); var err = document.getElementById('pin-setup-error'); if (!p1 || p1.length < 4) { err.style.display = 'block'; err.textContent = 'El PIN debe tener al menos 4 digitos'; return; } CFG.PIN = p1; localStorage.setItem('bleedit_pin', p1); document.getElementById('pin-setup-modal').style.display = 'none'; showView('admin'); showToast('PIN creado con exito', 's'); }
+    function savePIN() { var p1 = document.getElementById('pin-setup-input').value.trim(); var err = document.getElementById('pin-setup-error'); if (!p1 || p1.length < 4) { err.style.display = 'block'; err.textContent = 'El PIN debe tener al menos 4 digitos'; return; } CFG.PIN = p1; localStorage.setItem('bleedit_pin', p1); document.getElementById('pin-setup-modal').style.display = 'none'; showView('admin'); showToast('PIN creado con éxito', 's'); }
     function resetPIN() { if (confirm('¿Deseas cambiar tu PIN de administrador?')) { CFG.PIN = ''; localStorage.removeItem('bleedit_pin'); document.getElementById('pin-setup-input').value = ''; document.getElementById('pin-setup-modal').style.display = 'flex'; } }
 
     function verifyEntry(input, cid) {
         var dni = nD(input);
-        if (!dni) return;
+        var c = document.getElementById(cid);
+        if (!c) return;
+        c.style.display = 'block';
+
+        if (!dni) {
+            c.innerHTML = '<div class="rc rc-e"><h3>NO DETECTADO</h3><p>El código no contiene números válidos</p></div>';
+            return;
+        }
+
         var a = null;
         for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } }
-        var c = document.getElementById(cid);
-        c.style.display = 'block';
-        if (!a) { c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3></div>'; return; }
+        
+        if (!a) { c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3><p>Cédula: '+esc(dni)+'</p></div>'; return; }
         if (!isPaid(a.P)) { c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p></div>'; return; }
         if (cid === 'verify-result') { c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>ENTRADA VERIFICADA</h3><p>¡Te esperamos en el evento!</p></div>'; return; }
         var idx = -1;
@@ -648,6 +658,7 @@
         updateUI();
         c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Entrada '+idx+'/'+a.C+'</p></div>';
     }
+
     function verifyDNI() { verifyEntry(document.getElementById('verify-dni').value, 'verify-result'); }
     function adminVerify() { verifyEntry(document.getElementById('admin-dni-input').value, 'admin-verify-result'); }
     function verifyFromScanner() { verifyEntry(document.getElementById('scanner-dni-input').value, 'scanner-result'); document.getElementById('scanner-dni-input').value=''; }
@@ -780,7 +791,7 @@
         var container = document.getElementById('ind-qr-container');
         container.innerHTML = '';
 
-        new QRCode(container, { text: cleanDni, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+        new QRCode(container, { text: cleanDni, width: 200, height: 200, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
         document.getElementById('ind-qr-name').textContent = a.N;
         document.getElementById('ind-qr-dni').textContent = cleanDni;
 
@@ -838,10 +849,18 @@
             var cleanDni = nD(a.D);
             var card = document.createElement('div');
             card.className = 'qc';
+            
+            var qrWrap = document.createElement('div');
+            qrWrap.className = 'qr-wrapper';
+            qrWrap.style.margin = '0 auto';
+            
             var qrDiv = document.createElement('div');
             qrDiv.id = 'qr-' + i;
-            qrDiv.style.width = '140px'; qrDiv.style.height = '140px'; qrDiv.style.margin = '0 auto';
-            card.appendChild(qrDiv);
+            qrDiv.style.width = '140px'; qrDiv.style.height = '140px';
+            
+            qrWrap.appendChild(qrDiv);
+            card.appendChild(qrWrap);
+
             var np = document.createElement('div'); np.className = 'qn'; np.textContent = a.N; card.appendChild(np);
             var dp = document.createElement('div'); dp.className = 'qd'; dp.textContent = cleanDni; card.appendChild(dp);
             var db = document.createElement('button'); db.className = 'qdl'; db.innerHTML = '<i class="fa-solid fa-download mr-1"></i>Descargar';
@@ -863,40 +882,40 @@
 
     function openScanner() {
         showView('scanner');
-        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara...';
+        var statusElem = document.getElementById('scanner-status');
+        statusElem.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara...';
+        
         setTimeout(function() {
             if (window.Html5Qrcode) {
-                if (scannerInst) { scannerInst.clear().catch(function(){}); }
+                if (scannerInst) { 
+                    scannerInst.clear().catch(function(){}); 
+                }
+                
                 scannerInst = new Html5Qrcode("scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
                 
-                var config = { 
-                    fps: 10, 
-                    qrbox: function(viewfinderWidth, viewfinderHeight) {
-                        var minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                        return { width: Math.floor(minEdge * 0.75), height: Math.floor(minEdge * 0.75) };
-                    }
+                // Sin qrbox para analizar todo el cuadro de video directamente en iOS
+                var config = { fps: 15 };
+
+                var handleSuccess = function(dt) {
+                    statusElem.innerHTML = '<i class="fa-solid fa-check mr-2" style="color:var(--success)"></i>¡QR Lectura Exitosa!';
+                    verifyEntry(dt, 'scanner-result');
+                    if (scannerInst) scannerInst.pause(true);
                 };
 
                 scannerInst.start(
                     { facingMode: "environment" },
                     config,
-                    function(dt){
-                        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-check mr-2" style="color:var(--success)"></i>¡QR Detectado!';
-                        verifyEntry(dt, 'scanner-result');
-                        scannerInst.pause(true);
-                    },
+                    handleSuccess,
                     function(err){}
-                ).catch(function(err){
-                    scannerInst.start({ facingMode: "user" }, config, function(dt){
-                        verifyEntry(dt, 'scanner-result');
-                        scannerInst.pause(true);
-                    }).catch(function(e){
-                        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Permiso de cámara denegado o no disponible. Usa el botón de Subir Imagen.';
+                ).catch(function(err) {
+                    scannerInst.start({ facingMode: "user" }, config, handleSuccess, function(e){}).catch(function(e) {
+                        statusElem.innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Permiso de cámara bloqueado. Usa la opción de subir imagen.';
                     });
                 });
             }
         }, 300);
     }
+    
     function stopScanner() { if (scannerInst) { scannerInst.stop().then(function(){ scannerInst.clear(); }).catch(function(){}); } }
 
     function enterKioskMode() {
@@ -906,13 +925,7 @@
                 if (kioskScannerInst) { kioskScannerInst.clear().catch(function(){}); }
                 kioskScannerInst = new Html5Qrcode("kiosk-scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
                 
-                var config = { 
-                    fps: 10, 
-                    qrbox: function(viewfinderWidth, viewfinderHeight) {
-                        var minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                        return { width: Math.floor(minEdge * 0.75), height: Math.floor(minEdge * 0.75) };
-                    }
-                };
+                var config = { fps: 15 };
 
                 kioskScannerInst.start(
                     { facingMode: "environment" },
@@ -923,12 +936,13 @@
                     kioskScannerInst.start({ facingMode: "user" }, config, function(dt){
                         verifyKiosk(dt);
                     }).catch(function(e){
-                        showToast('Cámara bloqueada o no disponible. Usa subir imagen abajo.', 'e');
+                        showToast('Cámara bloqueada o no disponible', 'e');
                     });
                 });
             }
         }, 300);
     }
+
     function exitKioskMode() {
         document.getElementById('kiosk-mode').classList.remove('active');
         if (kioskScannerInst) { kioskScannerInst.stop().then(function(){ kioskScannerInst.clear(); }).catch(function(){}); }
@@ -974,7 +988,7 @@
                             document.body.removeChild(tempDiv);
                         })
                         .catch(function(err) {
-                            showToast('No se pudo leer el QR. Asegúrate de que la foto tenga buena luz.', 'e');
+                            showToast('No se pudo leer el QR. Asegúrate de que tenga buena luz.', 'e');
                             document.body.removeChild(tempDiv);
                         });
                 }, 'image/jpeg', 0.9);
