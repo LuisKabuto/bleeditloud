@@ -202,19 +202,23 @@
                 </div>
                 <div id="stage-stats" class="space-y-3"></div>
                 <div class="flex gap-3 items-center">
-                    <input type="text" id="search-attendee" class="di" placeholder="Buscar..." oninput="renderList()">
+                    <input type="text" id="search-attendee" class="di" placeholder="Buscar por nombre o cédula..." oninput="renderList()">
                     <div class="text-sm whitespace-nowrap" style="color:var(--muted)"><span id="verified-count" style="color:var(--success)">0</span> / <span id="total-count">0</span></div>
                 </div>
                 <div class="ab rounded-sm overflow-hidden" style="background:var(--card)">
-                    <table class="w-full text-left"><thead><tr class="border-b" style="border-color:var(--border)"><th class="p-2">Etapa</th><th class="p-2">Pago</th><th class="p-2">Nombre</th><th class="p-2">Cedula</th><th class="p-2">Usadas</th><th class="p-2">Acción</th></tr></thead><tbody id="attendee-tbody"></tbody></table>
+                    <table class="w-full text-left"><thead><tr class="border-b" style="border-color:var(--border)"><th class="p-2">Etapa</th><th class="p-2">Día</th><th class="p-2">Nombre</th><th class="p-2">Cedula</th><th class="p-2">Usadas</th><th class="p-2">Acción</th></tr></thead><tbody id="attendee-tbody"></tbody></table>
                 </div>
             </div>
         </div>
 
         <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
+
+                <!-- CONTROL DE DÍAS Y VENTAS -->
                 <div class="ab rounded-sm p-6" style="background:var(--card);border-color:var(--accent)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Control de Ventas</h3>
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent">Control de Evento</h3>
+                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día Activo del Evento (Ej: Viernes 31)</label>
+                    <input type="text" id="config-active-day" class="di mb-4" placeholder="Día Activo">
                     <button id="sales-toggle-btn" class="bp w-full rounded-sm" onclick="toggleSales()"><i class="fa-solid fa-pause mr-2"></i>Pausar Ventas</button>
                 </div>
 
@@ -232,11 +236,15 @@
                     <input type="text" id="config-event-logo" class="di mb-4" placeholder="https://.../logo.png">
                 </div>
 
+                <!-- SUBIR EXCEL POR DÍA -->
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Cargar Lista Masiva (Excel/CSV)</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">El sistema detecta automáticamente las columnas de tu Excel (Nombre, Cédula, Bloque). Si hay personas con la misma cédula, se unifican y se suma la cantidad de entradas.</p>
+                    <p class="text-sm mb-4" style="color:var(--muted)">El sistema detecta las columnas automáticamente. Si hay personas con la misma cédula, se unifican y se suma la cantidad de entradas.</p>
+                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día al que pertenece esta lista (Ej: Sábado 1)</label>
+                    <input type="text" id="upload-day-name" class="di mb-4" placeholder="Día de la lista">
                     <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px">
-                    <button class="bp w-full rounded-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir y Reemplazar Lista</button>
+                    <button class="bp w-full rounded-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir y Agregar a la Nube</button>
+                    <button class="bs w-full rounded-sm mt-2 text-sm" style="color:var(--accent-bright);border-color:var(--accent)" onclick="clearSpecificDay()"><i class="fa-solid fa-trash-can mr-2"></i>Borrar Lista de un Día Específico</button>
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
@@ -286,7 +294,6 @@
         <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
         <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
         
-        <!-- PLAN B KIOSK: Subir imagen del QR -->
         <div class="mt-6 w-full max-w-md text-center">
             <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
             <input type="file" id="kiosk-qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFileKiosk(event)">
@@ -305,10 +312,7 @@
             <input type="text" id="edit-cedula" class="di mb-3" placeholder="Cedula">
             <input type="number" id="edit-cantidad" class="di mb-3" placeholder="Cantidad" min="1">
             <input type="text" id="edit-etapa" class="di mb-3" placeholder="Etapa">
-            <select id="edit-pagado" class="di mb-6" style="background-color:var(--input-bg)">
-                <option value="Si">Pagado: Si</option>
-                <option value="No">Pagado: No</option>
-            </select>
+            <input type="text" id="edit-day" class="di mb-6" placeholder="Día del Evento">
             <div class="flex gap-3 mb-3">
                 <button class="bs flex-1 rounded-sm" onclick="closeEditModal()">Cancelar</button>
                 <button class="bp flex-1 rounded-sm" onclick="saveEditedAttendee()">Guardar Cambios</button>
@@ -383,6 +387,7 @@
             fbDB.ref('events/' + FB_EVENT_ID + '/used').on('value', function(s) { var data = s.val(); if (data) { usedIDs = new Set(Array.isArray(data) ? data : Object.values(data)); updateUI(); } });
             fbDB.ref('events/' + FB_EVENT_ID + '/config').on('value', function(s) {
                 salesConfig = s.val() || {};
+                document.getElementById('config-active-day').value = salesConfig.active_day || '';
                 document.getElementById('config-event-name').value = salesConfig.event_name || 'LIVE CAFÉ ROCK';
                 document.getElementById('config-event-sub').value = salesConfig.event_sub || 'CONTROL DE ACCESO Y ENTRADAS';
                 document.getElementById('config-event-date').value = salesConfig.event_date || '31 / 07 / 2026';
@@ -446,6 +451,7 @@
 
     function saveSalesConfig() {
         salesConfig = {
+            active_day: document.getElementById('config-active-day').value,
             event_name: document.getElementById('config-event-name').value,
             event_sub: document.getElementById('config-event-sub').value,
             event_date: document.getElementById('config-event-date').value,
@@ -466,11 +472,13 @@
     }
 
     // ============================================================
-    // LECTOR DE EXCEL DINÁMICO Y UNIFICADOR
+    // LECTOR DE EXCEL DINÁMICO, UNIFICADOR Y MULTI-DÍA
     // ============================================================
     function handleFileUpload() {
         var fileInput = document.getElementById('file-input');
         if (!fileInput.files.length) { showToast('Selecciona un archivo', 'e'); return; }
+        var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
+        
         var file = fileInput.files[0];
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -479,28 +487,38 @@
                 var wb = XLSX.read(data, {type: 'array'});
                 var ws = wb.Sheets[wb.SheetNames[0]];
                 var csv = XLSX.utils.sheet_to_csv(ws);
-                var parsed = parseCSV(csv);
+                var parsed = parseCSV(csv, dayName);
                 if (!parsed.length) throw new Error('No se encontraron datos válidos');
-                attendees = parsed;
+                
+                // Merge with existing attendees
+                for (var i=0; i<parsed.length; i++) {
+                    var exists = false;
+                    for (var j=0; j<attendees.length; j++) {
+                        if (nD(attendees[j].D) === nD(parsed[i].D) && attendees[j].E_D === parsed[i].E_D) {
+                            attendees[j].C += parsed[i].C; // Sumar cantidad si ya existe
+                            exists = true; break;
+                        }
+                    }
+                    if (!exists) attendees.push(parsed[i]);
+                }
+                
                 if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
-                updateUI(); showToast(parsed.length + ' registros cargados', 's');
+                updateUI(); showToast(parsed.length + ' registros cargados para ' + dayName, 's');
                 fileInput.value = '';
             } catch(err) { showToast('Error: ' + err.message, 'e'); }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    function parseCSV(t) {
+    function parseCSV(t, dayName) {
         var ls = t.split('\n').filter(function(l) { return l.trim(); });
         if (ls.length < 2) return [];
         
-        // Encontrar la fila de encabezados (la que contiene "Cédula" o "Nombre")
         var headerIndex = -1;
         for (var i = 0; i < ls.length; i++) {
             var lineLower = ls[i].toLowerCase();
             if (lineLower.includes('cédula') || lineLower.includes('cedula') || lineLower.includes('dni')) {
-                headerIndex = i;
-                break;
+                headerIndex = i; break;
             }
         }
         if (headerIndex === -1) throw new Error('No se encontró la columna Cédula');
@@ -524,38 +542,27 @@
             var v = parseLine(ls[i]);
             if (v.length < 2) continue;
             var dni = (v[dI] || '').trim();
-            if (dni && nD(dni) !== '') { // Asegurar que la cédula tenga números
+            if (dni && nD(dni) !== '') {
                 var cleanDni = nD(dni);
-                
-                // Buscar si ya existe (para unificar entradas)
-                var existing = null;
-                for (var k = 0; k < d.length; k++) {
-                    if (nD(d[k].D) === cleanDni) { existing = d[k]; break; }
-                }
-                
                 var qty = 1;
                 if (cI !== -1) {
                     var parsedQty = parseInt((v[cI] || '1').replace(/[^0-9]/g, ''), 10);
                     if (!isNaN(parsedQty) && parsedQty > 0) qty = parsedQty;
                 }
-                
-                if (existing) {
-                    existing.C += qty; // Sumar entradas
-                } else {
-                    var paidStatus = 'Si'; // Por defecto, si están en la lista, están aprobados
-                    if (pI !== -1) {
-                        var pVal = (v[pI] || '').toLowerCase().trim();
-                        if (pVal.includes('no') || pVal.includes('pendiente')) paidStatus = 'No';
-                    }
-                    d.push({
-                        N: (v[nI] || '').trim(),
-                        D: dni,
-                        C: qty,
-                        E: eI !== -1 ? (v[eI] || 'General').trim() : 'General',
-                        T: tI !== -1 ? (v[tI] || '').trim() : '',
-                        P: paidStatus
-                    });
+                var paidStatus = 'Si';
+                if (pI !== -1) {
+                    var pVal = (v[pI] || '').toLowerCase().trim();
+                    if (pVal.includes('no') || pVal.includes('pendiente')) paidStatus = 'No';
                 }
+                d.push({
+                    N: (v[nI] || '').trim(),
+                    D: dni,
+                    C: qty,
+                    E: eI !== -1 ? (v[eI] || 'General').trim() : 'General',
+                    T: tI !== -1 ? (v[tI] || '').trim() : '',
+                    P: paidStatus,
+                    E_D: dayName // Etiqueta del Día
+                });
             }
         }
         return d;
@@ -569,6 +576,28 @@
             else if (ch === ',' && !q) { r.push(c); c = ''; } else c += ch;
         }
         r.push(c); return r;
+    }
+
+    function clearSpecificDay() {
+        var dayName = prompt("Escribe el nombre exacto del día que quieres borrar (Ej: Viernes 31):");
+        if (!dayName) return;
+        var newAttendees = [];
+        var removedCount = 0;
+        for (var i=0; i<attendees.length; i++) {
+            if (attendees[i].E_D === dayName) {
+                removedCount++;
+            } else {
+                newAttendees.push(attendees[i]);
+            }
+        }
+        if (removedCount > 0) {
+            attendees = newAttendees;
+            if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
+            updateUI();
+            showToast(removedCount + ' registros eliminados del día ' + dayName, 's');
+        } else {
+            showToast('No se encontraron registros para ese día', 'e');
+        }
     }
 
     function renderBuyStages() {
@@ -645,7 +674,8 @@
     function approvePayment(id) {
         var p = pendingPayments.find(x => x.id === id);
         if (!p) return;
-        attendees.push({ N: p.name, D: p.dni, C: p.qty, E: p.stage, T: p.phone, P: 'Si' });
+        var activeDay = salesConfig.active_day || 'Día No Especificado';
+        attendees.push({ N: p.name, D: p.dni, C: p.qty, E: p.stage, T: p.phone, P: 'Si', E_D: activeDay });
         if (fbConnected) {
             fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
             fbDB.ref('events/' + FB_EVENT_ID + '/pending/' + id).remove();
@@ -662,16 +692,37 @@
     function savePIN() { var p1 = document.getElementById('pin-setup-input').value.trim(); var err = document.getElementById('pin-setup-error'); if (!p1 || p1.length < 4) { err.style.display = 'block'; err.textContent = 'El PIN debe tener al menos 4 digitos'; return; } CFG.PIN = p1; localStorage.setItem('bleedit_pin', p1); document.getElementById('pin-setup-modal').style.display = 'none'; showView('admin'); showToast('PIN creado con exito', 's'); }
     function resetPIN() { if (confirm('¿Deseas cambiar tu PIN de administrador?')) { CFG.PIN = ''; localStorage.removeItem('bleedit_pin'); document.getElementById('pin-setup-input').value = ''; document.getElementById('pin-setup-modal').style.display = 'flex'; } }
 
+    // ============================================================
+    // VERIFICACIÓN INTELIGENTE (MULTI-DÍA)
+    // ============================================================
     function verifyEntry(input, cid) {
         var dni = nD(input);
         if (!dni) return;
         var a = null;
-        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } }
+        var foundInOtherDay = null;
+        var activeDay = salesConfig.active_day || 'General';
+
+        for (var i = 0; i < attendees.length; i++) {
+            if (nD(attendees[i].D) === dni) {
+                if (!attendees[i].E_D || attendees[i].E_D === activeDay) {
+                    a = attendees[i]; break;
+                } else {
+                    foundInOtherDay = attendees[i];
+                }
+            }
+        }
+
         var c = document.getElementById(cid);
         c.style.display = 'block';
+
+        if (!a && foundInOtherDay) {
+            c.innerHTML = '<div class="rc rc-u"><h3>EVENTO EQUIVOCADO</h3><p>Esta cédula pertenece al evento del día <strong>'+esc(foundInOtherDay.E_D)+'</strong>, no al de hoy.</p></div>';
+            return;
+        }
         if (!a) { c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3></div>'; return; }
         if (!isPaid(a.P)) { c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p></div>'; return; }
         if (cid === 'verify-result') { c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>ENTRADA VERIFICADA</h3><p>¡Te esperamos en el evento!</p></div>'; return; }
+        
         var idx = -1;
         for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
         if (idx === -1) { c.innerHTML = '<div class="rc rc-e"><h3>AGOTADAS</h3><p>'+esc(a.N)+'</p></div>'; return; }
@@ -717,17 +768,28 @@
         renderList();
     }
 
+    // ============================================================
+    // BÚSQUEDA INTELIGENTE (SIN TILDES, NOMBRE O CÉDULA)
+    // ============================================================
     function renderList() {
-        var s = nD(document.getElementById('search-attendee').value);
-        var nameSearch = normalizeStr(document.getElementById('search-attendee').value);
+        var rawSearch = document.getElementById('search-attendee').value.toLowerCase().trim();
+        var sDni = nD(rawSearch);
         var tb = document.getElementById('attendee-tbody');
         var h = '';
         for (var i = 0; i < attendees.length; i++) {
             var a = attendees[i];
-            if(nD(a.D).indexOf(s) !== -1 || normalizeStr(a.N).indexOf(nameSearch) !== -1){
+            var aName = normalizeStr(a.N);
+            var aDni = nD(a.D);
+            
+            var matches = false;
+            if (rawSearch === '') matches = true;
+            else if (sDni && aDni.indexOf(sDni) !== -1) matches = true;
+            else if (aName.indexOf(normalizeStr(rawSearch)) !== -1) matches = true;
+
+            if (matches) {
                 var u = 0;
                 for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) u++; }
-                h += '<tr class="border-b" style="border-color:var(--border)"><td class="p-2">'+esc(a.E)+'</td><td class="p-2">'+(isPaid(a.P)?'Si':'No')+'</td><td class="p-2">'+esc(a.N)+'</td><td class="p-2">'+esc(nD(a.D))+'</td><td class="p-2">'+u+'/'+a.C+'</td><td class="p-2"><div class="flex gap-1"><button class="bs sm rounded-sm" onclick="openEditModal('+i+')" style="padding:4px 8px"><i class="fa-solid fa-pen"></i></button><button class="bs sm rounded-sm" onclick="openIndividualQR('+i+')" style="padding:4px 8px"><i class="fa-solid fa-qrcode"></i></button></div></td></tr>';
+                h += '<tr class="border-b" style="border-color:var(--border)"><td class="p-2">'+esc(a.E)+'</td><td class="p-2">'+esc(a.E_D||'-')+'</td><td class="p-2">'+esc(a.N)+'</td><td class="p-2">'+esc(nD(a.D))+'</td><td class="p-2">'+u+'/'+a.C+'</td><td class="p-2"><div class="flex gap-1"><button class="bs sm rounded-sm" onclick="openEditModal('+i+')" style="padding:4px 8px"><i class="fa-solid fa-pen"></i></button><button class="bs sm rounded-sm" onclick="openIndividualQR('+i+')" style="padding:4px 8px"><i class="fa-solid fa-qrcode"></i></button></div></td></tr>';
             }
         }
         tb.innerHTML = h;
@@ -740,6 +802,7 @@
         document.getElementById('edit-cedula').value = a.D;
         document.getElementById('edit-cantidad').value = a.C;
         document.getElementById('edit-etapa').value = a.E;
+        document.getElementById('edit-day').value = a.E_D || '';
         document.getElementById('edit-pagado').value = isPaid(a.P) ? 'Si' : 'No';
         document.getElementById('edit-modal').style.display = 'flex';
     }
@@ -751,6 +814,7 @@
         attendees[index].D = document.getElementById('edit-cedula').value.trim();
         attendees[index].C = parseInt(document.getElementById('edit-cantidad').value) || 1;
         attendees[index].E = document.getElementById('edit-etapa').value.trim() || 'General';
+        attendees[index].E_D = document.getElementById('edit-day').value.trim() || 'General';
         attendees[index].P = document.getElementById('edit-pagado').value;
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
         updateUI(); closeEditModal();
@@ -762,27 +826,17 @@
         if (isNaN(index)) return;
         var a = attendees[index];
         var cleanDni = nD(a.D);
-        
         if(!confirm('¿Reiniciar el estado de entrada para '+a.N+'? Esto permitirá que su QR sea escaneado nuevamente.')) return;
-        
         var removed = false;
         for(var j=1; j<=a.C; j++){
             var uid = cleanDni + '-' + j;
-            if(usedIDs.has(uid)){
-                usedIDs.delete(uid);
-                removed = true;
-            }
+            if(usedIDs.has(uid)){ usedIDs.delete(uid); removed = true; }
         }
-        
         if(removed){
             localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
             if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
-            updateUI();
-            showToast('Entradas reiniciadas para ' + a.N, 's');
-            closeEditModal();
-        } else {
-            showToast('Este asistente no tenía entradas usadas', 'i');
-        }
+            updateUI(); showToast('Entradas reiniciadas para ' + a.N, 's'); closeEditModal();
+        } else { showToast('Este asistente no tenía entradas usadas', 'i'); }
     }
 
     var currentIndQRDni = '';
@@ -790,29 +844,21 @@
         var a = attendees[index];
         var cleanDni = nD(a.D);
         currentIndQRDni = cleanDni;
-        
         var container = document.getElementById('ind-qr-container');
         container.innerHTML = '';
-        
         new QRCode(container, { text: cleanDni, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
         document.getElementById('ind-qr-name').textContent = a.N;
         document.getElementById('ind-qr-dni').textContent = cleanDni;
-        
         var waBtn = document.getElementById('ind-qr-wa');
         var phone = nD(a.T);
         if(phone){
             var msgText = 'Hola ' + a.N + ', aqui esta tu entrada para LIVE CAFÉ ROCK. Codigo: ' + cleanDni + '. Presenta el QR en la puerta.';
             waBtn.href = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msgText);
             waBtn.style.display = 'flex';
-        } else {
-            waBtn.style.display = 'none';
-        }
-        
+        } else { waBtn.style.display = 'none'; }
         document.getElementById('qr-modal').style.display = 'flex';
     }
-
     function closeQRModal() { document.getElementById('qr-modal').style.display = 'none'; }
-
     function downloadIndQR() {
         var cv = document.querySelector('#ind-qr-container canvas');
         if (!cv) return;
@@ -838,7 +884,7 @@
         var c = parseInt(document.getElementById('manual-cantidad').value) || 1;
         var e = document.getElementById('manual-etapa').value.trim() || 'Manual';
         if (!n || !d) return;
-        attendees.push({N:n, D:d, C:c, E:e, P:'Si'});
+        attendees.push({N:n, D:d, C:c, E:e, P:'Si', E_D: salesConfig.active_day || 'Manual'});
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
         updateUI(); showToast('Agregado', 's');
     }
@@ -875,15 +921,8 @@
         showToast(attendees.length + ' QRs generados', 's');
     }
 
-    // ============================================================
-    // MODO PUERTA Y ESCANER DE IMAGEN (PLAN B)
-    // ============================================================
-    function enterKioskMode() { 
-        document.getElementById('kiosk-mode').classList.add('active'); 
-    }
-    function exitKioskMode() { 
-        document.getElementById('kiosk-mode').classList.remove('active'); 
-    }
+    function enterKioskMode() { document.getElementById('kiosk-mode').classList.add('active'); }
+    function exitKioskMode() { document.getElementById('kiosk-mode').classList.remove('active'); }
 
     function scanQRFromFileKiosk(event) {
         var file = event.target.files[0];
@@ -892,23 +931,23 @@
         tempDiv.id = 'temp-qr-reader-kiosk';
         tempDiv.style.display = 'none';
         document.body.appendChild(tempDiv);
-
         var tempScanner = new Html5Qrcode("temp-qr-reader-kiosk");
         tempScanner.scanFile(file, true)
-            .then(function(decodedText) {
-                verifyKiosk(decodedText);
-                document.body.removeChild(tempDiv);
-            })
-            .catch(function(err) {
-                showToast('No se pudo leer el QR en la imagen', 'e');
-                document.body.removeChild(tempDiv);
-            });
+            .then(function(decodedText) { verifyKiosk(decodedText); document.body.removeChild(tempDiv); })
+            .catch(function(err) { showToast('No se pudo leer el QR en la imagen', 'e'); document.body.removeChild(tempDiv); });
         event.target.value = '';
     }
     
     function verifyKiosk(dt) { 
-        var dni = nD(dt); var a = null; 
-        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni) { a = attendees[i]; break; } } 
+        var dni = nD(dt); var a = null; var foundInOtherDay = null;
+        var activeDay = salesConfig.active_day || 'General';
+        for (var i = 0; i < attendees.length; i++) { 
+            if (nD(attendees[i].D) === dni) {
+                if (!attendees[i].E_D || attendees[i].E_D === activeDay) { a = attendees[i]; break; } 
+                else { foundInOtherDay = attendees[i]; }
+            } 
+        } 
+        if (!a && foundInOtherDay) { showKioskAnim('warn', 'EVENTO EQUIVOCADO', 'Pertenece al día ' + foundInOtherDay.E_D); return; }
         if (!a) { showKioskAnim('error', 'NO ENCONTRADO', 'No registrado'); return; } 
         if (!isPaid(a.P)) { showKioskAnim('warn', 'PAGO PENDIENTE', a.N); return; }
         var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } } 
@@ -936,7 +975,7 @@
             var a = attendees[i];
             var usedCount = 0; var usedTickets = [];
             for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) { usedCount++; usedTickets.push(j); } }
-            auditData.push({ "Nombre": a.N, "Cedula": a.D, "Etapa": a.E, "Telefono": a.T || '', "Pagado": isPaid(a.P) ? "Si" : "No", "Cant. Total": a.C, "Cant. Ingresadas": usedCount, "Tickets Usados": usedTickets.join(", "), "Estado": usedCount === a.C ? "COMPLETO" : (usedCount > 0 ? "PARCIAL" : "SIN USAR") });
+            auditData.push({ "Nombre": a.N, "Cedula": a.D, "Etapa": a.E, "Día del Evento": a.E_D || 'N/A', "Telefono": a.T || '', "Pagado": isPaid(a.P) ? "Si" : "No", "Cant. Total": a.C, "Cant. Ingresadas": usedCount, "Tickets Usados": usedTickets.join(", "), "Estado": usedCount === a.C ? "COMPLETO" : (usedCount > 0 ? "PARCIAL" : "SIN USAR") });
         }
         var pendingData = [];
         for (var k = 0; k < pendingPayments.length; k++) {
@@ -946,7 +985,7 @@
         var wb = XLSX.utils.book_new();
         var ws1 = XLSX.utils.json_to_sheet(auditData);
         var ws2 = XLSX.utils.json_to_sheet(pendingData);
-        ws1['!cols'] = [{wch:25},{wch:15},{wch:15},{wch:15},{wch:10},{wch:12},{wch:15},{wch:15},{wch:15}];
+        ws1['!cols'] = [{wch:25},{wch:15},{wch:15},{wch:15},{wch:15},{wch:10},{wch:12},{wch:15},{wch:15},{wch:15}];
         ws2['!cols'] = [{wch:25},{wch:15},{wch:15},{wch:15},{wch:8},{wch:10},{wch:20}];
         XLSX.utils.book_append_sheet(wb, ws1, "Asistentes");
         XLSX.utils.book_append_sheet(wb, ws2, "Pagos Pendientes");
