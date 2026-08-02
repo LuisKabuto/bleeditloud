@@ -178,7 +178,6 @@
             </div>
         </div>
 
-        <!-- TAB VERIFICAR (SOLO BÚSQUEDA MANUAL) -->
         <div id="tab-verify" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
@@ -214,11 +213,14 @@
         <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
             <div class="max-w-xl mx-auto space-y-5">
 
-                <!-- CONTROL DE DÍAS Y VENTAS -->
                 <div class="ab rounded-sm p-6" style="background:var(--card);border-color:var(--accent)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent">Control de Evento</h3>
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Control de Evento</h3>
                     <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día Activo del Evento (Ej: Viernes 31)</label>
                     <input type="text" id="config-active-day" class="di mb-4" placeholder="Día Activo">
+                    <div class="flex items-center gap-2 mb-4">
+                        <input type="checkbox" id="config-strict-days" class="w-5 h-5" style="accent-color:var(--accent)">
+                        <label for="config-strict-days" class="text-sm" style="color:var(--text)">Activar bloqueo estricto por días (Impide entrar con cédulas de otros días)</label>
+                    </div>
                     <button id="sales-toggle-btn" class="bp w-full rounded-sm" onclick="toggleSales()"><i class="fa-solid fa-pause mr-2"></i>Pausar Ventas</button>
                 </div>
 
@@ -236,11 +238,10 @@
                     <input type="text" id="config-event-logo" class="di mb-4" placeholder="https://.../logo.png">
                 </div>
 
-                <!-- SUBIR EXCEL POR DÍA -->
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
                     <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Cargar Lista Masiva (Excel/CSV)</h3>
                     <p class="text-sm mb-4" style="color:var(--muted)">El sistema detecta las columnas automáticamente. Si hay personas con la misma cédula, se unifican y se suma la cantidad de entradas.</p>
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día al que pertenece esta lista (Ej: Sábado 1)</label>
+                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día al que pertenece esta lista (Ej: Sábado 01)</label>
                     <input type="text" id="upload-day-name" class="di mb-4" placeholder="Día de la lista">
                     <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px">
                     <button class="bp w-full rounded-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir y Agregar a la Nube</button>
@@ -288,19 +289,16 @@
         </div>
     </section>
 
-    <!-- MODO KIOSK (Puerta) -->
     <div id="kiosk-mode" class="kiosk-mode">
         <button type="button" class="bs absolute top-4 right-4 rounded-sm" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
         <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
         <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
-        
         <div class="mt-6 w-full max-w-md text-center">
             <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
             <input type="file" id="kiosk-qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFileKiosk(event)">
         </div>
     </div>
 
-    <!-- MODALES -->
     <div id="pin-modal" class="mo"><div class="mb"><i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3><input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] my-4" maxlength="10" inputmode="numeric"><div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div><button class="bp w-full rounded-sm" onclick="checkPIN()">Acceder</button></div></div>
     <div id="pin-setup-modal" class="mo"><div class="mb"><i class="fa-solid fa-key text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">CONFIGURAR PIN</h3><p class="text-sm mt-2 mb-4" style="color:var(--muted)">Crea un PIN para proteger el panel. No lo olvides.</p><input type="password" id="pin-setup-input" class="di text-center text-2xl tracking-[8px] my-4" placeholder="Nuevo PIN" maxlength="10" inputmode="numeric"><div id="pin-setup-error" class="text-sm mb-4" style="color:var(--accent);display:none"></div><button class="bp w-full rounded-sm" onclick="savePIN()">Guardar y Acceder</button></div></div>
     
@@ -388,6 +386,7 @@
             fbDB.ref('events/' + FB_EVENT_ID + '/config').on('value', function(s) {
                 salesConfig = s.val() || {};
                 document.getElementById('config-active-day').value = salesConfig.active_day || '';
+                document.getElementById('config-strict-days').checked = salesConfig.strict_days || false;
                 document.getElementById('config-event-name').value = salesConfig.event_name || 'LIVE CAFÉ ROCK';
                 document.getElementById('config-event-sub').value = salesConfig.event_sub || 'CONTROL DE ACCESO Y ENTRADAS';
                 document.getElementById('config-event-date').value = salesConfig.event_date || '31 / 07 / 2026';
@@ -452,6 +451,7 @@
     function saveSalesConfig() {
         salesConfig = {
             active_day: document.getElementById('config-active-day').value,
+            strict_days: document.getElementById('config-strict-days').checked,
             event_name: document.getElementById('config-event-name').value,
             event_sub: document.getElementById('config-event-sub').value,
             event_date: document.getElementById('config-event-date').value,
@@ -471,14 +471,10 @@
         showToast('Configuracion guardada', 's');
     }
 
-    // ============================================================
-    // LECTOR DE EXCEL DINÁMICO, UNIFICADOR Y MULTI-DÍA
-    // ============================================================
     function handleFileUpload() {
         var fileInput = document.getElementById('file-input');
         if (!fileInput.files.length) { showToast('Selecciona un archivo', 'e'); return; }
         var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
-        
         var file = fileInput.files[0];
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -489,19 +485,16 @@
                 var csv = XLSX.utils.sheet_to_csv(ws);
                 var parsed = parseCSV(csv, dayName);
                 if (!parsed.length) throw new Error('No se encontraron datos válidos');
-                
-                // Merge with existing attendees
                 for (var i=0; i<parsed.length; i++) {
                     var exists = false;
                     for (var j=0; j<attendees.length; j++) {
                         if (nD(attendees[j].D) === nD(parsed[i].D) && attendees[j].E_D === parsed[i].E_D) {
-                            attendees[j].C += parsed[i].C; // Sumar cantidad si ya existe
+                            attendees[j].C += parsed[i].C;
                             exists = true; break;
                         }
                     }
                     if (!exists) attendees.push(parsed[i]);
                 }
-                
                 if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
                 updateUI(); showToast(parsed.length + ' registros cargados para ' + dayName, 's');
                 fileInput.value = '';
@@ -513,7 +506,6 @@
     function parseCSV(t, dayName) {
         var ls = t.split('\n').filter(function(l) { return l.trim(); });
         if (ls.length < 2) return [];
-        
         var headerIndex = -1;
         for (var i = 0; i < ls.length; i++) {
             var lineLower = ls[i].toLowerCase();
@@ -522,10 +514,8 @@
             }
         }
         if (headerIndex === -1) throw new Error('No se encontró la columna Cédula');
-        
         var hs = parseLine(ls[headerIndex]), hn = [];
         for (var h = 0; h < hs.length; h++) hn.push(hs[h].toLowerCase().trim());
-        
         var nI = -1, dI = -1, eI = -1, cI = -1, tI = -1, pI = -1;
         for (var i = 0; i < hn.length; i++) {
             if (nI === -1 && (hn[i].includes('nombre') || hn[i].includes('name'))) nI = i;
@@ -536,7 +526,6 @@
             if (pI === -1 && (hn[i].includes('pagado') || hn[i].includes('pago') || hn[i].includes('estado'))) pI = i;
         }
         if (dI === -1 || nI === -1) throw new Error('Columnas requeridas: Nombre y Cédula');
-        
         var d = [];
         for (var i = headerIndex + 1; i < ls.length; i++) {
             var v = parseLine(ls[i]);
@@ -561,7 +550,7 @@
                     E: eI !== -1 ? (v[eI] || 'General').trim() : 'General',
                     T: tI !== -1 ? (v[tI] || '').trim() : '',
                     P: paidStatus,
-                    E_D: dayName // Etiqueta del Día
+                    E_D: dayName
                 });
             }
         }
@@ -584,7 +573,7 @@
         var newAttendees = [];
         var removedCount = 0;
         for (var i=0; i<attendees.length; i++) {
-            if (attendees[i].E_D === dayName) {
+            if (normalizeStr(attendees[i].E_D) === normalizeStr(dayName)) {
                 removedCount++;
             } else {
                 newAttendees.push(attendees[i]);
@@ -641,7 +630,6 @@
         if (!n || !d || !r) { showToast('Completa todos los datos', 'e'); return; }
         var newPay = { id: 'pay_' + Date.now(), name: n, dni: d, phone: p, qty: q, ref: r, stage: stageName, total: q * price, status: 'pending' };
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/pending/' + newPay.id).set(newPay);
-        
         var qrContainer = document.getElementById('ticket-qr');
         qrContainer.innerHTML = '';
         new QRCode(qrContainer, { text: d, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
@@ -693,7 +681,7 @@
     function resetPIN() { if (confirm('¿Deseas cambiar tu PIN de administrador?')) { CFG.PIN = ''; localStorage.removeItem('bleedit_pin'); document.getElementById('pin-setup-input').value = ''; document.getElementById('pin-setup-modal').style.display = 'flex'; } }
 
     // ============================================================
-    // VERIFICACIÓN INTELIGENTE (MULTI-DÍA)
+    // VERIFICACIÓN INTELIGENTE (MULTI-DÍA CON MODO NO ESTRICTO POR DEFECTO)
     // ============================================================
     function verifyEntry(input, cid) {
         var dni = nD(input);
@@ -701,10 +689,11 @@
         var a = null;
         var foundInOtherDay = null;
         var activeDay = salesConfig.active_day || 'General';
+        var isStrict = salesConfig.strict_days || false;
 
         for (var i = 0; i < attendees.length; i++) {
             if (nD(attendees[i].D) === dni) {
-                if (!attendees[i].E_D || attendees[i].E_D === activeDay) {
+                if (!attendees[i].E_D || normalizeStr(attendees[i].E_D) === normalizeStr(activeDay)) {
                     a = attendees[i]; break;
                 } else {
                     foundInOtherDay = attendees[i];
@@ -716,8 +705,12 @@
         c.style.display = 'block';
 
         if (!a && foundInOtherDay) {
-            c.innerHTML = '<div class="rc rc-u"><h3>EVENTO EQUIVOCADO</h3><p>Esta cédula pertenece al evento del día <strong>'+esc(foundInOtherDay.E_D)+'</strong>, no al de hoy.</p></div>';
-            return;
+            if (isStrict) {
+                c.innerHTML = '<div class="rc rc-e"><h3>EVENTO EQUIVOCADO</h3><p>Esta cédula pertenece al día <strong>'+esc(foundInOtherDay.E_D)+'</strong>, no al de hoy.</p></div>';
+                return;
+            } else {
+                a = foundInOtherDay; // Modo no estricto: lo dejamos pasar pero mostraremos alerta amarilla
+            }
         }
         if (!a) { c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3></div>'; return; }
         if (!isPaid(a.P)) { c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p></div>'; return; }
@@ -731,7 +724,9 @@
         localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
         updateUI();
-        c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Entrada '+idx+'/'+a.C+'</p></div>';
+
+        var dayWarning = foundInOtherDay && !isStrict ? '<br><span style="color:var(--warning); font-size:13px;">ALERTA: Es de '+esc(foundInOtherDay.E_D)+'</span>' : '';
+        c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Entrada '+idx+'/'+a.C+dayWarning+'</p></div>';
     }
     function verifyDNI() { verifyEntry(document.getElementById('verify-dni').value, 'verify-result'); }
     function adminVerify() { verifyEntry(document.getElementById('admin-dni-input').value, 'admin-verify-result'); }
@@ -768,9 +763,6 @@
         renderList();
     }
 
-    // ============================================================
-    // BÚSQUEDA INTELIGENTE (SIN TILDES, NOMBRE O CÉDULA)
-    // ============================================================
     function renderList() {
         var rawSearch = document.getElementById('search-attendee').value.toLowerCase().trim();
         var sDni = nD(rawSearch);
@@ -780,7 +772,6 @@
             var a = attendees[i];
             var aName = normalizeStr(a.N);
             var aDni = nD(a.D);
-            
             var matches = false;
             if (rawSearch === '') matches = true;
             else if (sDni && aDni.indexOf(sDni) !== -1) matches = true;
@@ -941,19 +932,34 @@
     function verifyKiosk(dt) { 
         var dni = nD(dt); var a = null; var foundInOtherDay = null;
         var activeDay = salesConfig.active_day || 'General';
+        var isStrict = salesConfig.strict_days || false;
         for (var i = 0; i < attendees.length; i++) { 
             if (nD(attendees[i].D) === dni) {
-                if (!attendees[i].E_D || attendees[i].E_D === activeDay) { a = attendees[i]; break; } 
+                if (!attendees[i].E_D || normalizeStr(attendees[i].E_D) === normalizeStr(activeDay)) { a = attendees[i]; break; } 
                 else { foundInOtherDay = attendees[i]; }
             } 
         } 
-        if (!a && foundInOtherDay) { showKioskAnim('warn', 'EVENTO EQUIVOCADO', 'Pertenece al día ' + foundInOtherDay.E_D); return; }
+        if (!a && foundInOtherDay) {
+            if (isStrict) { showKioskAnim('error', 'EVENTO EQUIVOCADO', 'Pertenece al día ' + foundInOtherDay.E_D); return; }
+            else { a = foundInOtherDay; }
+        }
         if (!a) { showKioskAnim('error', 'NO ENCONTRADO', 'No registrado'); return; } 
         if (!isPaid(a.P)) { showKioskAnim('warn', 'PAGO PENDIENTE', a.N); return; }
         var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } } 
         if (idx === -1) { showKioskAnim('error', 'AGOTADAS', a.N); return; } 
-        usedIDs.add(dni+'-'+idx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs)); 
-        updateUI(); showKioskAnim('success', 'BIENVENIDO', a.N + ' (Entrada ' + idx + '/' + a.C + ')'); 
+        usedIDs.add(dni+'-'+idx); 
+        if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs)); 
+        updateUI(); 
+
+        var animType = 'success';
+        var animTitle = 'BIENVENIDO';
+        var animText = a.N + ' (Entrada ' + idx + '/' + a.C + ')';
+        if (foundInOtherDay && !isStrict) {
+            animType = 'warn';
+            animTitle = 'ALERTA OTRO DÍA';
+            animText = a.N + ' (De ' + foundInOtherDay.E_D + ')';
+        }
+        showKioskAnim(animType, animTitle, animText); 
     }
 
     function showKioskAnim(type, title, text) {
