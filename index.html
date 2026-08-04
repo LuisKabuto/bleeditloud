@@ -243,11 +243,11 @@
             <div class="max-w-xl mx-auto space-y-5">
 
                 <div class="ab rounded-sm p-6" style="background:var(--card);border-color:var(--accent)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent">Control de Evento</h3>
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Control de Evento</h3>
                     <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día Activo (Ej: Sábado 01)</label>
                     <input type="text" id="config-active-day" class="di mb-4" placeholder="Día Activo">
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Color del Texto para las Entradas de este Día</label>
-                    <input type="color" id="config-day-color" class="di mb-4" style="height:50px;padding:5px" value="#ffffff">
+                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Color de Borde/Texto para las Entradas de este Día</label>
+                    <input type="color" id="config-day-color" class="di mb-4" style="height:50px;padding:5px" value="#ff0000">
                     <button id="sales-toggle-btn" class="bp w-full rounded-sm" onclick="toggleSales()"><i class="fa-solid fa-pause mr-2"></i>Pausar Ventas</button>
                 </div>
 
@@ -261,8 +261,8 @@
                         <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Fecha</label><input type="text" id="config-event-date" class="di" placeholder="31 / 07 / 2026"></div>
                         <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Ciudad / Lugar</label><input type="text" id="config-event-city" class="di" placeholder="Maracaibo, estado Zulia"></div>
                     </div>
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">URL del Logo (Imagen)</label>
-                    <input type="text" id="config-event-logo" class="di mb-4" placeholder="https://.../logo.png">
+                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">URL de la Imagen base para las Entradas</label>
+                    <input type="text" id="config-event-logo" class="di mb-4" placeholder="https://.../entrada.jpg">
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
@@ -271,6 +271,14 @@
                     <input type="text" id="upload-day-name" class="di mb-4" placeholder="Día de la lista">
                     <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px">
                     <button class="bp w-full rounded-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir y Agregar a la Nube</button>
+                </div>
+
+                <div class="ab rounded-sm p-6" style="background:var(--card)">
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Agregar Asistente Manual</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="manual-nombre" class="di" placeholder="Nombre"><input type="text" id="manual-cedula" class="di" placeholder="Cedula"><input type="number" id="manual-cantidad" class="di" placeholder="Cant" value="1" min="1"><input type="text" id="manual-etapa" class="di" placeholder="Etapa" value="Manual">
+                    </div>
+                    <button class="bp w-full mt-3 rounded-sm" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar</button>
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
@@ -372,7 +380,7 @@
             fbDB.ref('events/' + FB_EVENT_ID + '/config').on('value', function(s) {
                 salesConfig = s.val() || {};
                 document.getElementById('config-active-day').value = salesConfig.active_day || '';
-                document.getElementById('config-day-color').value = salesConfig.day_color || '#ffffff';
+                document.getElementById('config-day-color').value = salesConfig.day_color || '#ff0000';
                 document.getElementById('config-event-name').value = salesConfig.event_name || 'LIVE CAFÉ ROCK';
                 document.getElementById('config-event-sub').value = salesConfig.event_sub || 'CONTROL DE ACCESO Y ENTRADAS';
                 document.getElementById('config-event-date').value = salesConfig.event_date || '31 / 07 / 2026';
@@ -471,7 +479,6 @@
         if (!isPaid(a.P)) { c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p></div>'; return; }
         if (cid === 'verify-result') { c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>ENTRADA VERIFICADA</h3><p>¡Te esperamos en el evento!</p></div>'; return; }
         
-        // Si se escaneó un ID específico (ej. 12345678-1)
         if (ticketIdx !== -1) {
             if (usedIDs.has(dni + '-' + ticketIdx)) { c.innerHTML = '<div class="rc rc-e"><h3>ENTRADA YA USADA</h3><p>'+esc(a.N)+' (Ticket #'+ticketIdx+')</p></div>'; return; }
             usedIDs.add(dni + '-' + ticketIdx);
@@ -482,7 +489,6 @@
             return;
         }
 
-        // Si se ingresó manualmente solo la cédula
         var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
         if (idx === -1) { c.innerHTML = '<div class="rc rc-e"><h3>AGOTADAS</h3><p>'+esc(a.N)+'</p></div>'; return; }
         usedIDs.add(dni + '-' + idx); localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
@@ -539,14 +545,26 @@
         } tb.innerHTML = h;
     }
 
+    function addManualAttendee() {
+        var n = document.getElementById('manual-nombre').value.trim();
+        var d = nD(document.getElementById('manual-cedula').value);
+        var c = parseInt(document.getElementById('manual-cantidad').value) || 1;
+        var e = document.getElementById('manual-etapa').value.trim() || 'Manual';
+        if (!n || !d) { showToast('Nombre y Cedula son obligatorios', 'e'); return; }
+        attendees.push({N:n, D:d, C:c, E:e, P:'Si', E_D: salesConfig.active_day || 'Manual'});
+        if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
+        updateUI(); showToast('Agregado manualmente', 's');
+        document.getElementById('manual-nombre').value = ''; document.getElementById('manual-cedula').value = ''; document.getElementById('manual-cantidad').value = '1'; document.getElementById('manual-etapa').value = 'Manual';
+    }
+
     // ============================================================
     // GENERADOR DE ENTRADAS VISUALES CON PLANTILLA Y QR ÚNICO
     // ============================================================
     function generateAllVisualTickets() {
         var grid = document.getElementById('qr-grid'); grid.innerHTML = '';
         var activeDay = salesConfig.active_day || 'General';
-        var dayColor = salesConfig.day_color || '#ffffff';
-        var templateUrl = salesConfig.event_logo || DEFAULT_TICKET_IMG; // Usa el logo subido o la plantilla por defecto
+        var dayColor = salesConfig.day_color || '#ff0000';
+        var templateUrl = salesConfig.event_logo || DEFAULT_TICKET_IMG; 
         
         if(attendees.length === 0){ showToast('No hay asistentes para hoy', 'e'); return; }
         
@@ -556,9 +574,9 @@
             
             for (var j = 1; j <= a.C; j++) {
                 var uid = nD(a.D) + '-' + j;
-                var card = document.createElement('div'); card.className = 'qc';
+                var card = document.createElement('div'); card.className = 'qc'; card.style.border = '4px solid ' + dayColor; // Borde visual del día
                 
-                var bgDiv = document.createElement('div'); bgDiv.className = 'ticket-bg'; bgDiv.style.backgroundImage = "url('"+templateUrl+"')"; bgDiv.style.color = dayColor;
+                var bgDiv = document.createElement('div'); bgDiv.className = 'ticket-bg'; bgDiv.style.backgroundImage = "url('"+templateUrl+"')"; bgDiv.style.color = dayColor; // Color de texto del día
                 
                 var overlay = document.createElement('div'); overlay.className = 'ticket-overlay';
                 overlay.innerHTML = '<div class="qn">'+esc(a.N)+'</div><div class="qd">C.I: '+esc(nD(a.D))+'</div><div class="qct">Entrada '+j+' de '+a.C+' ('+esc(a.E)+')</div>';
