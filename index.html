@@ -344,6 +344,10 @@
     var FB_EVENT_ID = 'live-cafe-rock-2026';
     var CFG = { PIN: '' };
     var attendees = [], usedIDs = new Set(), pendingPayments = [], salesConfig = {};
+    // Valores por defecto para que la pantalla de compra no aparezca vacía
+    salesConfig.s1_name = 'Preventa 1'; salesConfig.s1_price = 10;
+    salesConfig.s2_name = 'Preventa 2'; salesConfig.s2_price = 15;
+    salesConfig.payInfo = 'Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
     try { usedIDs = new Set(JSON.parse(localStorage.getItem('bleedit_used') || '[]')); } catch(e) {}
     var fbApp = null, fbDB = null, fbConnected = false;
     var currentTheme = localStorage.getItem('bleedit_theme') || 'dark';
@@ -367,7 +371,7 @@
         initFirebase();
     });
 
-    function showView(vn) { var av = document.querySelectorAll('.vw'); for (var i = 0; i < av.length; i++) av[i].style.display = 'none'; var t = document.getElementById('view-' + vn); if (t) t.style.display = 'flex'; window.scrollTo(0, 0); }
+    function showView(vn) { var av = document.querySelectorAll('.vw'); for (var i = 0; i < av.length; i++) av[i].style.display = 'none'; var t = document.getElementById('view-' + vn); if (t) t.style.display = 'flex'; if (vn === 'buy') renderBuyStages(); window.scrollTo(0, 0); }
 
     function initFirebase() {
         try {
@@ -379,6 +383,13 @@
             fbDB.ref('events/' + FB_EVENT_ID + '/used').on('value', function(s) { var data = s.val(); if (data) { usedIDs = new Set(Array.isArray(data) ? data : Object.values(data)); updateUI(); } });
             fbDB.ref('events/' + FB_EVENT_ID + '/config').on('value', function(s) {
                 salesConfig = s.val() || {};
+                // Mantener valores por defecto si la nube está vacía
+                if (!salesConfig.s1_name) salesConfig.s1_name = 'Preventa 1';
+                if (salesConfig.s1_price === undefined) salesConfig.s1_price = 10;
+                if (!salesConfig.s2_name) salesConfig.s2_name = 'Preventa 2';
+                if (salesConfig.s2_price === undefined) salesConfig.s2_price = 15;
+                if (!salesConfig.payInfo) salesConfig.payInfo = 'Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
+                
                 document.getElementById('config-active-day').value = salesConfig.active_day || '';
                 document.getElementById('config-day-color').value = salesConfig.day_color || '#ff0000';
                 document.getElementById('config-event-name').value = salesConfig.event_name || 'LIVE CAFÉ ROCK';
@@ -387,9 +398,9 @@
                 document.getElementById('config-event-city').value = salesConfig.event_city || 'Maracaibo';
                 document.getElementById('config-event-logo').value = salesConfig.event_logo || '';
                 document.getElementById('config-payment-info').value = salesConfig.payInfo || '';
-                document.getElementById('config-s1-name').value = salesConfig.s1_name || ''; document.getElementById('config-s1-price').value = salesConfig.s1_price || '';
+                document.getElementById('config-s1-name').value = salesConfig.s1_name; document.getElementById('config-s1-price').value = salesConfig.s1_price;
                 document.getElementById('config-s1-closed').checked = salesConfig.s1_closed || false;
-                document.getElementById('config-s2-name').value = salesConfig.s2_name || ''; document.getElementById('config-s2-price').value = salesConfig.s2_price || '';
+                document.getElementById('config-s2-name').value = salesConfig.s2_name; document.getElementById('config-s2-price').value = salesConfig.s2_price;
                 document.getElementById('config-s2-closed').checked = salesConfig.s2_closed || false;
                 updateLandingUI(); renderBuyStages(); updateSalesUI();
             });
@@ -554,7 +565,11 @@
         attendees.push({N:n, D:d, C:c, E:e, P:'Si', E_D: salesConfig.active_day || 'Manual'});
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
         updateUI(); showToast('Agregado manualmente', 's');
-        document.getElementById('manual-nombre').value = ''; document.getElementById('manual-cedula').value = ''; document.getElementById('manual-cantidad').value = '1'; document.getElementById('manual-etapa').value = 'Manual';
+        // Limpiar campos para el siguiente
+        document.getElementById('manual-nombre').value = '';
+        document.getElementById('manual-cedula').value = '';
+        document.getElementById('manual-cantidad').value = '1';
+        document.getElementById('manual-etapa').value = 'Manual';
     }
 
     // ============================================================
