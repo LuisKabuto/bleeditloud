@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LIVE CAFÉ ROCK - Entradas</title>
     <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="css/styles.css">
     <meta name="theme-color" content="#0a0a0a">
     <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,6 +17,57 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script>tailwind.config={theme:{extend:{fontFamily:{display:['Oswald','sans-serif'],body:['Roboto Condensed','sans-serif']}}}}</script>
+    <style>
+        :root{--bg:#0a0a0a;--card:#111111;--border:#1e1e1e;--accent:#cc0000;--accent-bright:#ff1a1a;--accent-glow:rgba(204,0,0,0.4);--text:#e8e8e8;--muted:#555555;--success:#00cc44;--success-glow:rgba(0,204,68,0.4);--warning:#cc8800;--info:#3399ff;--surface:#0d0d0d;--input-bg:#0d0d0d}
+        [data-theme="light"]{--bg:#f5f5f5;--card:#ffffff;--border:#e0e0e0;--accent:#cc0000;--accent-bright:#cc0000;--accent-glow:rgba(204,0,0,0.15);--text:#1a1a1a;--muted:#888888;--success:#00aa33;--success-glow:rgba(0,170,51,0.2);--warning:#cc7700;--info:#2266cc;--surface:#fafafa;--input-bg:#ffffff}
+        *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Roboto Condensed',sans-serif;-webkit-text-size-adjust:100%;transition:background .3s,color .3s}
+        .grid-bg{background-image:linear-gradient(rgba(204,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(204,0,0,0.04) 1px,transparent 1px);background-size:24px 24px}
+        .scanlines::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9998}
+        [data-theme="light"] .scanlines::after{display:none}
+        .glitch{position:relative;display:inline-block}.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}.glitch::before{color:var(--accent);animation:ga 3s infinite linear alternate-reverse;clip-path:polygon(0 0,100% 0,100% 33%,0 33%)}.glitch::after{color:rgba(255,255,255,0.6);animation:gb 2.5s infinite linear alternate-reverse;clip-path:polygon(0 67%,100% 67%,100% 100%,0 100%)}
+        @keyframes ga{0%,90%{transform:translate(0)}92%{transform:translate(-3px,1px)}94%{transform:translate(2px,-1px)}96%{transform:translate(-1px,2px)}98%{transform:translate(3px,0)}100%{transform:translate(0)}}
+        @keyframes gb{0%,88%{transform:translate(0)}90%{transform:translate(2px,-1px)}93%{transform:translate(-3px,2px)}96%{transform:translate(1px,-2px)}100%{transform:translate(0)}}
+        .ab{border:1px solid var(--border);box-shadow:inset 0 0 30px rgba(204,0,0,0.05),0 0 15px rgba(204,0,0,0.05);transition:border-color .3s,box-shadow .3s,background .3s}.ab:hover{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(204,0,0,0.1),0 0 20px var(--accent-glow)}
+        .bp{background:linear-gradient(135deg,var(--accent),#990000);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;-webkit-tap-highlight-color:transparent}.bp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}.bp:hover::before{transform:translateX(100%)}.bp:hover{box-shadow:0 0 30px var(--accent-glow),0 4px 15px rgba(0,0,0,.5);transform:translateY(-1px)}.bp:active{transform:translateY(1px)}
+        .bs{background:transparent;color:var(--muted);font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}.bs:hover{color:var(--text);border-color:var(--muted);background:rgba(255,255,255,.03)}
+        .di{background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:'Roboto Condensed',sans-serif;font-size:18px;padding:14px 18px;width:100%;outline:none;transition:border-color .3s,box-shadow .3s,background .3s;-webkit-appearance:none;border-radius:2px}.di:focus{border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}.di::placeholder{color:#333}
+        .vf{position:relative;width:280px;height:280px;margin:0 auto}.vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
+        .rc{border:2px solid;padding:24px;text-align:center;animation:ri .4s ease-out}.rc-s{border-color:var(--success);background:rgba(0,204,68,.06);box-shadow:0 0 40px var(--success-glow)}.rc-e{border-color:var(--accent);background:rgba(204,0,0,.06);box-shadow:0 0 40px var(--accent-glow)}.rc-u{border-color:var(--warning);background:rgba(204,136,0,.06);box-shadow:0 0 40px rgba(204,136,0,.3)}@keyframes ri{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+        .at{padding:10px 20px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .3s;background:none;-webkit-tap-highlight-color:transparent}.at:hover{color:var(--text)}.at.ac{color:var(--accent-bright);border-bottom-color:var(--accent)}
+        .mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center}.mb{background:var(--card);border:1px solid var(--border);padding:40px;max-width:380px;width:90%;text-align:center}
+        .tt{padding:14px 22px;font-size:14px;animation:ti .4s ease,to .4s ease 2.6s forwards;max-width:340px}.tt-s{background:rgba(0,204,68,.15);border:1px solid rgba(0,204,68,.3);color:var(--success)}.tt-e{background:rgba(204,0,0,.15);border:1px solid rgba(204,0,0,.3);color:var(--accent-bright)}.tt-i{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text)}
+        @keyframes ti{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes to{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+        .hi{position:relative;display:inline-block}.hi img{display:block;max-height:55vh;width:auto;max-width:90vw;filter:contrast(1.1) brightness(.95)}
+        .vw{display:none}
+        .kiosk-mode{position:fixed;inset:0;z-index:99999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}.kiosk-mode.active{display:flex}
+        .theme-toggle{position:fixed;bottom:20px;right:20px;z-index:9990;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
+        .tc{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+        .firebase-status{padding:4px 10px;border-radius:2px;font-size:10px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase}.fb-connected{background:rgba(0,204,68,.15);color:var(--success);border:1px solid rgba(0,204,68,.3)}.fb-disconnected{background:rgba(204,0,0,.15);color:var(--accent-bright);border:1px solid rgba(204,0,0,.3)}
+        .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:4px;text-align:center}
+        .stat-num{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700}
+        .stat-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+        .progress-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:6px}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-bright));transition:width .5s ease}
+        
+        .qg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}@media(min-width:640px){.qg{grid-template-columns:repeat(3,1fr)}}@media(min-width:1024px){.qg{grid-template-columns:repeat(4,1fr)}}
+        .qc{background:#fff;border-radius:8px;overflow:hidden;text-align:center;color:#111;position:relative;box-shadow:0 4px 10px rgba(0,0,0,0.3)}
+        .ticket-bg{width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;background-color:#111}
+        .ticket-bg img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:1}
+        .ticket-overlay{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(to top, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0));padding:50px 10px 15px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2}
+        .qc .qn{color:#fff;font-size:14px;font-weight:700;text-shadow: 1px 1px 2px black;}
+        .qc .qd{color:#ccc;font-family:monospace;font-size:10px;margin-top:2px;text-shadow: 1px 1px 2px black;}
+        .qc .qct{color:#fff;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;margin-top:4px;text-shadow: 1px 1px 2px black;}
+        .qc .qr-box{margin-top:10px;background:#fff;padding:5px;border-radius:4px;z-index:3;position:relative}
+        .qc .qdl{display:flex;align-items:center;justify-content:center;padding:8px;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;background:#0a0a0a;color:#fff;border:none;cursor:pointer;text-decoration:none;width:100%;position:relative;z-index:10}
+        .qc .qsend{display:flex;gap:1px;width:100%}
+        .qc .qwa{background:#25D366;color:#fff;flex:1}
+        
+        .kiosk-anim{position:fixed;inset:0;z-index:100000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:flashBg .5s ease}
+        @keyframes flashBg {0%{opacity:0;transform:scale(1.2)}100%{opacity:1;transform:scale(1)}}
+        .anim-icon{font-size:160px;margin-bottom:20px}
+        .anim-title{font-family:'Oswald',sans-serif;font-size:80px;font-weight:700;letter-spacing:4px;text-transform:uppercase}
+        .anim-text{font-size:30px;margin-top:10px}
+    </style>
 </head>
 <body class="grid-bg scanlines min-h-screen">
     <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
@@ -216,11 +266,22 @@
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Cargar Lista Masiva (Excel/CSV)</h3>
+                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Cargar Lista Masiva</h3>
                     <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día al que pertenece esta lista (Ej: Viernes 31)</label>
                     <input type="text" id="upload-day-name" class="di mb-4" placeholder="Día de la lista">
-                    <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px">
-                    <button class="bp w-full rounded-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir y Agregar a la Nube</button>
+                    
+                    <div class="mt-4 pt-4 border-t" style="border-color:var(--border)">
+                        <h3 class="font-display text-sm tracking-[3px] uppercase mb-2" style="color:var(--accent)">Opción 1: Pegar datos de Excel</h3>
+                        <p class="text-sm mb-4" style="color:var(--muted)">Abre tu Excel, selecciona todo (Ctrl+E), copia (Ctrl+C) y pégalo en el cuadro de abajo.</p>
+                        <textarea id="paste-list-input" class="di mb-4" rows="8" placeholder="Pega aquí los datos copiados del Excel..."></textarea>
+                        <button class="bp w-full rounded-sm" onclick="handlePasteUpload()"><i class="fa-solid fa-paste mr-2"></i>Cargar Datos Pegados</button>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t" style="border-color:var(--border)">
+                        <h3 class="font-display text-sm tracking-[3px] uppercase mb-2" style="color:var(--accent)">Opción 2: Subir Archivo Excel/CSV</h3>
+                        <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px">
+                        <button class="bp w-full rounded-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir Archivo</button>
+                    </div>
                 </div>
 
                 <div class="ab rounded-sm p-6" style="background:var(--card)">
@@ -245,6 +306,10 @@
                     <div class="grid grid-cols-2 gap-4 mb-2">
                         <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 2 (Nombre)</label><input type="text" id="config-s2-name" class="di" placeholder="Preventa 2"></div>
                         <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 2 (Precio $)</label><input type="number" id="config-s2-price" class="di" placeholder="15"></div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <input type="checkbox" id="config-s2-closed" class="w-5 h-5" style="accent-color:var(--accent)">
+                        <label for="config-s2-closed" class="text-sm" style="color:var(--text)">Marcar Etapa 2 como AGOTADA</label>
                     </div>
                     <button class="bp w-full rounded-sm" onclick="saveSalesConfig()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Configuracion</button>
                 </div>
@@ -294,7 +359,6 @@
     var FB_EVENT_ID = 'live-cafe-rock-2026';
     var CFG = { PIN: '' };
     var attendees = [], usedIDs = new Set(), pendingPayments = [], salesConfig = {};
-    // Valores por defecto para que la pantalla de compra no aparezca vacía
     salesConfig.s1_name = 'Preventa 1'; salesConfig.s1_price = 10;
     salesConfig.s2_name = 'Preventa 2'; salesConfig.s2_price = 15;
     salesConfig.payInfo = 'Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
@@ -333,7 +397,6 @@
             fbDB.ref('events/' + FB_EVENT_ID + '/used').on('value', function(s) { var data = s.val(); if (data) { usedIDs = new Set(Array.isArray(data) ? data : Object.values(data)); updateUI(); } });
             fbDB.ref('events/' + FB_EVENT_ID + '/config').on('value', function(s) {
                 salesConfig = s.val() || {};
-                // Mantener valores por defecto si la nube está vacía
                 if (!salesConfig.s1_name) salesConfig.s1_name = 'Preventa 1';
                 if (salesConfig.s1_price === undefined) salesConfig.s1_price = 10;
                 if (!salesConfig.s2_name) salesConfig.s2_name = 'Preventa 2';
@@ -373,45 +436,166 @@
     function updateSalesUI() { var btn = document.getElementById('sales-toggle-btn'); var landBtn = document.getElementById('btn-buy-landing'); if (!btn || !landBtn) return; if (salesConfig.sales_paused) { btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i>Reanudar Ventas'; btn.style.background = 'linear-gradient(135deg,#00cc44,#009933)'; landBtn.innerHTML = '<i class="fa-solid fa-ban mr-2"></i>Ventas Cerradas'; landBtn.disabled = true; landBtn.style.opacity = '0.5'; landBtn.style.pointerEvents = 'none'; } else { btn.innerHTML = '<i class="fa-solid fa-pause mr-2"></i>Pausar Ventas'; btn.style.background = 'linear-gradient(135deg,var(--accent),#990000)'; landBtn.innerHTML = '<i class="fa-solid fa-ticket mr-2"></i>Comprar Entradas'; landBtn.disabled = false; landBtn.style.opacity = '1'; landBtn.style.pointerEvents = 'auto'; } }
 
     function saveSalesConfig() {
-        salesConfig = { active_day: document.getElementById('config-active-day').value, day_color: document.getElementById('config-day-color').value, event_name: document.getElementById('config-event-name').value, event_sub: document.getElementById('config-event-sub').value, event_date: document.getElementById('config-event-date').value, event_city: document.getElementById('config-event-city').value, event_logo: document.getElementById('config-event-logo').value, payInfo: document.getElementById('config-payment-info').value, s1_name: document.getElementById('config-s1-name').value, s1_price: parseFloat(document.getElementById('config-s1-price').value) || 0, s1_closed: document.getElementById('config-s1-closed').checked, s2_name: document.getElementById('config-s2-name').value, s2_price: parseFloat(document.getElementById('config-s2-price').value) || 0, s2_closed: document.getElementById('config-s2-closed').checked, sales_paused: salesConfig.sales_paused || false };
-        if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/config').set(salesConfig);
-        updateLandingUI(); renderBuyStages(); updateSalesUI(); showToast('Configuracion guardada', 's');
+        var newConfig = {
+            active_day: document.getElementById('config-active-day').value,
+            day_color: document.getElementById('config-day-color').value,
+            event_name: document.getElementById('config-event-name').value,
+            event_sub: document.getElementById('config-event-sub').value,
+            event_date: document.getElementById('config-event-date').value,
+            event_city: document.getElementById('config-event-city').value,
+            event_logo: document.getElementById('config-event-logo').value,
+            payInfo: document.getElementById('config-payment-info').value,
+            s1_name: document.getElementById('config-s1-name').value,
+            s1_price: parseFloat(document.getElementById('config-s1-price').value) || 0,
+            s1_closed: document.getElementById('config-s1-closed').checked,
+            s2_name: document.getElementById('config-s2-name').value,
+            s2_price: parseFloat(document.getElementById('config-s2-price').value) || 0,
+            s2_closed: document.getElementById('config-s2-closed').checked,
+            sales_paused: salesConfig.sales_paused || false
+        };
+        salesConfig = newConfig;
+        if (fbConnected) {
+            fbDB.ref('events/' + FB_EVENT_ID + '/config').set(newConfig).then(function() {
+                showToast('Configuracion guardada en la nube', 's');
+            }).catch(function(error) {
+                showToast('Error al guardar: ' + error.message, 'e');
+            });
+        } else {
+            showToast('Configuracion guardada localmente', 's');
+        }
+        updateLandingUI(); renderBuyStages(); updateSalesUI();
     }
 
+    // ============================================================
+    // LECTOR DE EXCEL Y PEGADO RÁPIDO
+    // ============================================================
     function handleFileUpload() {
-        var fileInput = document.getElementById('file-input'); if (!fileInput.files.length) { showToast('Selecciona un archivo', 'e'); return; }
+        var fileInput = document.getElementById('file-input');
+        if (!fileInput || !fileInput.files || !fileInput.files.length) { showToast('Selecciona un archivo', 'e'); return; }
         var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
         var file = fileInput.files[0]; var reader = new FileReader();
         reader.onload = function(e) {
             try {
-                var data = new Uint8Array(e.target.result); var wb = XLSX.read(data, {type: 'array'}); var ws = wb.Sheets[wb.SheetNames[0]]; var csv = XLSX.utils.sheet_to_csv(ws);
-                var parsed = parseCSV(csv, dayName); if (!parsed.length) throw new Error('No se encontraron datos válidos');
-                for (var i=0; i<parsed.length; i++) { var exists = false; for (var j=0; j<attendees.length; j++) { if (nD(attendees[j].D) === nD(parsed[i].D) && attendees[j].E_D === parsed[i].E_D) { attendees[j].C += parsed[i].C; exists = true; break; } } if (!exists) attendees.push(parsed[i]); }
+                var data = new Uint8Array(e.target.result);
+                var wb = XLSX.read(data, {type: 'array'});
+                if (!wb || !wb.SheetNames || wb.SheetNames.length === 0) throw new Error('Archivo Excel vacío');
+                var ws = wb.Sheets[wb.SheetNames[0]];
+                var csv = XLSX.utils.sheet_to_csv(ws);
+                var parsed = parseCSV(csv, dayName);
+                if (!parsed || !parsed.length) throw new Error('No se encontraron datos válidos en el Excel');
+                if (!Array.isArray(attendees)) attendees = [];
+                for (var i=0; i<parsed.length; i++) {
+                    var exists = false;
+                    for (var j=0; j<attendees.length; j++) {
+                        if (attendees[j] && nD(attendees[j].D) === nD(parsed[i].D) && attendees[j].E_D === parsed[i].E_D) {
+                            attendees[j].C += parsed[i].C; exists = true; break;
+                        }
+                    }
+                    if (!exists) attendees.push(parsed[i]);
+                }
                 if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
                 updateUI(); showToast(parsed.length + ' registros cargados para ' + dayName, 's'); fileInput.value = '';
-            } catch(err) { showToast('Error: ' + err.message, 'e'); }
-        }; reader.readAsArrayBuffer(file);
+            } catch(err) { showToast('Error: ' + err.message, 'e'); console.error(err); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function handlePasteUpload() {
+        var pasteText = document.getElementById('paste-list-input').value.trim();
+        if (!pasteText) { showToast('Pega los datos primero', 'e'); return; }
+        var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
+        
+        try {
+            var parsed = parseCSV(pasteText, dayName);
+            if (!parsed || !parsed.length) throw new Error('No se encontraron datos válidos en el texto pegado.');
+            if (!Array.isArray(attendees)) attendees = [];
+            
+            for (var i=0; i<parsed.length; i++) {
+                var exists = false;
+                for (var j=0; j<attendees.length; j++) {
+                    if (attendees[j] && nD(attendees[j].D) === nD(parsed[i].D) && attendees[j].E_D === parsed[i].E_D) {
+                        attendees[j].C += parsed[i].C; exists = true; break;
+                    }
+                }
+                if (!exists) attendees.push(parsed[i]);
+            }
+            
+            if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
+            updateUI(); showToast(parsed.length + ' registros cargados para ' + dayName, 's');
+            document.getElementById('paste-list-input').value = '';
+        } catch(err) { showToast('Error: ' + err.message, 'e'); }
     }
 
     function parseCSV(t, dayName) {
-        var ls = t.split('\n').filter(function(l) { return l.trim(); }); if (ls.length < 2) return [];
-        var headerIndex = -1; for (var i = 0; i < ls.length; i++) { var lineLower = ls[i].toLowerCase(); if (lineLower.includes('cédula') || lineLower.includes('cedula') || lineLower.includes('dni')) { headerIndex = i; break; } }
+        if (!t) return [];
+        t = t.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        var ls = t.split('\n').filter(function(l) { return l.trim(); });
+        if (ls.length < 2) return [];
+        
+        var headerIndex = -1;
+        for (var i = 0; i < ls.length; i++) {
+            var lineLower = ls[i].toLowerCase();
+            if (lineLower.includes('cédula') || lineLower.includes('cedula') || lineLower.includes('dni')) {
+                headerIndex = i; break;
+            }
+        }
         if (headerIndex === -1) throw new Error('No se encontró la columna Cédula');
-        var hs = parseLine(ls[headerIndex]), hn = []; for (var h = 0; h < hs.length; h++) hn.push(hs[h].toLowerCase().trim());
+        
+        var hs = parseLine(ls[headerIndex]), hn = [];
+        for (var h = 0; h < hs.length; h++) hn.push(hs[h].toLowerCase().trim());
+        
         var nI = -1, dI = -1, eI = -1, cI = -1, tI = -1, pI = -1;
-        for (var i = 0; i < hn.length; i++) { if (nI === -1 && (hn[i].includes('nombre') || hn[i].includes('name'))) nI = i; if (dI === -1 && (hn[i].includes('cédula') || hn[i].includes('cedula') || hn[i].includes('dni'))) dI = i; if (eI === -1 && (hn[i].includes('etapa') || hn[i].includes('bloque') || hn[i].includes('stage'))) eI = i; if (cI === -1 && (hn[i].includes('cantidad') || hn[i].includes('cant'))) cI = i; if (tI === -1 && (hn[i].includes('tel') || hn[i].includes('movil') || hn[i].includes('phone'))) tI = i; if (pI === -1 && (hn[i].includes('pagado') || hn[i].includes('pago') || hn[i].includes('estado'))) pI = i; }
+        for (var i = 0; i < hn.length; i++) {
+            if (nI === -1 && (hn[i].includes('nombre') || hn[i].includes('name'))) nI = i;
+            if (dI === -1 && (hn[i].includes('cédula') || hn[i].includes('cedula') || hn[i].includes('dni'))) dI = i;
+            if (eI === -1 && (hn[i].includes('etapa') || hn[i].includes('bloque') || hn[i].includes('stage'))) eI = i;
+            if (cI === -1 && (hn[i].includes('cantidad') || hn[i].includes('cant'))) cI = i;
+            if (tI === -1 && (hn[i].includes('tel') || hn[i].includes('movil') || hn[i].includes('phone'))) tI = i;
+            if (pI === -1 && (hn[i].includes('pagado') || hn[i].includes('pago') || hn[i].includes('estado'))) pI = i;
+        }
         if (dI === -1 || nI === -1) throw new Error('Columnas requeridas: Nombre y Cédula');
+        
         var d = [];
         for (var i = headerIndex + 1; i < ls.length; i++) {
-            var v = parseLine(ls[i]); if (v.length < 2) continue; var dni = (v[dI] || '').trim();
+            var v = parseLine(ls[i]);
+            if (v.length < 2) continue;
+            var dni = (v[dI] || '').trim();
             if (dni && nD(dni) !== '') {
-                var qty = 1; if (cI !== -1) { var parsedQty = parseInt((v[cI] || '1').replace(/[^0-9]/g, ''), 10); if (!isNaN(parsedQty) && parsedQty > 0) qty = parsedQty; }
-                var paidStatus = 'Si'; if (pI !== -1) { var pVal = (v[pI] || '').toLowerCase().trim(); if (pVal.includes('no') || pVal.includes('pendiente')) paidStatus = 'No'; }
-                d.push({ N: (v[nI] || '').trim(), D: dni, C: qty, E: eI !== -1 ? (v[eI] || 'General').trim() : 'General', T: tI !== -1 ? (v[tI] || '').trim() : '', P: paidStatus, E_D: dayName });
+                var qty = 1;
+                if (cI !== -1 && v[cI]) {
+                    var parsedQty = parseInt((v[cI] || '1').replace(/[^0-9]/g, ''), 10);
+                    if (!isNaN(parsedQty) && parsedQty > 0) qty = parsedQty;
+                }
+                var paidStatus = 'Si';
+                if (pI !== -1) {
+                    var pVal = (v[pI] || '').toLowerCase().trim();
+                    if (pVal.includes('no') || pVal.includes('pendiente')) paidStatus = 'No';
+                }
+                d.push({
+                    N: (v[nI] || '').trim(),
+                    D: dni,
+                    C: qty,
+                    E: eI !== -1 ? (v[eI] || 'General').trim() : 'General',
+                    T: tI !== -1 ? (v[tI] || '').trim() : '',
+                    P: paidStatus,
+                    E_D: dayName
+                });
             }
-        } return d;
+        }
+        return d;
     }
-    function parseLine(l) { var r = [], c = '', q = false; for (var i = 0; i < l.length; i++) { var ch = l[i]; if (ch === '"') { if (q && i + 1 < l.length && l[i + 1] === '"') { c += '"'; i++; } else q = !q; } else if (ch === ',' && !q) { r.push(c); c = ''; } else c += ch; } r.push(c); return r; }
+
+    function parseLine(l) {
+        if (!l) return [];
+        var r = [], c = '', q = false;
+        for (var i = 0; i < l.length; i++) {
+            var ch = l[i];
+            if (ch === '"') { if (q && i + 1 < l.length && l[i + 1] === '"') { c += '"'; i++; } else q = !q; } 
+            else if ((ch === ',' || ch === '\t') && !q) { r.push(c); c = ''; } 
+            else c += ch;
+        }
+        r.push(c); return r;
+    }
 
     function renderBuyStages() { var c = document.getElementById('buy-stages'); var h = ''; if (salesConfig.s1_name) { if(salesConfig.s1_closed) h += '<div class="ab rounded-sm p-6 opacity-50" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s1_name)+'</h3><div class="font-display text-2xl" style="color:var(--muted)">AGOTADO</div></div><button class="bs w-full mt-4 rounded-sm" disabled>No disponible</button></div>'; else h += '<div class="ab rounded-sm p-6" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s1_name)+'</h3><div class="font-display text-2xl" style="color:var(--accent-bright)">$'+salesConfig.s1_price+'</div></div><button class="bp w-full mt-4 rounded-sm" onclick="selectStage(1)">Comprar</button></div>'; } if (salesConfig.s2_name) { if(salesConfig.s2_closed) h += '<div class="ab rounded-sm p-6 opacity-50" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s2_name)+'</h3><div class="font-display text-2xl" style="color:var(--muted)">AGOTADO</div></div><button class="bs w-full mt-4 rounded-sm" disabled>No disponible</button></div>'; else h += '<div class="ab rounded-sm p-6" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s2_name)+'</h3><div class="font-display text-2xl" style="color:var(--accent-bright)">$'+salesConfig.s2_price+'</div></div><button class="bp w-full mt-4 rounded-sm" onclick="selectStage(2)">Comprar</button></div>'; } c.innerHTML = h || '<p class="text-center" style="color:var(--muted)">Las entradas no estan disponibles aún.</p>'; }
     var selectedStage = 0; function selectStage(num) { selectedStage = num; var name = num === 1 ? salesConfig.s1_name : salesConfig.s2_name; document.getElementById('buy-stages').style.display = 'none'; document.getElementById('buy-checkout').style.display = 'block'; document.getElementById('payment-info').innerHTML = '<strong style="color:var(--accent)">'+name+'</strong><br><br>' + (salesConfig.payInfo || '').replace(/\n/g, '<br>'); updateTotal(); }
@@ -424,7 +608,6 @@
     function savePIN() { var p1 = document.getElementById('pin-setup-input').value.trim(); if (p1.length < 4) return; CFG.PIN = p1; localStorage.setItem('bleedit_pin', p1); document.getElementById('pin-setup-modal').style.display = 'none'; showView('admin'); }
     function resetPIN() { CFG.PIN = ''; localStorage.removeItem('bleedit_pin'); document.getElementById('pin-setup-input').value = ''; document.getElementById('pin-setup-modal').style.display = 'flex'; }
 
-    // VERIFICACIÓN POR CÉDULA O ID ÚNICO
     function verifyEntry(input, cid) {
         var rawInput = input.trim();
         var dni = nD(rawInput);
@@ -461,7 +644,6 @@
     function adminVerify() { verifyEntry(document.getElementById('admin-dni-input').value, 'admin-verify-result'); }
     function verifyFromScanner() { verifyEntry(document.getElementById('scanner-dni-input').value, 'scanner-result'); document.getElementById('scanner-dni-input').value=''; }
 
-    // ESTADÍSTICAS FILTRADAS POR DÍA ACTIVO
     function updateUI() {
         var activeDay = salesConfig.active_day || 'General';
         var totalTickets = 0, usedTickets = 0, paidTickets = 0, courtesyTickets = 0;
@@ -470,7 +652,7 @@
         
         for (var i = 0; i < attendees.length; i++) {
             var a = attendees[i];
-            if (a.E_D !== activeDay) continue; // FILTRO POR DÍA
+            if (a.E_D !== activeDay) continue; 
             dayAttendeesCount++;
             var qty = a.C || 1; totalTickets += qty;
             var stageName = a.E || 'General';
@@ -499,7 +681,7 @@
         var sDni = nD(rawSearch); var activeDay = salesConfig.active_day || 'General';
         var tb = document.getElementById('attendee-tbody'); var h = '';
         for (var i = 0; i < attendees.length; i++) {
-            var a = attendees[i]; if (a.E_D !== activeDay) continue; // FILTRO POR DÍA
+            var a = attendees[i]; if (a.E_D !== activeDay) continue;
             var aName = normalizeStr(a.N); var aDni = nD(a.D);
             var matches = false; if (rawSearch === '') matches = true; else if (sDni && aDni.indexOf(sDni) !== -1) matches = true; else if (aName.indexOf(normalizeStr(rawSearch)) !== -1) matches = true;
             if (matches) { var u = 0; for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) u++; } h += '<tr class="border-b" style="border-color:var(--border)"><td class="p-2">'+esc(a.E)+'</td><td class="p-2">'+esc(a.N)+'</td><td class="p-2">'+esc(nD(a.D))+'</td><td class="p-2">'+u+'/'+a.C+'</td><td class="p-2"><div class="flex gap-1"><button class="bs sm rounded-sm" onclick="openEditModal('+i+')"><i class="fa-solid fa-pen"></i></button></div></td></tr>'; }
@@ -515,16 +697,12 @@
         attendees.push({N:n, D:d, C:c, E:e, P:'Si', E_D: salesConfig.active_day || 'Manual'});
         if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
         updateUI(); showToast('Agregado manualmente', 's');
-        // Limpiar campos para el siguiente
         document.getElementById('manual-nombre').value = '';
         document.getElementById('manual-cedula').value = '';
         document.getElementById('manual-cantidad').value = '1';
         document.getElementById('manual-etapa').value = 'Manual';
     }
 
-    // ============================================================
-    // GENERADOR DE ENTRADAS VISUALES CON PLANTILLA Y QR ÚNICO
-    // ============================================================
     function generateAllVisualTickets() {
         var grid = document.getElementById('qr-grid'); grid.innerHTML = '';
         var activeDay = salesConfig.active_day || 'General';
@@ -535,21 +713,27 @@
         
         for (var i = 0; i < attendees.length; i++) {
             var a = attendees[i];
-            if (a.E_D !== activeDay) continue; // Solo generar para el día activo
+            if (a.E_D !== activeDay) continue;
             
             for (var j = 1; j <= a.C; j++) {
                 var uid = nD(a.D) + '-' + j;
-                var card = document.createElement('div'); card.className = 'qc'; card.style.border = '4px solid ' + dayColor; // Borde visual del día
+                var card = document.createElement('div'); card.className = 'qc'; card.style.border = '4px solid ' + dayColor; 
                 
-                var bgDiv = document.createElement('div'); bgDiv.className = 'ticket-bg'; bgDiv.style.backgroundImage = "url('"+templateUrl+"')"; bgDiv.style.color = dayColor; // Color de texto del día
+                var bgDiv = document.createElement('div'); bgDiv.className = 'ticket-bg'; 
+                
+                var imgEl = document.createElement('img'); 
+                imgEl.crossOrigin = "anonymous";
+                imgEl.src = templateUrl;
+                bgDiv.appendChild(imgEl);
                 
                 var overlay = document.createElement('div'); overlay.className = 'ticket-overlay';
+                overlay.style.color = dayColor;
                 overlay.innerHTML = '<div class="qn">'+esc(a.N)+'</div><div class="qd">C.I: '+esc(nD(a.D))+'</div><div class="qct">Entrada '+j+' de '+a.C+' ('+esc(a.E)+')</div>';
-                bgDiv.appendChild(overlay);
                 
                 var qrBox = document.createElement('div'); qrBox.className = 'qr-box'; qrBox.id = 'qr-box-'+i+'-'+j; qrBox.style.width = '80px'; qrBox.style.height = '80px';
-                bgDiv.appendChild(qrBox);
+                overlay.appendChild(qrBox);
                 
+                bgDiv.appendChild(overlay);
                 card.appendChild(bgDiv);
                 
                 var db = document.createElement('button'); db.className = 'qdl'; db.innerHTML = '<i class="fa-solid fa-download mr-1"></i>Descargar PNG';
@@ -585,7 +769,6 @@
 
     function switchTab(id, btn) { var ts = document.querySelectorAll('.tab-c'); for (var i = 0; i < ts.length; i++) ts[i].style.display = 'none'; var bs = document.querySelectorAll('.at'); for (var j = 0; j < bs.length; j++) bs[j].classList.remove('ac'); document.getElementById(id).style.display = 'block'; btn.classList.add('ac'); }
 
-    // ESCANER NATIVO Y PLAN B
     function openScanner() { 
         showView('scanner'); 
         document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...';
