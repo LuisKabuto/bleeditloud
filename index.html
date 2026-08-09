@@ -435,7 +435,7 @@
     function toggleSales() { salesConfig.sales_paused = !salesConfig.sales_paused; if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/config').update({sales_paused: salesConfig.sales_paused}); updateSalesUI(); showToast(salesConfig.sales_paused ? 'Ventas Pausadas' : 'Ventas Activadas', 'i'); }
     function updateSalesUI() { var btn = document.getElementById('sales-toggle-btn'); var landBtn = document.getElementById('btn-buy-landing'); if (!btn || !landBtn) return; if (salesConfig.sales_paused) { btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i>Reanudar Ventas'; btn.style.background = 'linear-gradient(135deg,#00cc44,#009933)'; landBtn.innerHTML = '<i class="fa-solid fa-ban mr-2"></i>Ventas Cerradas'; landBtn.disabled = true; landBtn.style.opacity = '0.5'; landBtn.style.pointerEvents = 'none'; } else { btn.innerHTML = '<i class="fa-solid fa-pause mr-2"></i>Pausar Ventas'; btn.style.background = 'linear-gradient(135deg,var(--accent),#990000)'; landBtn.innerHTML = '<i class="fa-solid fa-ticket mr-2"></i>Comprar Entradas'; landBtn.disabled = false; landBtn.style.opacity = '1'; landBtn.style.pointerEvents = 'auto'; } }
 
-    function saveSalesConfig() {
+    async function saveSalesConfig() {
         var newConfig = {
             active_day: document.getElementById('config-active-day').value,
             day_color: document.getElementById('config-day-color').value,
@@ -455,11 +455,12 @@
         };
         salesConfig = newConfig;
         if (fbConnected) {
-            fbDB.ref('events/' + FB_EVENT_ID + '/config').set(newConfig).then(function() {
+            try {
+                await fbDB.ref('events/' + FB_EVENT_ID + '/config').set(newConfig);
                 showToast('Configuracion guardada en la nube', 's');
-            }).catch(function(error) {
-                showToast('Error al guardar: ' + error.message, 'e');
-            });
+            } catch(error) {
+                showToast('Error Firebase: Revisa las reglas de tu DB', 'e');
+            }
         } else {
             showToast('Configuracion guardada localmente', 's');
         }
@@ -467,14 +468,14 @@
     }
 
     // ============================================================
-    // LECTOR DE EXCEL Y PEGADO RÁPIDO
+    // LECTOR DE EXCEL Y PEGADO RÁPIDO (ASYNC PARA DETECTAR ERRORES)
     // ============================================================
-    function handleFileUpload() {
+    async function handleFileUpload() {
         var fileInput = document.getElementById('file-input');
         if (!fileInput || !fileInput.files || !fileInput.files.length) { showToast('Selecciona un archivo', 'e'); return; }
         var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
         var file = fileInput.files[0]; var reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 var data = new Uint8Array(e.target.result);
                 var wb = XLSX.read(data, {type: 'array'});
@@ -493,14 +494,27 @@
                     }
                     if (!exists) attendees.push(parsed[i]);
                 }
-                if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
-                updateUI(); showToast(parsed.length + ' registros cargados para ' + dayName, 's'); fileInput.value = '';
-            } catch(err) { showToast('Error: ' + err.message, 'e'); console.error(err); }
+                if (fbConnected) {
+                    showToast('Subiendo a la nube...', 'i');
+                    await fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
+                    showToast(parsed.length + ' registros cargados en la nube', 's');
+                } else {
+                    showToast(parsed.length + ' registros cargados local', 's');
+                }
+                updateUI(); fileInput.value = '';
+            } catch(err) {
+                console.error("Upload Error:", err);
+                if (err.code === 'PERMISSION_DENIED') {
+                    showToast('Error Firebase: Revisa las reglas de tu DB', 'e');
+                } else {
+                    showToast('Error: ' + err.message, 'e');
+                }
+            }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    function handlePasteUpload() {
+    async function handlePasteUpload() {
         var pasteText = document.getElementById('paste-list-input').value.trim();
         if (!pasteText) { showToast('Pega los datos primero', 'e'); return; }
         var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
@@ -520,10 +534,24 @@
                 if (!exists) attendees.push(parsed[i]);
             }
             
-            if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
-            updateUI(); showToast(parsed.length + ' registros cargados para ' + dayName, 's');
+            if (fbConnected) {
+                showToast('Subiendo a la nube...', 'i');
+                await fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
+                showToast(parsed.length + ' registros cargados en la nube', 's');
+            } else {
+                showToast(parsed.length + ' registros cargados local', 's');
+            }
+            
+            updateUI();
             document.getElementById('paste-list-input').value = '';
-        } catch(err) { showToast('Error: ' + err.message, 'e'); }
+        } catch(err) {
+            console.error("Paste Upload Error:", err);
+            if (err.code === 'PERMISSION_DENIED') {
+                showToast('Error Firebase: Revisa las reglas de tu DB', 'e');
+            } else {
+                showToast('Error: ' + err.message, 'e');
+            }
+        }
     }
 
     function parseCSV(t, dayName) {
