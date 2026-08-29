@@ -1,876 +1,1862 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LIVE CAFÉ ROCK - Entradas</title>
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#0a0a0a">
-    <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script>tailwind.config={theme:{extend:{fontFamily:{display:['Oswald','sans-serif'],body:['Roboto Condensed','sans-serif']}}}}</script>
-    <style>
-        :root{--bg:#0a0a0a;--card:#111111;--border:#1e1e1e;--accent:#cc0000;--accent-bright:#ff1a1a;--accent-glow:rgba(204,0,0,0.4);--text:#e8e8e8;--muted:#555555;--success:#00cc44;--success-glow:rgba(0,204,68,0.4);--warning:#cc8800;--info:#3399ff;--surface:#0d0d0d;--input-bg:#0d0d0d}
-        [data-theme="light"]{--bg:#f5f5f5;--card:#ffffff;--border:#e0e0e0;--accent:#cc0000;--accent-bright:#cc0000;--accent-glow:rgba(204,0,0,0.15);--text:#1a1a1a;--muted:#888888;--success:#00aa33;--success-glow:rgba(0,170,51,0.2);--warning:#cc7700;--info:#2266cc;--surface:#fafafa;--input-bg:#ffffff}
-        *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Roboto Condensed',sans-serif;-webkit-text-size-adjust:100%;transition:background .3s,color .3s}
-        .grid-bg{background-image:linear-gradient(rgba(204,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(204,0,0,0.04) 1px,transparent 1px);background-size:24px 24px}
-        .scanlines::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9998}
-        [data-theme="light"] .scanlines::after{display:none}
-        .glitch{position:relative;display:inline-block}.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}.glitch::before{color:var(--accent);animation:ga 3s infinite linear alternate-reverse;clip-path:polygon(0 0,100% 0,100% 33%,0 33%)}.glitch::after{color:rgba(255,255,255,0.6);animation:gb 2.5s infinite linear alternate-reverse;clip-path:polygon(0 67%,100% 67%,100% 100%,0 100%)}
-        @keyframes ga{0%,90%{transform:translate(0)}92%{transform:translate(-3px,1px)}94%{transform:translate(2px,-1px)}96%{transform:translate(-1px,2px)}98%{transform:translate(3px,0)}100%{transform:translate(0)}}
-        @keyframes gb{0%,88%{transform:translate(0)}90%{transform:translate(2px,-1px)}93%{transform:translate(-3px,2px)}96%{transform:translate(1px,-2px)}100%{transform:translate(0)}}
-        .ab{border:1px solid var(--border);box-shadow:inset 0 0 30px rgba(204,0,0,0.05),0 0 15px rgba(204,0,0,0.05);transition:border-color .3s,box-shadow .3s,background .3s}.ab:hover{border-color:var(--accent);box-shadow:inset 0 0 30px rgba(204,0,0,0.1),0 0 20px var(--accent-glow)}
-        .bp{background:linear-gradient(135deg,var(--accent),#990000);color:#fff;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;-webkit-tap-highlight-color:transparent}.bp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s}.bp:hover::before{transform:translateX(100%)}.bp:hover{box-shadow:0 0 30px var(--accent-glow),0 4px 15px rgba(0,0,0,.5);transform:translateY(-1px)}.bp:active{transform:translateY(1px)}
-        .bs{background:transparent;color:var(--muted);font-family:'Oswald',sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;border:1px solid var(--border);cursor:pointer;transition:all .3s;-webkit-tap-highlight-color:transparent}.bs:hover{color:var(--text);border-color:var(--muted);background:rgba(255,255,255,.03)}
-        .di{background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:'Roboto Condensed',sans-serif;font-size:18px;padding:14px 18px;width:100%;outline:none;transition:border-color .3s,box-shadow .3s,background .3s;-webkit-appearance:none;border-radius:2px}.di:focus{border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}.di::placeholder{color:#333}
-        .vf{position:relative;width:280px;height:280px;margin:0 auto}.vc{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid}.vc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px}.vc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0}.vc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px}.vc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0}
-        .rc{border:2px solid;padding:24px;text-align:center;animation:ri .4s ease-out}.rc-s{border-color:var(--success);background:rgba(0,204,68,.06);box-shadow:0 0 40px var(--success-glow)}.rc-e{border-color:var(--accent);background:rgba(204,0,0,.06);box-shadow:0 0 40px var(--accent-glow)}.rc-u{border-color:var(--warning);background:rgba(204,136,0,.06);box-shadow:0 0 40px rgba(204,136,0,.3)}@keyframes ri{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-        .at{padding:10px 20px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .3s;background:none;-webkit-tap-highlight-color:transparent}.at:hover{color:var(--text)}.at.ac{color:var(--accent-bright);border-bottom-color:var(--accent)}
-        .mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center}.mb{background:var(--card);border:1px solid var(--border);padding:40px;max-width:380px;width:90%;text-align:center}
-        .tt{padding:14px 22px;font-size:14px;animation:ti .4s ease,to .4s ease 2.6s forwards;max-width:340px}.tt-s{background:rgba(0,204,68,.15);border:1px solid rgba(0,204,68,.3);color:var(--success)}.tt-e{background:rgba(204,0,0,.15);border:1px solid rgba(204,0,0,.3);color:var(--accent-bright)}.tt-i{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text)}
-        @keyframes ti{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes to{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
-        .hi{position:relative;display:inline-block}.hi img{display:block;max-height:55vh;width:auto;max-width:90vw;filter:contrast(1.1) brightness(.95)}
-        .vw{display:none}
-        .kiosk-mode{position:fixed;inset:0;z-index:99999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}.kiosk-mode.active{display:flex}
-        .theme-toggle{position:fixed;bottom:20px;right:20px;z-index:9990;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
-        .tc{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
-        .firebase-status{padding:4px 10px;border-radius:2px;font-size:10px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase}.fb-connected{background:rgba(0,204,68,.15);color:var(--success);border:1px solid rgba(0,204,68,.3)}.fb-disconnected{background:rgba(204,0,0,.15);color:var(--accent-bright);border:1px solid rgba(204,0,0,.3)}
-        .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:4px;text-align:center}
-        .stat-num{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700}
-        .stat-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
-        .progress-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:6px}
-        .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-bright));transition:width .5s ease}
-        
-        .qg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}@media(min-width:640px){.qg{grid-template-columns:repeat(3,1fr)}}@media(min-width:1024px){.qg{grid-template-columns:repeat(4,1fr)}}
-        .qc{background:#fff;border-radius:8px;overflow:hidden;text-align:center;color:#111;position:relative;box-shadow:0 4px 10px rgba(0,0,0,0.3)}
-        .ticket-bg{width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;background-color:#111}
-        .ticket-bg img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:1}
-        .ticket-overlay{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(to top, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0));padding:50px 10px 15px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2}
-        .qc .qn{color:#fff;font-size:14px;font-weight:700;text-shadow: 1px 1px 2px black;}
-        .qc .qd{color:#ccc;font-family:monospace;font-size:10px;margin-top:2px;text-shadow: 1px 1px 2px black;}
-        .qc .qct{color:#fff;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;margin-top:4px;text-shadow: 1px 1px 2px black;}
-        .qc .qr-box{margin-top:10px;background:#fff;padding:5px;border-radius:4px;z-index:3;position:relative}
-        .qc .qdl{display:flex;align-items:center;justify-content:center;padding:8px;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;background:#0a0a0a;color:#fff;border:none;cursor:pointer;text-decoration:none;width:100%;position:relative;z-index:10}
-        .qc .qsend{display:flex;gap:1px;width:100%}
-        .qc .qwa{background:#25D366;color:#fff;flex:1}
-        
-        .kiosk-anim{position:fixed;inset:0;z-index:100000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:flashBg .5s ease}
-        @keyframes flashBg {0%{opacity:0;transform:scale(1.2)}100%{opacity:1;transform:scale(1)}}
-        .anim-icon{font-size:160px;margin-bottom:20px}
-        .anim-title{font-family:'Oswald',sans-serif;font-size:80px;font-weight:700;letter-spacing:4px;text-transform:uppercase}
-        .anim-text{font-size:30px;margin-top:10px}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LIVE CAFÉ ROCK — Entradas</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0c0a08">
+<link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script>tailwind.config={theme:{extend:{fontFamily:{display:['Anton','sans-serif'],body:['"Barlow Condensed"','sans-serif'],mono:['"Space Mono"','monospace']}}}}</script>
+<style>
+:root{
+  --bg:#0c0a08; --card:#14110d; --field:#0f0d0a; --border:#2b241b; --border-soft:#1f1a13;
+  --text:#f3eee3; --muted:#8d8371;
+  --red:#e0281a; --red-deep:#a1160b; --red-glow:rgba(224,40,26,.32); --red-bg:rgba(224,40,26,.09);
+  --green:#3ecf6d; --green-bg:rgba(62,207,109,.1);
+  --amber:#d9a441; --amber-bg:rgba(217,164,65,.1);
+  --shadow:0 18px 50px rgba(0,0,0,.5);
+}
+[data-theme="light"]{
+  --bg:#f1ece0; --card:#faf7ef; --field:#ffffff; --border:#d9d1bd; --border-soft:#e6dfcd;
+  --text:#191410; --muted:#7c7361;
+  --red:#cf1f12; --red-deep:#9c150b; --red-glow:rgba(207,31,18,.18); --red-bg:rgba(207,31,18,.06);
+  --green:#178a46; --green-bg:rgba(23,138,70,.09);
+  --amber:#a06f14; --amber-bg:rgba(160,111,20,.09);
+  --shadow:0 14px 40px rgba(60,45,20,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:17px;-webkit-text-size-adjust:100%;transition:background .3s,color .3s;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9990;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+.mono{font-family:'Space Mono',monospace}
+.vw{display:none;flex-direction:column;align-items:center;min-height:100vh;min-height:100dvh;animation:vin .35s ease both}
+#view-admin{align-items:stretch}
+@keyframes vin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.wrap{width:100%;max-width:460px;padding:24px 16px}
+.wrap-md{width:100%;max-width:560px;padding:24px 16px}
+.wrap-lg{width:100%;max-width:680px;padding:24px 16px}
+.wrap-xl{width:100%;max-width:960px;padding:20px 16px}
+.center-y{justify-content:center}
+.ab{background:var(--card);border:1px solid var(--border);border-radius:8px}
+.sec-h{display:flex;align-items:center;gap:12px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.28em;color:var(--red);text-transform:uppercase;margin-bottom:16px}
+.sec-h::after{content:'';flex:1;height:1px;background:var(--border)}
+.lbl{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.hint{color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px}
+.di{background:var(--field);border:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:17px;padding:13px 15px;width:100%;outline:none;border-radius:4px;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.di:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-glow)}
+.di::placeholder{color:var(--muted);opacity:.7}
+textarea.di{resize:vertical;line-height:1.5}
+.bp{font-family:'Anton',sans-serif;letter-spacing:.12em;text-transform:uppercase;font-size:15px;background:var(--red);color:#0c0a08;border:none;padding:14px 24px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:.2s;border-radius:4px;-webkit-tap-highlight-color:transparent}
+.bp:hover{background:var(--red-deep);transform:translateY(-2px);box-shadow:0 10px 26px var(--red-glow)}
+.bp:active{transform:translateY(0)}
+.bp.paused{background:var(--green)}
+.bs{font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.16em;text-transform:uppercase;font-size:14px;background:transparent;color:var(--muted);padding:11px 20px;border:1px solid var(--border);cursor:pointer;border-radius:4px;transition:.2s;display:inline-flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.bs:hover{color:var(--text);border-color:var(--muted)}
+.bs.on{color:var(--amber);border-color:var(--amber)}
+.ibtn{width:38px;height:38px;border:1px solid var(--border);background:var(--field);color:var(--muted);cursor:pointer;border-radius:4px;transition:.2s;font-size:14px}
+.ibtn:hover{color:var(--text);border-color:var(--muted)}
+.ibtn.ok{color:var(--green);border-color:var(--green)}.ibtn.ok:hover{background:var(--green-bg)}
+.ibtn.bad{color:var(--red);border-color:var(--red)}.ibtn.bad:hover{background:var(--red-bg)}
+.chip{display:inline-flex;align-items:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:3px 9px;border:1px solid currentColor;border-radius:999px;color:var(--muted)}
+.chip-warn{color:var(--amber)}
+.empty{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);padding:26px;text-align:center;letter-spacing:.12em;border:1px dashed var(--border);border-radius:6px}
+.notice{border:1px dashed var(--amber);color:var(--amber);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;text-align:center;padding:22px;border-radius:6px;background:var(--amber-bg)}
+.step-label{font-size:10px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.stamp{display:inline-block;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);border:3px double var(--amber);padding:6px 16px;transform:rotate(-6deg);border-radius:4px}
+.receipt{border:1px dashed var(--border);border-radius:6px;padding:16px;font-family:'Space Mono',monospace;font-size:12px;white-space:pre-line;color:var(--muted);background:var(--field);line-height:1.8}
+.theme-toggle{position:fixed;bottom:18px;right:18px;z-index:9991;width:46px;height:46px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
+.theme-toggle:hover{border-color:var(--red);color:var(--red);transform:rotate(15deg)}
+.tc{position:fixed;top:16px;right:16px;z-index:100010;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.tt{display:flex;align-items:center;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--muted);padding:12px 16px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;border-radius:4px;box-shadow:var(--shadow);animation:tin .3s ease;max-width:320px}
+.tt-s{border-left-color:var(--green)}.tt-e{border-left-color:var(--red)}.tt-i{border-left-color:var(--amber)}
+.tt.out{animation:tou .3s forwards}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}}
+@keyframes tou{to{opacity:0;transform:translateY(-10px)}}
+.mo{position:fixed;inset:0;background:rgba(5,4,3,.8);backdrop-filter:blur(4px);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+.mb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px;max-width:400px;width:100%;box-shadow:var(--shadow)}
+
+/* ============ LANDING ============ */
+#view-landing{position:relative;overflow:hidden}
+#view-landing::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:120vw;height:70vh;background:radial-gradient(ellipse at center,var(--red-glow),transparent 60%);pointer-events:none;opacity:.35}
+.spot{position:absolute;top:-30%;width:44vw;height:85vh;background:radial-gradient(ellipse at top,var(--red-glow),transparent 65%);pointer-events:none;opacity:.4;filter:blur(8px);animation:sway 8s ease-in-out infinite alternate}
+.spot.l{left:-12%;animation-name:swayL}
+.spot.r{right:-12%;animation-name:swayR}
+@keyframes swayL{from{transform:rotate(14deg) translateX(-5vw)}to{transform:rotate(22deg) translateX(5vw)}}
+@keyframes swayR{from{transform:rotate(-22deg) translateX(5vw)}to{transform:rotate(-14deg) translateX(-5vw)}}
+.wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:min(58vw,640px);color:transparent;-webkit-text-stroke:1px var(--border-soft);pointer-events:none;user-select:none;line-height:1}
+.marquee{width:100%;background:var(--red);color:#0c0a08;overflow:hidden;white-space:nowrap;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;padding:9px 0;user-select:none;position:relative;z-index:2}
+.mq-track{display:inline-block;animation:mq 32s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+.hero{flex:1;display:flex;align-items:center;justify-content:center;padding:36px 16px;position:relative;z-index:2;width:100%}
+.hero-inner{display:flex;flex-direction:column;align-items:center;gap:24px;max-width:640px;width:100%;text-align:center}
+.hero-logo img{max-height:42vh;max-width:88vw;width:auto;border-radius:8px;box-shadow:var(--shadow)}
+.wordmark{font-family:'Anton',sans-serif;font-size:clamp(3rem,14vw,9rem);line-height:.92;text-transform:uppercase;letter-spacing:.01em}
+.wordmark span{display:block}
+.wordmark .w-out{color:transparent;-webkit-text-stroke:2px var(--red)}
+.sub{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--muted)}
+.eq{display:flex;align-items:flex-end;gap:3px;height:30px}
+.eq i{width:3px;background:var(--red);opacity:.85;animation:eqb .8s ease-in-out infinite alternate;transform-origin:bottom;border-radius:2px}
+@keyframes eqb{from{transform:scaleY(.12)}to{transform:scaleY(1)}}
+.hero-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 26px;font-weight:500;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.hero-meta i{color:var(--red);margin-right:8px}
+#countdown{display:none;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--red);border:1px dashed var(--red);padding:8px 18px;border-radius:999px;background:var(--red-bg)}
+.cta-row{display:flex;flex-direction:column;gap:14px;width:min(440px,100%)}
+@media(min-width:480px){.cta-row{flex-direction:row;justify-content:center}}
+.tbtn{--stub:36px;position:relative;display:inline-flex;align-items:stretch;cursor:pointer;border:none;background:none;padding:0;font-family:'Anton',sans-serif;text-transform:uppercase;transition:transform .2s,filter .2s}
+.tbtn:hover{transform:translateY(-2px)}
+.tbtn:active{transform:translateY(0)}
+.tbtn-main{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--red);color:#0c0a08;padding:16px 22px;font-size:16px;letter-spacing:.1em;border-radius:4px 0 0 4px;transition:.2s}
+.tbtn-stub{display:flex;align-items:center;justify-content:center;width:var(--stub);background:var(--red);color:rgba(12,10,8,.55);border-left:2px dashed rgba(12,10,8,.45);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;border-radius:0 4px 4px 0;writing-mode:vertical-rl;transition:.2s}
+.tbtn:hover .tbtn-main{background:var(--red-deep)}
+.tbtn::before,.tbtn::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--bg);left:calc(100% - var(--stub) - 7px);z-index:2}
+.tbtn::before{top:-7px}.tbtn::after{bottom:-7px}
+.tbtn.alt .tbtn-main{background:transparent;color:var(--text);border:1px solid var(--border)}
+.tbtn.alt .tbtn-stub{background:transparent;color:var(--muted);border:1px solid var(--border);border-left-style:dashed}
+.tbtn.alt:hover .tbtn-main{border-color:var(--muted)}
+.tbtn[disabled]{opacity:.45;pointer-events:none}
+.landing-footer{width:100%;text-align:center;padding:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;position:relative;z-index:2}
+
+/* ============ COMPRA ============ */
+.stages{display:grid;gap:14px;margin-top:14px}
+@media(min-width:520px){.stages{grid-template-columns:1fr 1fr}}
+.stage{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
+.stage:hover{border-color:var(--muted);transform:translateY(-2px)}
+.stage.sel{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 12px 30px var(--red-glow)}
+.stage-name{font-family:'Anton',sans-serif;font-size:20px;letter-spacing:.05em;text-transform:uppercase}
+.stage-price{font-family:'Space Mono',monospace;font-size:28px;font-weight:700}
+.stage-hint{font-size:9px;letter-spacing:.25em;color:var(--muted)}
+.stage.sel .stage-hint{color:var(--red)}
+.total-box{margin-top:16px;padding:16px;text-align:center;background:var(--field);border:1px solid var(--red);border-radius:6px}
+.total-box .lbl{margin:0}
+.total-val{font-family:'Anton',sans-serif;font-size:36px;color:var(--red);line-height:1.1}
+.confirm-card{padding:32px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;text-align:left}
+.res-grid b{display:block;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-bottom:3px;font-weight:400}
+
+/* ============ RESULTADOS ============ */
+.res{border:1px solid var(--border);border-left:6px solid;padding:20px;border-radius:8px;animation:ri .3s ease-out;background:var(--card)}
+@keyframes ri{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.res-ok{border-left-color:var(--green);background:var(--green-bg)}
+.res-bad{border-left-color:var(--red);background:var(--red-bg)}
+.res-warn{border-left-color:var(--amber);background:var(--amber-bg)}
+.res-head{display:flex;align-items:center;gap:12px;font-family:'Anton',sans-serif;font-size:24px;letter-spacing:.04em;text-transform:uppercase}
+.res-ok .res-head{color:var(--green)}.res-bad .res-head{color:var(--red)}.res-warn .res-head{color:var(--amber)}
+.res-head i{font-size:20px}
+.res-msg{color:var(--muted);margin-top:6px;font-size:15px}
+.res .res-grid{margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)}
+.res-share{margin-top:12px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+
+/* entradas públicas del comprador */
+.tk-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px}
+.tk-chip{background:var(--field);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;position:relative;overflow:hidden}
+.tk-chip.off{opacity:.55}
+.tk-chip.off::after{content:'USADA';position:absolute;top:9px;right:-8px;transform:rotate(8deg);background:var(--red);color:#fff;font-family:'Space Mono',monospace;font-size:9px;padding:3px 10px;letter-spacing:.2em;border-radius:2px}
+.tk-qr-box{background:#fff;padding:7px;border-radius:6px;display:inline-block;line-height:0}
+.tk-qr-box img{width:112px;height:112px;display:block}
+.tk-srl{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;letter-spacing:.14em;margin-top:9px}
+.tk-meta{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.08em;text-transform:uppercase}
+.tk-meta b{color:var(--red)}
+
+/* ============ ESCÁNER ============ */
+.vf{position:relative;width:min(300px,78vw);aspect-ratio:1;margin:0 auto}
+.kiosk-frame{position:relative;width:min(430px,86vw);aspect-ratio:1;border-radius:10px;overflow:hidden;background:#000}
+.scan-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;background:#000}
+.kiosk-frame .scan-video{border-radius:10px}
+.vc{position:absolute;width:26px;height:26px;border-color:var(--red);border-style:solid;z-index:3}
+.vc.tl{top:-3px;left:-3px;border-width:3px 0 0 3px}
+.vc.tr{top:-3px;right:-3px;border-width:3px 3px 0 0}
+.vc.bl{bottom:-3px;left:-3px;border-width:0 0 3px 3px}
+.vc.br{bottom:-3px;right:-3px;border-width:0 3px 3px 0}
+.laser{position:absolute;left:6%;right:6%;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);box-shadow:0 0 14px var(--red-glow);animation:sweep 2.4s ease-in-out infinite;z-index:2;border-radius:2px;pointer-events:none}
+@keyframes sweep{0%,100%{top:12%}50%{top:86%}}
+.scan-status{text-align:center;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--muted);margin-top:16px;line-height:1.7}
+.scan-status .ok-t{color:var(--green)}.scan-status .warn-t{color:var(--amber)}
+.log-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border-soft);border-left:3px solid var(--muted);border-radius:4px;font-size:14px;margin-bottom:6px}
+.log-row.ok{border-left-color:var(--green)}
+.log-row.bad{border-left-color:var(--red)}
+.log-row .mono{font-size:10px;color:var(--muted)}
+
+/* ============ ADMIN ============ */
+.admin-head{position:sticky;top:0;z-index:60;background:var(--card)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.topbar h2{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.12em}
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.at{padding:14px 16px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--muted);border:none;border-bottom:2px solid transparent;cursor:pointer;transition:.2s;background:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.at:hover{color:var(--text)}
+.at.ac{color:var(--red);border-bottom-color:var(--red)}
+.tab-c{display:none;flex:1;padding:22px 16px}
+.tab-c.on{display:block}
+.fb-badge{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:5px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted)}
+.fb-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--amber)}
+.fb-badge.on::before{background:var(--green)}
+.fb-badge.err::before{background:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--border);border-radius:8px;background:var(--card);overflow:hidden}
+.stat{padding:18px 16px;border-top:1px dashed var(--border)}
+.stat:nth-child(-n+2){border-top:none}
+.stat:nth-child(even){border-left:1px dashed var(--border)}
+@media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}.stat{border-top:none;border-left:1px dashed var(--border)}.stat:first-child{border-left:none}}
+.stat-num{font-family:'Space Mono',monospace;font-size:32px;font-weight:700;line-height:1}
+.stat-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-top:6px}
+.stg{margin-top:12px}
+.stg-head{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.stg-nums{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)}
+.bar{height:6px;background:var(--field);border:1px solid var(--border-soft);border-radius:999px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--red);transition:width .5s}
+.pay{display:flex;justify-content:space-between;gap:16px;align-items:center;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--amber);padding:14px 16px;border-radius:8px;flex-wrap:wrap}
+.pay-name{font-weight:600;font-size:18px}
+.pay-meta{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:3px}
+.pay-side{display:flex;align-items:center;gap:14px}
+.pay-total{font-family:'Space Mono',monospace;font-size:22px;font-weight:700}
+.pay-actions{display:flex;gap:8px}
+.tbl-wrap{overflow-x:auto;border-radius:8px}
+table{width:100%;min-width:660px;border-collapse:collapse}
+th{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 10px;border-bottom:1px solid var(--border)}
+td{padding:12px 10px;border-bottom:1px solid var(--border-soft);font-size:16px;vertical-align:middle}
+tr:hover td{background:var(--field)}
+.td-name{font-weight:600}
+.td-mono{font-family:'Space Mono',monospace;font-size:13px}
+.td-sub{display:block;font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:.1em}
+.td-actions{white-space:nowrap;display:flex;gap:8px}
+.u-count{font-family:'Space Mono',monospace;font-size:13px}
+.u-count.full{color:var(--red)}.u-count.part{color:var(--amber)}
+
+/* ============ ENTRADAS VISUALES ============ */
+.qg{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+@media(min-width:640px){.qg{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1024px){.qg{grid-template-columns:repeat(4,1fr)}}
+.vt-wrap{display:flex;flex-direction:column}
+.vt{position:relative;width:100%;aspect-ratio:3/4.4;border-radius:10px;overflow:hidden;background:#0c0a08;color:#f3eee3;display:flex;flex-direction:column;border:1px solid #2b241b}
+.vt-media{position:relative;height:34%;flex:none;overflow:hidden;background:radial-gradient(circle at 50% 30%,#3a120c,#0c0a08)}
+.vt-media img{width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.05)}
+.vt-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,10,8,.25),rgba(12,10,8,.05) 40%,rgba(12,10,8,.9) 96%,#0c0a08)}
+.vt-head{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;color:rgba(243,238,227,.85);text-transform:uppercase}
+.vt-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:14px 12px;background:#0c0a08}
+.vt-qr{background:#fff;padding:9px;border-radius:8px;line-height:0;min-height:120px;display:flex;align-items:center;justify-content:center}
+.vt-qr img{width:min(150px,58vw);height:auto;aspect-ratio:1;display:block}
+.vt-name{font-family:'Anton',sans-serif;font-size:16px;letter-spacing:.05em;text-transform:uppercase;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vt-serial{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;letter-spacing:.22em;color:#f3eee3}
+.vt-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.vt-code{font-family:'Space Mono',monospace;font-size:10px;color:#8d8371}
+.perf{position:relative;height:0;border-top:2px dashed #3a3126;margin:0 10px}
+.perf::before,.perf::after{content:'';position:absolute;top:-8px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:1px solid #2b241b}
+.perf::before{left:-19px}.perf::after{right:-19px}
+.vt-stub{flex:none;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0c0a08;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.28em;color:#8d8371;text-transform:uppercase}
+.vt.used .vt-media img,.vt.used .vt-qr img{filter:grayscale(1) contrast(.75)}
+.vt.used::after{content:'USADA';position:absolute;top:46%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);font-family:'Space Mono',monospace;font-weight:700;font-size:24px;letter-spacing:.35em;color:var(--red);border:3px double var(--red);padding:6px 14px;background:rgba(12,10,8,.82);border-radius:4px;z-index:5}
+.vt-dl{margin-top:10px;width:100%;justify-content:center}
+#ticket-summary{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:14px}
+
+/* ============ MODO PUERTA ============ */
+.kiosk-mode{position:fixed;inset:0;z-index:99999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:18px;overflow-y:auto}
+.kiosk-mode.active{display:flex}
+.kiosk-anim{position:fixed;inset:0;z-index:100000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#060504;padding:20px;overflow:hidden}
+.kiosk-anim.show{display:flex;animation:slam .32s cubic-bezier(.2,1.5,.4,1)}
+.kiosk-anim.shake{animation:slam .32s cubic-bezier(.2,1.5,.4,1),kshake .4s .15s}
+@keyframes slam{from{opacity:0;transform:scale(1.5)}to{opacity:1;transform:scale(1)}}
+@keyframes kshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-14px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(6px)}}
+.kiosk-big{font-family:'Anton',sans-serif;font-size:clamp(56px,16vw,190px);line-height:1;letter-spacing:.02em;text-transform:uppercase}
+.kiosk-anim.green .kiosk-big{color:#3ecf6d}
+.kiosk-anim.red .kiosk-big{color:#e0281a}
+.kiosk-anim.amber .kiosk-big{color:#d9a441}
+.kiosk-info{font-size:clamp(16px,3vw,26px);color:#f3eee3;margin-top:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+.kiosk-sub{font-family:'Space Mono',monospace;font-size:13px;color:#8d8371;margin-top:10px;letter-spacing:.15em}
+.kiosk-rest{margin-top:14px;font-family:'Space Mono',monospace;font-size:15px;color:#3ecf6d;letter-spacing:.2em}
+.cf{position:absolute;top:-14px;width:8px;height:14px;border-radius:2px;animation:cfall 1.2s ease-in forwards;z-index:1}
+@keyframes cfall{to{transform:translate(var(--dx),108vh) rotate(720deg);opacity:.5}}
+
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
 </head>
-<body class="grid-bg scanlines min-h-screen">
-    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
+<div id="kiosk-anim" class="kiosk-anim"></div>
 
-    <div id="kiosk-anim" class="kiosk-anim"></div>
-
-    <!-- LANDING -->
-    <section id="view-landing" class="vw flex-col items-center justify-center min-h-screen px-4 py-10 relative" style="display:flex">
-        <div class="relative z-10 flex flex-col items-center gap-8 max-w-2xl w-full">
-            <div class="hi"><img id="landing-logo" src="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2" alt="Event Logo" onerror="this.style.display='none';document.getElementById('ft').style.display='block'"></div>
-            <div id="ft" style="display:none" class="text-center">
-                <h1 id="landing-title" class="font-display text-5xl sm:text-7xl font-bold tracking-wider glitch" data-text="LIVE CAFÉ ROCK">LIVE CAFÉ ROCK</h1>
-                <p id="landing-subtitle" class="font-display text-sm tracking-[6px] mt-2" style="color:var(--muted)">CONTROL DE ACCESO Y ENTRADAS</p>
-            </div>
-            <div class="text-center space-y-2">
-                <div class="flex items-center justify-center gap-6 text-sm" style="color:var(--muted)">
-                    <span><i class="fa-regular fa-calendar mr-2" style="color:var(--accent)"></i><span id="landing-date">31 / 07 / 2026</span></span>
-                    <span><i class="fa-solid fa-location-dot mr-2" style="color:var(--accent)"></i><span id="landing-city">Maracaibo, estado Zulia</span></span>
-                </div>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-                <button id="btn-buy-landing" class="bp flex-1 text-center rounded-sm" onclick="showView('buy')"><i class="fa-solid fa-ticket mr-2"></i>Comprar Entradas</button>
-                <button class="bs flex-1 text-center rounded-sm" onclick="showView('verify')"><i class="fa-solid fa-qrcode mr-2"></i>Ya tengo mi entrada</button>
-            </div>
-        </div>
-        <footer class="absolute bottom-4 text-center w-full" style="color:#2a2a2a;font-size:11px;letter-spacing:2px">Control de Acceso &amp; Ticketing</footer>
-    </section>
-
-    <!-- COMPRAR ENTRADAS -->
-    <section id="view-buy" class="vw flex-col items-center min-h-screen px-4 py-10">
-        <div class="w-full max-w-lg space-y-6">
-            <button type="button" class="bs text-sm rounded-sm mb-2" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
-            <div class="text-center"><h2 class="font-display text-3xl font-bold tracking-wider">COMPRAR ENTRADAS</h2></div>
-            <div id="buy-stages" class="space-y-4"></div>
-            <div id="buy-checkout" style="display:none" class="ab rounded-sm p-6" style="background:var(--card)">
-                <h3 class="font-display text-lg tracking-wider mb-4" style="color:var(--accent)">DATOS DE PAGO</h3>
-                <div id="payment-info" class="text-sm mb-4 p-4 border" style="border-color:var(--border);background:var(--bg)"></div>
-                <div class="space-y-3">
-                    <input type="text" id="buy-name" class="di" placeholder="Nombre completo del comprador">
-                    <input type="text" id="buy-dni" class="di" placeholder="Cedula (Ej: 12345678)">
-                    <input type="text" id="buy-phone" class="di" placeholder="Telefono (Ej: 4141234567)">
-                    <input type="number" id="buy-qty" class="di" placeholder="Cantidad de entradas" min="1" value="1" oninput="updateTotal()">
-                    <input type="text" id="buy-ref" class="di" placeholder="ID / Referencia de Pago">
-                </div>
-                <div class="mt-4 p-4 text-center" style="background:var(--bg);border:1px solid var(--accent)">
-                    <p class="text-sm" style="color:var(--muted)">Total a pagar</p>
-                    <p class="font-display text-3xl font-bold" id="buy-total" style="color:var(--accent-bright)">$0</p>
-                </div>
-                <button class="bp w-full mt-4 rounded-sm" onclick="submitPurchase()"><i class="fa-solid fa-paper-plane mr-2"></i>Enviar Comprobante</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- TICKET GENERADO -->
-    <section id="view-ticket" class="vw flex-col items-center justify-center min-h-screen px-4 py-10">
-        <div class="w-full max-w-md space-y-6 text-center">
-            <div>
-                <i class="fa-solid fa-circle-check text-6xl mb-4" style="color:var(--success)"></i>
-                <h2 class="font-display text-3xl font-bold tracking-wider">¡COMPROBANTE ENVIADO!</h2>
-                <p class="text-sm mt-2" style="color:var(--muted)">Tu pago está en revisión. Una vez aprobado, recibirás tus entradas QR únicas.</p>
-            </div>
-            <button class="bp w-full rounded-sm" onclick="showView('landing')">Volver al Inicio</button>
-        </div>
-    </section>
-
-    <!-- VERIFICAR ENTRADA (PÚBLICO) -->
-    <section id="view-verify" class="vw flex-col items-center justify-center min-h-screen px-4 py-10">
-        <div class="w-full max-w-md space-y-6 relative z-20">
-            <button type="button" class="bs text-sm rounded-sm mb-2" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
-            <div class="text-center"><h2 class="font-display text-3xl font-bold tracking-wider">VERIFICAR ENTRADA</h2></div>
-            <div class="ab rounded-sm p-6" style="background:var(--card)">
-                <input type="text" id="verify-dni" class="di" placeholder="12345678" inputmode="numeric" pattern="[0-9]*" onkeydown="if(event.key==='Enter')verifyDNI()">
-                <button class="bp w-full mt-4 rounded-sm" onclick="verifyDNI()">Verificar</button>
-            </div>
-            <div id="verify-result" style="display:none"></div>
-        </div>
-    </section>
-
-    <!-- ESCANER ADMIN -->
-    <section id="view-scanner" class="vw flex-col items-center min-h-screen px-4 py-6">
-        <div class="w-full max-w-lg space-y-5">
-            <div class="flex items-center justify-between">
-                <button type="button" class="bs text-sm rounded-sm" onclick="stopScanner();showView('admin')"><i class="fa-solid fa-arrow-left mr-2"></i>Volver</button>
-                <h2 class="font-display text-xl font-bold tracking-wider">ESCANER QR</h2>
-                <div style="width:80px"></div>
-            </div>
-            <div class="ab rounded-sm p-4" style="background:var(--card)">
-                <div class="vf mx-auto"><div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div><div id="scanner-reader" style="width:280px;height:280px;overflow:hidden;border-radius:4px"></div></div>
-                <p id="scanner-status" class="text-center text-sm mt-4" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...</p>
-            </div>
-            <div id="scanner-result" style="display:none"></div>
-            <div class="ab rounded-sm p-4" style="background:var(--card)">
-                <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
-                <input type="file" id="qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFile(event)">
-            </div>
-            <div class="ab rounded-sm p-4" style="background:var(--card)">
-                <input type="text" id="scanner-dni-input" class="di" placeholder="Verificacion manual cedula" inputmode="numeric" pattern="[0-9]*" onkeydown="if(event.key==='Enter')verifyFromScanner()">
-                <button class="bp w-full mt-3 rounded-sm" onclick="verifyFromScanner()"><i class="fa-solid fa-check"></i></button>
-            </div>
-        </div>
-    </section>
-
-    <!-- ADMIN -->
-    <section id="view-admin" class="vw flex-col min-h-screen">
-        <div class="flex items-center justify-between px-4 py-4 border-b" style="border-color:var(--border);background:var(--card)">
-            <button type="button" class="bs text-sm rounded-sm" onclick="showView('landing')"><i class="fa-solid fa-arrow-left mr-2"></i>Salir</button>
-            <h2 class="font-display text-lg font-bold tracking-wider">PANEL ADMIN</h2>
-            <div class="flex items-center gap-2">
-                <span id="fb-badge" class="firebase-status fb-disconnected">Offline</span>
-                <span id="admin-data-count" class="text-xs" style="color:var(--muted)">0</span>
-            </div>
-        </div>
-        <nav class="flex border-b overflow-x-auto" style="border-color:var(--border);background:rgba(17,17,17,.8)">
-            <button class="at ac" onclick="switchTab('tab-payments',this)"><i class="fa-solid fa-money-bill-wave mr-1"></i> Pagos</button>
-            <button class="at" onclick="switchTab('tab-qr',this)"><i class="fa-solid fa-qrcode mr-1"></i> QR</button>
-            <button class="at" onclick="switchTab('tab-verify',this)"><i class="fa-solid fa-magnifying-glass mr-1"></i> Verificar</button>
-            <button class="at" onclick="switchTab('tab-list',this)"><i class="fa-solid fa-list mr-1"></i> Lista</button>
-            <button class="at" onclick="switchTab('tab-config',this)"><i class="fa-solid fa-gear mr-1"></i> Config</button>
-        </nav>
-
-        <div id="tab-payments" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:block">
-            <div class="max-w-3xl mx-auto space-y-4">
-                <h3 class="font-display text-xl tracking-wider" style="color:var(--accent)">PAGOS PENDIENTES</h3>
-                <div id="pending-payments-list" class="space-y-3"></div>
-            </div>
-        </div>
-
-        <div id="tab-qr" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
-            <div class="max-w-4xl mx-auto space-y-6">
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Generador de Entradas Visuales</h3>
-                    <p class="text-sm mb-4" style="color:var(--muted)">Genera las entradas con diseño para el día activo. Si alguien compró 4, se generarán 4 entradas con QRs únicos.</p>
-                    <button class="bp rounded-sm" onclick="generateAllVisualTickets()"><i class="fa-solid fa-ticket mr-2"></i>Generar Entradas para Hoy</button>
-                </div>
-                <div id="qr-grid" class="qg"></div>
-            </div>
-        </div>
-
-        <div id="tab-verify" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
-            <div class="max-w-xl mx-auto space-y-5">
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <div class="flex gap-3">
-                        <input type="text" id="admin-dni-input" class="di flex-1 text-xl" placeholder="Cedula" inputmode="numeric" pattern="[0-9]*" onkeydown="if(event.key==='Enter')adminVerify()">
-                        <button class="bp rounded-sm px-6 text-lg" onclick="adminVerify()"><i class="fa-solid fa-check"></i></button>
-                    </div>
-                </div>
-                <div id="admin-verify-result" style="display:none"></div>
-                <button class="bs w-full rounded-sm" onclick="openScanner()"><i class="fa-solid fa-camera mr-2"></i>Abrir Escaner QR</button>
-                <button class="bp w-full rounded-sm" style="background:linear-gradient(135deg,#0066cc,#004499)" onclick="enterKioskMode()"><i class="fa-solid fa-door-open mr-2"></i>Modo Puerta</button>
-            </div>
-        </div>
-
-        <div id="tab-list" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
-            <div class="max-w-3xl mx-auto space-y-6">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="stat-card"><div class="stat-num" id="stat-total" style="color:var(--info)">0</div><div class="stat-label">Vendidas</div></div>
-                    <div class="stat-card"><div class="stat-num" id="stat-paid" style="color:var(--success)">0</div><div class="stat-label">Pagadas</div></div>
-                    <div class="stat-card"><div class="stat-num" id="stat-pending" style="color:var(--warning)">0</div><div class="stat-label">Por Pagar</div></div>
-                    <div class="stat-card"><div class="stat-num" id="stat-cortesia" style="color:var(--accent-bright)">0</div><div class="stat-label">Cortesías</div></div>
-                </div>
-                <div id="stage-stats" class="space-y-3"></div>
-                <div class="flex gap-3 items-center">
-                    <input type="text" id="search-attendee" class="di" placeholder="Buscar por nombre o cédula..." oninput="renderList()">
-                    <div class="text-sm whitespace-nowrap" style="color:var(--muted)"><span id="verified-count" style="color:var(--success)">0</span> / <span id="total-count">0</span></div>
-                </div>
-                <div class="ab rounded-sm overflow-hidden" style="background:var(--card)">
-                    <table class="w-full text-left"><thead><tr class="border-b" style="border-color:var(--border)"><th class="p-2">Etapa</th><th class="p-2">Nombre</th><th class="p-2">Cedula</th><th class="p-2">Usadas</th><th class="p-2">Acción</th></tr></thead><tbody id="attendee-tbody"></tbody></table>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-config" class="tab-c flex-1 p-4 sm:p-6 overflow-y-auto" style="display:none">
-            <div class="max-w-xl mx-auto space-y-5">
-
-                <div class="ab rounded-sm p-6" style="background:var(--card);border-color:var(--accent)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Control de Evento</h3>
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día Activo (Ej: Sábado 01)</label>
-                    <input type="text" id="config-active-day" class="di mb-4" placeholder="Día Activo">
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Color de Borde/Texto para las Entradas de este Día</label>
-                    <input type="color" id="config-day-color" class="di mb-4" style="height:50px;padding:5px" value="#ff0000">
-                    <button id="sales-toggle-btn" class="bp w-full rounded-sm" onclick="toggleSales()"><i class="fa-solid fa-pause mr-2"></i>Pausar Ventas</button>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Datos del Evento</h3>
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Nombre del Evento</label>
-                    <input type="text" id="config-event-name" class="di mb-4" placeholder="LIVE CAFÉ ROCK">
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Subtitulo</label>
-                    <input type="text" id="config-event-sub" class="di mb-4" placeholder="CONTROL DE ACCESO Y ENTRADAS">
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Fecha</label><input type="text" id="config-event-date" class="di" placeholder="31 / 07 / 2026"></div>
-                        <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Ciudad / Lugar</label><input type="text" id="config-event-city" class="di" placeholder="Maracaibo, estado Zulia"></div>
-                    </div>
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">URL de la Imagen base para las Entradas</label>
-                    <input type="text" id="config-event-logo" class="di mb-4" placeholder="https://.../entrada.jpg">
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Cargar Lista Masiva</h3>
-                    <label class="block text-xs uppercase mb-2" style="color:var(--muted)">Día al que pertenece esta lista (Ej: Viernes 31)</label>
-                    <input type="text" id="upload-day-name" class="di mb-4" placeholder="Día de la lista">
-                    
-                    <div class="mt-4 pt-4 border-t" style="border-color:var(--border)">
-                        <h3 class="font-display text-sm tracking-[3px] uppercase mb-2" style="color:var(--accent)">Opción 1: Pegar datos de Excel</h3>
-                        <p class="text-sm mb-4" style="color:var(--muted)">Abre tu Excel, selecciona todo (Ctrl+E), copia (Ctrl+C) y pégalo en el cuadro de abajo.</p>
-                        <textarea id="paste-list-input" class="di mb-4" rows="8" placeholder="Pega aquí los datos copiados del Excel..."></textarea>
-                        <button class="bp w-full rounded-sm" onclick="handlePasteUpload()"><i class="fa-solid fa-paste mr-2"></i>Cargar Datos Pegados</button>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t" style="border-color:var(--border)">
-                        <h3 class="font-display text-sm tracking-[3px] uppercase mb-2" style="color:var(--accent)">Opción 2: Subir Archivo Excel/CSV</h3>
-                        <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px">
-                        <button class="bp w-full rounded-sm" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir Archivo</button>
-                    </div>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Agregar Asistente Manual</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="text" id="manual-nombre" class="di" placeholder="Nombre"><input type="text" id="manual-cedula" class="di" placeholder="Cedula"><input type="number" id="manual-cantidad" class="di" placeholder="Cant" value="1" min="1"><input type="text" id="manual-etapa" class="di" placeholder="Etapa" value="Manual">
-                    </div>
-                    <button class="bp w-full mt-3 rounded-sm" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar</button>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Configuracion de Ventas</h3>
-                    <textarea id="config-payment-info" class="di mb-4" rows="4" placeholder="Datos para pagar..."></textarea>
-                    <div class="grid grid-cols-2 gap-4 mb-2">
-                        <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 1 (Nombre)</label><input type="text" id="config-s1-name" class="di" placeholder="Preventa 1"></div>
-                        <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 1 (Precio $)</label><input type="number" id="config-s1-price" class="di" placeholder="10"></div>
-                    </div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <input type="checkbox" id="config-s1-closed" class="w-5 h-5" style="accent-color:var(--accent)">
-                        <label for="config-s1-closed" class="text-sm" style="color:var(--text)">Marcar Etapa 1 como AGOTADA</label>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 mb-2">
-                        <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 2 (Nombre)</label><input type="text" id="config-s2-name" class="di" placeholder="Preventa 2"></div>
-                        <div><label class="block text-xs uppercase mb-2" style="color:var(--muted)">Etapa 2 (Precio $)</label><input type="number" id="config-s2-price" class="di" placeholder="15"></div>
-                    </div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <input type="checkbox" id="config-s2-closed" class="w-5 h-5" style="accent-color:var(--accent)">
-                        <label for="config-s2-closed" class="text-sm" style="color:var(--text)">Marcar Etapa 2 como AGOTADA</label>
-                    </div>
-                    <button class="bp w-full rounded-sm" onclick="saveSalesConfig()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Configuracion</button>
-                </div>
-
-                <div class="ab rounded-sm p-6" style="background:var(--card)">
-                    <h3 class="font-display text-sm tracking-[3px] uppercase mb-4" style="color:var(--accent)">Seguridad y Datos</h3>
-                    <button class="bs w-full rounded-sm mb-2" onclick="resetPIN()"><i class="fa-solid fa-key mr-2"></i>Cambiar PIN de Admin</button>
-                    <button class="bs w-full rounded-sm mb-2" onclick="exportAudit()"><i class="fa-solid fa-file-excel mr-2" style="color:#00cc44"></i>Descargar Base de Datos (Excel)</button>
-                    <button class="bp w-full rounded-sm" style="background:linear-gradient(135deg,#990000,#660000)" onclick="clearAllDataForNewEvent()"><i class="fa-solid fa-trash-can mr-2"></i>Borrar Nube y Reiniciar App</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div id="kiosk-mode" class="kiosk-mode">
-        <button type="button" class="bs absolute top-4 right-4 rounded-sm" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
-        <h2 class="font-display text-2xl font-bold tracking-wider mb-4" style="color:var(--accent)">ESCANER</h2>
-        <div id="kiosk-scanner-reader" style="width:min(350px,80vw);height:min(350px,80vw);overflow:hidden;border-radius:4px"></div>
-        <div class="mt-6 w-full max-w-md text-center">
-            <p class="font-display text-xs tracking-[3px] uppercase mb-3" style="color:var(--muted)">¿La cámara no lee? Sube la foto del QR</p>
-            <input type="file" id="kiosk-qr-file-input" accept="image/*" class="di" style="padding:10px" onchange="scanQRFromFileKiosk(event)">
-        </div>
+<!-- ============ LANDING ============ -->
+<section id="view-landing" class="vw" style="display:flex">
+  <div class="spot l" aria-hidden="true"></div><div class="spot r" aria-hidden="true"></div>
+  <div class="wm" aria-hidden="true">26</div>
+  <div class="marquee" aria-hidden="true"><div class="mq-track"><span id="mq-a"></span><span id="mq-b"></span></div></div>
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-logo" id="hero-logo-wrap" style="display:none"><img id="landing-logo" alt="Logo del evento"></div>
+      <div id="ft">
+        <h1 id="landing-title" class="wordmark"></h1>
+        <p id="landing-subtitle" class="sub" style="margin-top:14px"></p>
+      </div>
+      <div class="eq" id="eq" aria-hidden="true"></div>
+      <div class="hero-meta">
+        <span><i class="fa-regular fa-calendar"></i><span id="landing-date">31 / 07 / 2026</span></span>
+        <span><i class="fa-solid fa-location-dot"></i><span id="landing-city">Maracaibo, estado Zulia</span></span>
+      </div>
+      <div id="countdown"></div>
+      <div class="cta-row">
+        <button id="btn-buy-landing" class="tbtn" onclick="showView('buy')">
+          <span class="tbtn-main"><i class="fa-solid fa-ticket"></i><span id="buy-cta-label">Comprar entradas</span></span>
+          <span class="tbtn-stub">ADMIT</span>
+        </button>
+        <button class="tbtn alt" onclick="showView('verify')">
+          <span class="tbtn-main"><i class="fa-solid fa-qrcode"></i>Ya tengo mi entrada</span>
+          <span class="tbtn-stub">QR</span>
+        </button>
+      </div>
     </div>
+  </div>
+  <footer class="landing-footer">Control de acceso /// Ticketing /// LCR·26</footer>
+</section>
 
-    <!-- MODALES -->
-    <div id="pin-modal" class="mo"><div class="mb"><i class="fa-solid fa-shield-halved text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">ACCESO RESTRINGIDO</h3><input type="password" id="pin-input" class="di text-center text-2xl tracking-[8px] my-4" maxlength="10" inputmode="numeric"><div id="pin-error" class="text-sm mb-4" style="color:var(--accent);display:none">PIN incorrecto</div><button class="bp w-full rounded-sm" onclick="checkPIN()">Acceder</button></div></div>
-    <div id="pin-setup-modal" class="mo"><div class="mb"><i class="fa-solid fa-key text-3xl mb-3 block" style="color:var(--accent)"></i><h3 class="font-display text-xl tracking-wider font-bold">CONFIGURAR PIN</h3><input type="password" id="pin-setup-input" class="di text-center text-2xl tracking-[8px] my-4" maxlength="10" inputmode="numeric"><button class="bp w-full rounded-sm" onclick="savePIN()">Guardar</button></div></div>
-    
-    <div id="edit-modal" class="mo">
-        <div class="mb" style="max-width:450px">
-            <h3 class="font-display text-xl tracking-wider font-bold mb-6">EDITAR ASISTENTE</h3>
-            <input type="hidden" id="edit-index"><input type="text" id="edit-nombre" class="di mb-3" placeholder="Nombre"><input type="text" id="edit-cedula" class="di mb-3" placeholder="Cedula"><input type="number" id="edit-cantidad" class="di mb-3" placeholder="Cantidad" min="1"><input type="text" id="edit-etapa" class="di mb-3" placeholder="Etapa">
-            <div class="flex gap-3 mb-3">
-                <button class="bs flex-1 rounded-sm" onclick="closeEditModal()">Cancelar</button>
-                <button class="bp flex-1 rounded-sm" onclick="saveEditedAttendee()">Guardar</button>
-            </div>
-            <button class="bs w-full rounded-sm text-sm" style="color:var(--accent-bright)" onclick="resetAttendeeEntries()">Reiniciar Ingreso</button>
-        </div>
+<!-- ============ COMPRAR ============ -->
+<section id="view-buy" class="vw">
+  <div class="wrap-md">
+    <button type="button" class="bs mb-6" onclick="showView('landing')"><i class="fa-solid fa-arrow-left"></i>Volver</button>
+    <h2 style="font-family:'Anton';font-size:clamp(30px,7vw,44px);letter-spacing:.03em">COMPRAR ENTRADAS</h2>
+    <div id="buy-stages" style="margin-top:20px"></div>
+    <div id="buy-checkout" style="display:none" class="ab p-6">
+      <p class="step-label mono">PASO 02 — PAGA Y ENVÍA TU COMPROBANTE</p>
+      <div class="sec-h" style="margin:16px 0 12px">Datos de pago</div>
+      <div id="payment-info" class="receipt mb-5"></div>
+      <div class="space-y-3">
+        <input type="text" id="buy-name" class="di" placeholder="Nombre completo del comprador">
+        <input type="text" id="buy-dni" class="di" placeholder="Cédula (Ej: 12345678)" inputmode="numeric">
+        <input type="text" id="buy-phone" class="di" placeholder="Teléfono (Ej: 4141234567)" inputmode="numeric">
+        <input type="number" id="buy-qty" class="di" placeholder="Cantidad de entradas" min="1" value="1" oninput="updateTotal()">
+        <input type="text" id="buy-ref" class="di" placeholder="ID / Referencia de pago">
+      </div>
+      <div class="total-box">
+        <span class="lbl">Etapa: <span id="buy-stage-label" style="color:var(--text)">—</span></span>
+        <p class="lbl" style="margin-top:6px">Total a pagar</p>
+        <p class="total-val" id="buy-total">$0</p>
+      </div>
+      <button class="bp w-full mt-4" onclick="submitPurchase()"><i class="fa-solid fa-paper-plane"></i>Enviar comprobante</button>
     </div>
+  </div>
+</section>
 
-    <div class="tc" id="toast-container"></div>
+<!-- ============ COMPROBANTE ENVIADO ============ -->
+<section id="view-ticket" class="vw center-y">
+  <div class="wrap">
+    <div class="confirm-card ab">
+      <span class="stamp">En revisión</span>
+      <h2 style="font-family:'Anton';font-size:28px;letter-spacing:.04em">COMPROBANTE ENVIADO</h2>
+      <div class="res-grid">
+        <div><b>Comprador</b><span id="confirm-name">—</span></div>
+        <div><b>Referencia</b><span id="confirm-ref" class="mono">—</span></div>
+        <div><b>Etapa</b><span id="confirm-stage">—</span></div>
+        <div><b>Total</b><span id="confirm-total" class="mono">—</span></div>
+      </div>
+      <p style="color:var(--muted);font-size:15px">Cuando el organizador apruebe tu pago, cada entrada recibirá su <b style="color:var(--text)">serial único con QR</b>. Consulta la sección «Ya tengo mi entrada» con tu cédula: ahí podrás ver y compartir cada QR con quien lo vaya a usar.</p>
+      <button class="bp w-full" onclick="showView('landing')">Volver al inicio</button>
+    </div>
+  </div>
+</section>
 
-    <script>
-    var _k1 = "AIzaSyB"; var _k2 = "GDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE";
-    var _a1 = "1:838453069044"; var _a2 = "web:ce6346a7089385fa628aa1";
-    var FIREBASE_CONFIG = { apiKey: _k1 + _k2, authDomain: "bleeditloud-6fb33.firebaseapp.com", databaseURL: "https://bleeditloud-6fb33-default-rtdb.firebaseio.com", projectId: "bleeditloud-6fb33", storageBucket: "bleeditloud-6fb33.firebasestorage.app", messagingSenderId: "838453069044", appId: _a1 + _a2 };
-    var FB_EVENT_ID = 'live-cafe-rock-2026';
-    var CFG = { PIN: '' };
-    var attendees = [], usedIDs = new Set(), pendingPayments = [], salesConfig = {};
-    salesConfig.s1_name = 'Preventa 1'; salesConfig.s1_price = 10;
-    salesConfig.s2_name = 'Preventa 2'; salesConfig.s2_price = 15;
-    salesConfig.payInfo = 'Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
-    try { usedIDs = new Set(JSON.parse(localStorage.getItem('bleedit_used') || '[]')); } catch(e) {}
-    var fbApp = null, fbDB = null, fbConnected = false;
-    var currentTheme = localStorage.getItem('bleedit_theme') || 'dark';
-    var scannerInst = null, kioskScannerInst = null;
-    var DEFAULT_TICKET_IMG = "https://z-cdn-media.chatglm.cn/files/f418507f-0beb-4feb-b259-9eba113da559.jpeg?auth_key=1885857858-8a6d0d1b452e40569b9916ffa6642a0d-0-5ae3f9680f422dbff459bf9cee65b70c";
+<!-- ============ VERIFICAR (PÚBLICO) ============ -->
+<section id="view-verify" class="vw center-y">
+  <div class="wrap-md">
+    <button type="button" class="bs mb-6" onclick="showView('landing')"><i class="fa-solid fa-arrow-left"></i>Volver</button>
+    <h2 style="font-family:'Anton';font-size:clamp(26px,6vw,36px);letter-spacing:.04em">MIS ENTRADAS</h2>
+    <p style="color:var(--muted);margin-top:6px">Consulta tus entradas con tu cédula. Cada QR es independiente: pásalo a quien lo vaya a usar.</p>
+    <div class="ab p-6 mt-6">
+      <input type="text" id="verify-dni" class="di" placeholder="12345678" inputmode="numeric" pattern="[0-9]*" onkeydown="if(event.key==='Enter')verifyDNI()">
+      <button class="bp w-full mt-4" onclick="verifyDNI()"><i class="fa-solid fa-magnifying-glass"></i>Verificar</button>
+    </div>
+    <div id="verify-result" style="display:none" class="mt-5"></div>
+  </div>
+</section>
 
-    function nD(d) { return d ? d.replace(/[^0-9]/g, '') : ''; }
-    function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-    function normalizeStr(str) { if (!str) return ''; return str.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
-    function isPaid(val) { if (val === true) return true; var v = String(val).toLowerCase().trim(); return v === 'si' || v === 'pagado' || v === 'listo' || v === 'confirmado'; }
-    function showToast(m, t) { var c = document.getElementById('toast-container'); var tt = document.createElement('div'); tt.className = 'tt ' + (t==='s'?'tt-s':t==='e'?'tt-e':'tt-i'); tt.innerHTML = m; c.appendChild(tt); setTimeout(function() { tt.remove(); }, 3000); }
-    function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); document.getElementById('theme-icon').className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
-    function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; localStorage.setItem('bleedit_theme', currentTheme); applyTheme(currentTheme); }
+<!-- ============ ESCÁNER ============ -->
+<section id="view-scanner" class="vw">
+  <div class="wrap-md">
+    <div class="flex items-center justify-between mb-6">
+      <button type="button" class="bs" onclick="stopScanner();showView('admin')"><i class="fa-solid fa-arrow-left"></i>Volver</button>
+      <h2 style="font-family:'Anton';font-size:20px;letter-spacing:.1em">ESCÁNER QR</h2>
+      <div style="width:86px"></div>
+    </div>
+    <div class="ab p-6">
+      <div class="vf">
+        <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+        <video id="scanner-video" class="scan-video" autoplay muted playsinline></video>
+        <div class="laser"></div>
+      </div>
+      <p id="scanner-status" class="scan-status"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando cámara…</p>
+      <div class="flex gap-3 justify-center mt-4">
+        <button id="torch-btn" class="bs" style="display:none" onclick="toggleTorch()"><i class="fa-solid fa-bolt"></i>Linterna</button>
+        <button class="bs" onclick="switchCam()"><i class="fa-solid fa-camera-rotate"></i>Cambiar cámara</button>
+      </div>
+    </div>
+    <div id="scanner-result" style="display:none" class="mt-5"></div>
+    <div class="ab p-5 mt-5">
+      <p class="step-label mono mb-3">Si la cámara no lee · sube la foto del QR</p>
+      <input type="file" id="qr-file-input" accept="image/*" class="di" style="padding:10px;font-size:13px" onchange="scanQRFromFile(event)">
+    </div>
+    <div class="ab p-5 mt-5">
+      <p class="step-label mono mb-3">Verificación manual · cédula o serial</p>
+      <div class="flex gap-3">
+        <input type="text" id="scanner-dni-input" class="di" placeholder="Cédula o serial (ej: K7M2-XQ9A)" onkeydown="if(event.key==='Enter')verifyFromScanner()">
+        <button class="bp px-6" onclick="verifyFromScanner()"><i class="fa-solid fa-check"></i></button>
+      </div>
+    </div>
+    <div id="scan-log-wrap" class="mt-5" style="display:none">
+      <div class="sec-h">Últimas lecturas</div>
+      <div id="scan-log"></div>
+    </div>
+  </div>
+</section>
 
-    document.addEventListener('DOMContentLoaded', function() {
-        applyTheme(currentTheme);
-        CFG.PIN = localStorage.getItem('bleedit_pin') || '';
-        if (window.location.hash === '#admin') { if (CFG.PIN === '') document.getElementById('pin-setup-modal').style.display = 'flex'; else document.getElementById('pin-modal').style.display = 'flex'; }
-        else if (window.location.hash === '#verificar') showView('verify');
-        else showView('landing');
-        initFirebase();
+<!-- ============ PANEL ADMIN / PORTERO ============ -->
+<section id="view-admin" class="vw">
+  <div class="admin-head">
+    <div class="topbar">
+      <button type="button" class="bs" onclick="showView('landing')"><i class="fa-solid fa-arrow-left"></i>Salir</button>
+      <h2 id="panel-title">PANEL</h2>
+      <div class="flex items-center gap-3">
+        <span id="admin-data-count" class="mono" style="font-size:10px;color:var(--muted);letter-spacing:.1em">0 REG</span>
+        <span id="fb-badge" class="fb-badge">Offline</span>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="at ac" data-tab="tab-payments" data-admin-only onclick="switchTab('tab-payments',this)"><i class="fa-solid fa-money-bill-wave mr-1"></i> Pagos</button>
+      <button class="at" data-tab="tab-qr" data-admin-only onclick="switchTab('tab-qr',this)"><i class="fa-solid fa-qrcode mr-1"></i> Entradas</button>
+      <button class="at" data-tab="tab-verify" onclick="switchTab('tab-verify',this)"><i class="fa-solid fa-magnifying-glass mr-1"></i> Verificar</button>
+      <button class="at" data-tab="tab-list" data-admin-only onclick="switchTab('tab-list',this)"><i class="fa-solid fa-list mr-1"></i> Lista</button>
+      <button class="at" data-tab="tab-config" data-admin-only onclick="switchTab('tab-config',this)"><i class="fa-solid fa-gear mr-1"></i> Config</button>
+    </nav>
+  </div>
+
+  <div id="tab-payments" class="tab-c on">
+    <div class="wrap-lg" style="margin:0 auto">
+      <div class="sec-h">Pagos pendientes de revisión</div>
+      <div id="pending-payments-list" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <div id="tab-qr" class="tab-c">
+    <div class="wrap-xl" style="margin:0 auto">
+      <div class="ab p-6">
+        <div class="sec-h">Entradas con serial único</div>
+        <p class="hint">Cada entrada paga recibe un <b style="color:var(--text)">serial independiente de 8 caracteres</b>. Si alguien compra 4, se emiten 4 QR distintos: entra quien llegue con cualquiera de ellos, una vez por QR. Se emiten solas al aprobar pagos, subir listas o agregar manuales; este botón rellena cualquier faltante.</p>
+        <div id="ticket-summary">SIN EMITIR</div>
+        <div class="flex flex-wrap gap-3">
+          <button class="bp" onclick="generateAllVisualTickets()"><i class="fa-solid fa-ticket"></i>Generar / actualizar</button>
+          <button class="bs" onclick="downloadAllTickets()"><i class="fa-solid fa-download"></i>Descargar todas (PNG)</button>
+        </div>
+      </div>
+      <div id="qr-grid" class="qg mt-6"></div>
+    </div>
+  </div>
+
+  <div id="tab-verify" class="tab-c">
+    <div class="wrap" style="margin:0 auto">
+      <div class="ab p-6">
+        <p class="step-label mono mb-3">Cédula o serial de la entrada</p>
+        <div class="flex gap-3">
+          <input type="text" id="admin-dni-input" class="di flex-1" placeholder="Cédula o serial" onkeydown="if(event.key==='Enter')adminVerify()">
+          <button class="bp px-6" onclick="adminVerify()"><i class="fa-solid fa-check"></i></button>
+        </div>
+      </div>
+      <div id="admin-verify-result" style="display:none" class="mt-5"></div>
+      <button class="bs w-full mt-5" onclick="openScanner()"><i class="fa-solid fa-camera mr-2"></i>Abrir escáner QR</button>
+      <button class="bp w-full mt-3" style="background:var(--text);color:var(--bg)" onclick="enterKioskMode()"><i class="fa-solid fa-door-open mr-2"></i>Modo puerta</button>
+    </div>
+  </div>
+
+  <div id="tab-list" class="tab-c">
+    <div class="wrap-lg" style="margin:0 auto">
+      <div class="stats">
+        <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Vendidas</div></div>
+        <div class="stat"><div class="stat-num" id="stat-paid" style="color:var(--green)">0</div><div class="stat-label">Pagadas</div></div>
+        <div class="stat"><div class="stat-num" id="stat-pending" style="color:var(--amber)">0</div><div class="stat-label">Por pagar</div></div>
+        <div class="stat"><div class="stat-num" id="stat-cortesia" style="color:var(--red)">0</div><div class="stat-label">Cortesías</div></div>
+      </div>
+      <div id="stage-stats" class="mt-5"></div>
+      <div class="flex gap-3 items-center mt-6">
+        <input type="text" id="search-attendee" class="di" placeholder="Buscar por nombre o cédula…" oninput="renderList()">
+        <div class="mono whitespace-nowrap" style="font-size:12px;color:var(--muted)"><span id="verified-count" style="color:var(--green)">0</span> / <span id="total-count">0</span></div>
+      </div>
+      <div class="tbl-wrap ab mt-4">
+        <table>
+          <thead><tr><th>Etapa</th><th>Nombre</th><th>Cédula</th><th>Ingresos</th><th>Acción</th></tr></thead>
+          <tbody id="attendee-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-config" class="tab-c">
+    <div class="wrap-md" style="margin:0 auto">
+      <div class="ab p-6 mb-5" style="border-color:var(--red)">
+        <div class="sec-h">Control de evento y usuarios</div>
+        <label class="lbl">Día activo (filtra la puerta en eventos de varios días)</label>
+        <input type="text" id="config-active-day" class="di mb-4" placeholder="Día 1">
+        <label class="lbl">Color para las entradas</label>
+        <input type="color" id="config-day-color" class="di mb-4" style="height:48px;padding:5px" value="#e0281a">
+        <label class="lbl">PIN de administrador (acceso total)</label>
+        <input type="text" id="config-admin-pin" class="di mb-4" placeholder="2025" inputmode="numeric">
+        <label class="lbl">PIN de portero (solo verificar)</label>
+        <input type="text" id="config-portero-pin" class="di mb-4" placeholder="1234" inputmode="numeric">
+        <button id="sales-toggle-btn" class="bp w-full" onclick="toggleSales()"><i class="fa-solid fa-pause mr-2"></i>Pausar ventas</button>
+      </div>
+
+      <div class="ab p-6 mb-5">
+        <div class="sec-h">Datos del evento</div>
+        <input type="text" id="config-event-name" class="di mb-4" placeholder="LIVE CAFÉ ROCK">
+        <input type="text" id="config-event-sub" class="di mb-4" placeholder="CONTROL DE ACCESO Y ENTRADAS">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <input type="text" id="config-event-date" class="di" placeholder="31 / 07 / 2026">
+          <input type="text" id="config-event-city" class="di" placeholder="Maracaibo, estado Zulia">
+        </div>
+        <input type="text" id="config-event-logo" class="di" placeholder="https://.../logo.jpg">
+      </div>
+
+      <div class="ab p-6 mb-5">
+        <div class="sec-h">Cargar lista masiva</div>
+        <label class="lbl">Día de la lista</label>
+        <input type="text" id="upload-day-name" class="di mb-4" placeholder="Día 1">
+        <div class="mt-4 pt-4" style="border-top:1px dashed var(--border)">
+          <p class="step-label mono mb-3">Opción 1 · Pegar datos del Excel</p>
+          <textarea id="paste-list-input" class="di mb-4" rows="8" placeholder="Pega aquí los datos copiados del Excel…"></textarea>
+          <button class="bp w-full" onclick="handlePasteUpload()"><i class="fa-solid fa-paste mr-2"></i>Cargar datos pegados</button>
+        </div>
+        <div class="mt-6 pt-4" style="border-top:1px dashed var(--border)">
+          <p class="step-label mono mb-3">Opción 2 · Subir archivo Excel / CSV</p>
+          <input type="file" id="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="di mb-4" style="padding:10px;font-size:13px">
+          <button class="bp w-full" onclick="handleFileUpload()"><i class="fa-solid fa-file-arrow-up mr-2"></i>Subir archivo</button>
+        </div>
+      </div>
+
+      <div class="ab p-6 mb-5">
+        <div class="sec-h">Agregar asistente manual</div>
+        <div class="grid grid-cols-2 gap-3">
+          <input type="text" id="manual-nombre" class="di" placeholder="Nombre">
+          <input type="text" id="manual-cedula" class="di" placeholder="Cédula">
+          <input type="number" id="manual-cantidad" class="di" placeholder="Cant" value="1" min="1">
+          <input type="text" id="manual-etapa" class="di" placeholder="Etapa" value="Manual">
+        </div>
+        <button class="bp w-full mt-3" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar (emite sus seriales)</button>
+      </div>
+
+      <div class="ab p-6 mb-5">
+        <div class="sec-h">Configuración de ventas</div>
+        <label class="lbl">Datos para pagar</label>
+        <textarea id="config-payment-info" class="di mb-4" rows="4" placeholder="Banco, Pago Móvil, Binance…"></textarea>
+        <div class="grid grid-cols-2 gap-4 mb-2">
+          <input type="text" id="config-s1-name" class="di" placeholder="Preventa 1">
+          <input type="number" id="config-s1-price" class="di" placeholder="10">
+        </div>
+        <div class="flex items-center gap-2 mb-4">
+          <input type="checkbox" id="config-s1-closed" class="w-5 h-5" style="accent-color:var(--red)">
+          <label for="config-s1-closed" style="font-size:15px">Marcar etapa 1 como agotada</label>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-2">
+          <input type="text" id="config-s2-name" class="di" placeholder="Preventa 2">
+          <input type="number" id="config-s2-price" class="di" placeholder="15">
+        </div>
+        <div class="flex items-center gap-2 mb-4">
+          <input type="checkbox" id="config-s2-closed" class="w-5 h-5" style="accent-color:var(--red)">
+          <label for="config-s2-closed" style="font-size:15px">Marcar etapa 2 como agotada</label>
+        </div>
+        <button class="bp w-full" onclick="saveSalesConfig()"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar configuración</button>
+      </div>
+
+      <div class="ab p-6 mb-8">
+        <div class="sec-h">Seguridad y datos</div>
+        <button class="bs w-full mb-3" onclick="exportAudit()"><i class="fa-solid fa-file-excel mr-2" style="color:var(--green)"></i>Descargar base de datos (Excel)</button>
+        <button class="bp w-full" style="background:#8f1208;color:#f3eee3" onclick="clearAllDataForNewEvent()"><i class="fa-solid fa-trash-can mr-2"></i>Borrar nube y reiniciar app</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODO PUERTA ============ -->
+<div id="kiosk-mode" class="kiosk-mode">
+  <button type="button" class="bs" style="position:absolute;top:16px;right:16px" onclick="exitKioskMode()"><i class="fa-solid fa-xmark"></i></button>
+  <p class="mono" style="font-size:11px;letter-spacing:.4em;color:var(--red)">MODO PUERTA</p>
+  <div class="kiosk-frame">
+    <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+    <video id="kiosk-video" class="scan-video" autoplay muted playsinline></video>
+    <div class="laser"></div>
+  </div>
+  <p id="kiosk-status" class="mono" style="font-size:11px;letter-spacing:.2em;color:var(--muted)">APUNTA EL QR DE LA ENTRADA</p>
+  <div class="w-full" style="max-width:420px">
+    <p class="step-label mono mb-2" style="text-align:center">Foto del QR · o escribe serial / cédula</p>
+    <div class="flex gap-2">
+      <input id="kiosk-manual" class="di" placeholder="Serial o cédula" onkeydown="if(event.key==='Enter')kioskManual()">
+      <button class="bp px-5" onclick="kioskManual()"><i class="fa-solid fa-check"></i></button>
+    </div>
+    <input type="file" id="kiosk-qr-file-input" accept="image/*" class="di mt-3" style="padding:10px;font-size:13px" onchange="scanQRFromFileKiosk(event)">
+    <button id="kiosk-torch-btn" class="bs w-full justify-center mt-3" style="display:none" onclick="toggleTorch()"><i class="fa-solid fa-bolt"></i>Linterna</button>
+  </div>
+</div>
+
+<!-- ============ MODALES ============ -->
+<div id="pin-modal" class="mo" onclick="if(event.target===this)closeModal('pin-modal')">
+  <div class="mb" style="text-align:center">
+    <i class="fa-solid fa-shield-halved text-2xl mb-3" style="color:var(--red)"></i>
+    <h3 id="pin-modal-title" style="font-family:'Anton';font-size:20px;letter-spacing:.08em">ACCESO RESTRINGIDO</h3>
+    <input type="password" id="pin-input" class="di mt-5 mb-2" style="text-align:center;font-size:24px;letter-spacing:.5em;font-family:'Space Mono'" maxlength="10" inputmode="numeric">
+    <div id="pin-error" style="font-size:14px;color:var(--red);display:none">PIN incorrecto</div>
+    <button class="bp w-full mt-4" onclick="checkPIN()">Acceder</button>
+  </div>
+</div>
+
+<div id="edit-modal" class="mo" onclick="if(event.target===this)closeModal('edit-modal')">
+  <div class="mb" style="max-width:440px">
+    <div class="sec-h">Editar asistente</div>
+    <input type="hidden" id="edit-index">
+    <input type="text" id="edit-nombre" class="di mb-3" placeholder="Nombre">
+    <input type="text" id="edit-cedula" class="di mb-3" placeholder="Cédula">
+    <input type="number" id="edit-cantidad" class="di mb-3" placeholder="Cantidad" min="1">
+    <input type="text" id="edit-etapa" class="di mb-4" placeholder="Etapa">
+    <div class="flex items-center gap-3 mb-4">
+      <input type="checkbox" id="edit-paid" class="w-5 h-5" style="accent-color:var(--green)">
+      <label for="edit-paid" style="font-size:15px">Pagado (habilita sus entradas con serial)</label>
+    </div>
+    <div class="flex gap-3 mb-3">
+      <button class="bs flex-1 justify-center" onclick="closeEditModal()">Cancelar</button>
+      <button class="bp flex-1" onclick="saveEditedAttendee()">Guardar</button>
+    </div>
+    <button class="bs w-full justify-center" style="color:var(--red);border-color:var(--red)" onclick="resetAttendeeEntries()"><i class="fa-solid fa-rotate-left mr-2"></i>Reiniciar ingresos</button>
+  </div>
+</div>
+
+<div id="confirm-modal" class="mo" onclick="if(event.target===this)closeModal('confirm-modal')">
+  <div class="mb" style="text-align:center">
+    <i class="fa-solid fa-triangle-exclamation text-2xl mb-3" style="color:var(--red)"></i>
+    <h3 id="confirm-title" style="font-family:'Anton';font-size:22px;letter-spacing:.06em">¿CONFIRMAR?</h3>
+    <p id="confirm-msg" style="color:var(--muted);font-size:15px;margin:12px 0 20px"></p>
+    <div class="flex gap-3">
+      <button class="bs flex-1 justify-center" onclick="closeModal('confirm-modal')">Cancelar</button>
+      <button class="bp flex-1" style="background:#8f1208;color:#f3eee3" onclick="runConfirm()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="tc" id="toast-container"></div>
+
+<script>
+/* ================= ESTADO ================= */
+var _k1="AIzaSyB",_k2="GDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE";
+var _a1="1:838453069044",_a2="web:ce6346a7089385fa628aa1";
+var FIREBASE_CONFIG={apiKey:_k1+_k2,authDomain:"bleeditloud-6fb33.firebaseapp.com",databaseURL:"https://bleeditloud-6fb33-default-rtdb.firebaseio.com",projectId:"bleeditloud-6fb33",storageBucket:"bleeditloud-6fb33.firebasestorage.app",messagingSenderId:"838453069044",appId:_a1+_a2};
+var FB_EVENT_ID='live-cafe-rock-2026';
+var CFG={PIN:'2025',PORTERO_PIN:'1234'};
+var currentRole='admin', attendees=[], usedIDs=new Set(), pendingPayments=[], salesConfig={}, tickets={};
+salesConfig.s1_name='Preventa 1'; salesConfig.s1_price=10;
+salesConfig.s2_name='Preventa 2'; salesConfig.s2_price=15;
+salesConfig.payInfo='Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
+try{ usedIDs=new Set(JSON.parse(localStorage.getItem('bleedit_used')||'[]')); }catch(e){}
+var fbApp=null, fbDB=null, fbConnected=false;
+var currentTheme=localStorage.getItem('bleedit_theme')||'dark';
+var selectedStage=0, confirmCb=null, SCANLOG=[], kioskTok=0;
+var DEFAULT_TICKET_IMG="https://z-cdn-media.chatglm.cn/files/b5514a0a-8209-4f46-8693-d1877cff0de0.jpeg?auth_key=1887157655-9bac99754d044e79b867f92041dfb20c-0-0e1d71ab4f51dfca8b8c9e3a7061b690";
+
+/* ================= UTILIDADES ================= */
+function nD(d){return d?String(d).replace(/[^0-9]/g,''):'';}
+function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+function normalizeStr(s){if(!s)return'';return s.toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+function isPaid(v){if(v===true)return true;var x=String(v).toLowerCase().trim();return x==='si'||x==='pagado'||x==='listo'||x==='confirmado'||x==='cortesia';}
+function fmtDT(ts){if(!ts)return'';try{var d=new Date(ts);return d.toLocaleDateString('es-VE',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-VE',{hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+function dashSerial(s){s=String(s||'');return s.length===8?s.slice(0,4)+'-'+s.slice(4):s;}
+function showToast(m,t){var c=document.getElementById('toast-container');var el=document.createElement('div');el.className='tt '+(t==='s'?'tt-s':t==='e'?'tt-e':'tt-i');el.innerHTML=m;c.appendChild(el);setTimeout(function(){el.classList.add('out');},2600);setTimeout(function(){el.remove();},3000);}
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+
+/* tema */
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-icon').className=t==='dark'?'fa-solid fa-sun':'fa-solid fa-moon';var mt=document.querySelector('meta[name=theme-color]');if(mt)mt.content=t==='dark'?'#0c0a08':'#f1ece0';}
+function toggleTheme(){currentTheme=currentTheme==='dark'?'light':'dark';localStorage.setItem('bleedit_theme',currentTheme);applyTheme(currentTheme);}
+
+/* sonidos */
+var AC=null;
+function tone(f,d,delay,type,vol){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();var o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.value=f;o.connect(g);g.connect(AC.destination);var t=AC.currentTime+(delay||0);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol||.12,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.05);}catch(e){}}
+function beepGood(){tone(880,.12,0);tone(1318,.2,.12);}
+function beepBad(){tone(150,.35,0,'square',.15);}
+
+/* ================= CARGADORES DE LIBRERÍAS (con respaldo doble CDN) ================= */
+var LIBQ=['https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js','https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js'];
+var LIBJ=['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://unpkg.com/jsqr@1.4.0/dist/jsQR.js'];
+function loadSeq(urls,cb,ix){
+  ix=ix||0;
+  if(ix>=urls.length){cb(false);return;}
+  var s=document.createElement('script');s.src=urls[ix];
+  s.onload=function(){cb(true);};
+  s.onerror=function(){s.remove();loadSeq(urls,cb,ix+1);};
+  document.head.appendChild(s);
+}
+function ensureJsQR(cb){if(window.jsQR)return cb(true);loadSeq(LIBJ,cb);}
+
+/* Genera el QR como imagen data-URL (a prueba de html2canvas). Devuelve Promise<string|null> */
+function makeQR(text,size){
+  return new Promise(function(resolve){
+    function viaSoldair(){
+      if(window.QRCode&&typeof QRCode.toDataURL==='function'){
+        QRCode.toDataURL(text,{errorCorrectionLevel:'H',margin:2,width:size||640,color:{dark:'#000000',light:'#ffffff'}})
+          .then(resolve).catch(function(){resolve(qrcodejsQR(text,size));});
+        return true;
+      }
+      return false;
+    }
+    if(viaSoldair())return;
+    loadSeq(LIBQ,function(){if(!viaSoldair())resolve(qrcodejsQR(text,size));});
+  });
+}
+function qrcodejsQR(text,size){
+  try{
+    if(!window.QRCode||!QRCode.CorrectLevel)return null;
+    var d=document.createElement('div');d.style.cssText='position:fixed;left:-9999px;top:0;';
+    document.body.appendChild(d);
+    new QRCode(d,{text:text,width:size||640,height:size||640,correctLevel:QRCode.CorrectLevel.H,colorDark:'#000000',colorLight:'#ffffff'});
+    var img=d.querySelector('img'),cv=d.querySelector('canvas'),url=null;
+    if(img&&img.src&&img.src.indexOf('data:')===0)url=img.src;
+    else if(cv&&cv.toDataURL)url=cv.toDataURL('image/png');
+    setTimeout(function(){d.remove();},60);
+    return url;
+  }catch(e){return null;}
+}
+
+/* ================= NAVEGACIÓN ================= */
+function showView(vn){
+  if(vn!=='scanner')camStop();
+  var all=document.querySelectorAll('.vw');
+  for(var i=0;i<all.length;i++)all[i].style.display='none';
+  var t=document.getElementById('view-'+vn);
+  if(t)t.style.display='flex';
+  if(vn==='buy')renderBuyStages();
+  window.scrollTo(0,0);
+}
+function switchTab(id,btn){
+  var tabs=document.querySelectorAll('.tab-c');
+  for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('on');
+  var el=document.getElementById(id);if(el)el.classList.add('on');
+  var bs=document.querySelectorAll('.at');
+  for(var j=0;j<bs.length;j++)bs[j].classList.remove('ac');
+  if(btn)btn.classList.add('ac');
+  if(id==='tab-qr')renderTicketCards();
+}
+function stopScanner(){camStop();}
+
+/* ================= ARRANQUE ================= */
+document.addEventListener('DOMContentLoaded',function(){
+  applyTheme(currentTheme);
+  buildEq();
+  CFG.PIN=localStorage.getItem('bleedit_pin')||CFG.PIN;
+  CFG.PORTERO_PIN=localStorage.getItem('bleedit_portero_pin')||CFG.PORTERO_PIN;
+  loadSeq(LIBQ,function(){});           /* mejora silenciosa del generador QR */
+  ensureJsQR(function(){});             /* pre-calienta el lector */
+  if(window.location.hash==='#admin'||window.location.hash==='#portero'){
+    currentRole=window.location.hash.replace('#','');
+    document.getElementById('pin-modal-title').textContent=currentRole==='admin'?'ACCESO ADMINISTRADOR':'ACCESO PORTERO';
+    openModal('pin-modal');
+  }else if(window.location.hash==='#verificar'){showView('verify');}
+  else showView('landing');
+  updateLandingUI();renderBuyStages();updateSalesUI();
+  document.getElementById('payment-info').textContent=salesConfig.payInfo;
+  initFirebase();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&document.getElementById('pin-modal').style.display==='flex')checkPIN();
+  if(e.key==='Escape'){closeModal('pin-modal');closeModal('edit-modal');closeModal('confirm-modal');}
+});
+function buildEq(){
+  var eq=document.getElementById('eq');if(!eq)return;
+  for(var i=0;i<28;i++){
+    var b=document.createElement('i');
+    b.style.animationDuration=(0.5+Math.random()*0.9)+'s';
+    b.style.animationDelay=(-Math.random()*1.2)+'s';
+    b.style.height=(22+Math.random()*78)+'%';
+    eq.appendChild(b);
+  }
+}
+
+/* ================= FIREBASE ================= */
+function initFirebase(){
+  try{
+    if(!fbApp)fbApp=firebase.initializeApp(FIREBASE_CONFIG,'live-cafe-app');
+    fbDB=fbApp.database();fbConnected=true;
+    setBadge('on','Nube online');
+    fbDB.ref('events/'+FB_EVENT_ID+'/attendees').on('value',function(s){attendees=s.val()?Object.values(s.val()):[];updateUI();});
+    fbDB.ref('events/'+FB_EVENT_ID+'/used').on('value',function(s){var d=s.val();usedIDs=new Set(d?(Array.isArray(d)?d:Object.values(d)):[]);try{localStorage.setItem('bleedit_used',JSON.stringify(Array.from(usedIDs)));}catch(e){}updateUI();});
+    fbDB.ref('events/'+FB_EVENT_ID+'/tickets').on('value',function(s){tickets=s.val()||{};updateUI();});
+    fbDB.ref('events/'+FB_EVENT_ID+'/pending').on('value',function(s){var v=s.val()||{};pendingPayments=Object.keys(v).map(function(k){var o=v[k]||{};o.id=k;return o;});renderPendingPayments();});
+    fbDB.ref('events/'+FB_EVENT_ID+'/config').on('value',function(s){
+      salesConfig=s.val()||{};
+      if(!salesConfig.s1_name)salesConfig.s1_name='Preventa 1';
+      if(salesConfig.s1_price===undefined)salesConfig.s1_price=10;
+      if(!salesConfig.s2_name)salesConfig.s2_name='Preventa 2';
+      if(salesConfig.s2_price===undefined)salesConfig.s2_price=15;
+      if(!salesConfig.payInfo)salesConfig.payInfo='Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
+      document.getElementById('config-active-day').value=salesConfig.active_day||'';
+      document.getElementById('config-day-color').value=salesConfig.day_color||'#e0281a';
+      document.getElementById('config-admin-pin').value=salesConfig.admin_pin||CFG.PIN;
+      document.getElementById('config-portero-pin').value=salesConfig.portero_pin||CFG.PORTERO_PIN;
+      document.getElementById('config-event-name').value=salesConfig.event_name||'LIVE CAFÉ ROCK';
+      document.getElementById('config-event-sub').value=salesConfig.event_sub||'CONTROL DE ACCESO Y ENTRADAS';
+      document.getElementById('config-event-date').value=salesConfig.event_date||'31 / 07 / 2026';
+      document.getElementById('config-event-city').value=salesConfig.event_city||'Maracaibo, estado Zulia';
+      document.getElementById('config-event-logo').value=salesConfig.event_logo||'';
+      document.getElementById('config-payment-info').value=salesConfig.payInfo||'';
+      document.getElementById('config-s1-name').value=salesConfig.s1_name;
+      document.getElementById('config-s1-price').value=salesConfig.s1_price;
+      document.getElementById('config-s1-closed').checked=!!salesConfig.s1_closed;
+      document.getElementById('config-s2-name').value=salesConfig.s2_name;
+      document.getElementById('config-s2-price').value=salesConfig.s2_price;
+      document.getElementById('config-s2-closed').checked=!!salesConfig.s2_closed;
+      CFG.PIN=salesConfig.admin_pin||CFG.PIN;
+      CFG.PORTERO_PIN=salesConfig.portero_pin||CFG.PORTERO_PIN;
+      document.getElementById('payment-info').textContent=salesConfig.payInfo;
+      updateLandingUI();renderBuyStages();updateSalesUI();updateTotal();updateUI();
     });
+  }catch(e){setBadge('err','Nube error');}
+}
+function setBadge(cls,txt){var b=document.getElementById('fb-badge');b.className='fb-badge '+(cls||'');b.textContent=txt;}
+function saveUsed(){
+  try{localStorage.setItem('bleedit_used',JSON.stringify(Array.from(usedIDs)));}catch(e){}
+  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/used').set(Array.from(usedIDs)).catch(function(){});
+}
+function saveAttendees(){if(fbConnected){fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees).catch(function(){showToast('Error Firebase: revisa las reglas de tu DB','e');});}updateUI();}
 
-    function showView(vn) { var av = document.querySelectorAll('.vw'); for (var i = 0; i < av.length; i++) av[i].style.display = 'none'; var t = document.getElementById('view-' + vn); if (t) t.style.display = 'flex'; if (vn === 'buy') renderBuyStages(); window.scrollTo(0, 0); }
+/* ================= LANDING ================= */
+function updateLandingUI(){
+  var name=salesConfig.event_name||'LIVE CAFÉ ROCK';
+  var sub=salesConfig.event_sub||'CONTROL DE ACCESO Y ENTRADAS';
+  var date=salesConfig.event_date||'31 / 07 / 2026';
+  var city=salesConfig.event_city||'Maracaibo, estado Zulia';
+  var wm=document.getElementById('landing-title');
+  wm.innerHTML=name.trim().split(/\s+/).map(function(w,i){return '<span class="'+(i%2?'w-out':'')+'">'+esc(w)+'</span>';}).join('');
+  document.getElementById('landing-subtitle').textContent=sub;
+  document.getElementById('landing-date').textContent=date;
+  document.getElementById('landing-city').textContent=city;
+  var seg=(name+' /// '+date+' /// '+city+' /// '+sub+' /// ').toUpperCase();
+  document.getElementById('mq-a').textContent=seg.repeat(3);
+  document.getElementById('mq-b').textContent=seg.repeat(3);
+  var logo=salesConfig.event_logo,img=document.getElementById('landing-logo');
+  if(logo){img.src=logo;img.style.display='block';document.getElementById('hero-logo-wrap').style.display='block';document.getElementById('ft').style.display='none';}
+  else{img.style.display='none';document.getElementById('hero-logo-wrap').style.display='none';document.getElementById('ft').style.display='block';}
+  updateCountdown();
+}
+function updateCountdown(){
+  var el=document.getElementById('countdown');if(!el)return;
+  var m=(salesConfig.event_date||'').match(/(\d{1,2})\D+(\d{1,2})\D+(\d{2,4})/);
+  if(!m){el.style.display='none';return;}
+  var d=+m[1],mo=+m[2],y=+m[3];if(y<100)y+=2000;
+  var ev=new Date(y,mo-1,d);
+  if(isNaN(ev.getTime())){el.style.display='none';return;}
+  var today=new Date();today.setHours(0,0,0,0);
+  var dd=Math.round((ev-today)/86400000);
+  if(dd>1){el.style.display='';el.innerHTML='<i class="fa-solid fa-bolt"></i> FALTAN '+dd+' DÍOS'.replace('DÍOS','DÍAS');}
+  else if(dd===1){el.style.display='';el.innerHTML='<i class="fa-solid fa-bolt"></i> ¡MAÑANA ES EL SHOW!';}
+  else if(dd===0){el.style.display='';el.innerHTML='<i class="fa-solid fa-bolt"></i> ¡ES HOY!';}
+  else{el.style.display='';el.innerHTML='EVENTO REALIZADO';}
+}
 
-    function initFirebase() {
-        try {
-            if (!fbApp) fbApp = firebase.initializeApp(FIREBASE_CONFIG, 'live-cafe-app');
-            fbDB = fbApp.database(); fbConnected = true;
-            document.getElementById('fb-badge').className = 'firebase-status fb-connected';
-            document.getElementById('fb-badge').textContent = 'Nube Online';
-            fbDB.ref('events/' + FB_EVENT_ID + '/attendees').on('value', function(s) { attendees = s.val() ? Object.values(s.val()) : []; updateUI(); });
-            fbDB.ref('events/' + FB_EVENT_ID + '/used').on('value', function(s) { var data = s.val(); if (data) { usedIDs = new Set(Array.isArray(data) ? data : Object.values(data)); updateUI(); } });
-            fbDB.ref('events/' + FB_EVENT_ID + '/config').on('value', function(s) {
-                salesConfig = s.val() || {};
-                if (!salesConfig.s1_name) salesConfig.s1_name = 'Preventa 1';
-                if (salesConfig.s1_price === undefined) salesConfig.s1_price = 10;
-                if (!salesConfig.s2_name) salesConfig.s2_name = 'Preventa 2';
-                if (salesConfig.s2_price === undefined) salesConfig.s2_price = 15;
-                if (!salesConfig.payInfo) salesConfig.payInfo = 'Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
-                
-                document.getElementById('config-active-day').value = salesConfig.active_day || '';
-                document.getElementById('config-day-color').value = salesConfig.day_color || '#ff0000';
-                document.getElementById('config-event-name').value = salesConfig.event_name || 'LIVE CAFÉ ROCK';
-                document.getElementById('config-event-sub').value = salesConfig.event_sub || 'CONTROL DE ACCESO Y ENTRADAS';
-                document.getElementById('config-event-date').value = salesConfig.event_date || '31 / 07 / 2026';
-                document.getElementById('config-event-city').value = salesConfig.event_city || 'Maracaibo';
-                document.getElementById('config-event-logo').value = salesConfig.event_logo || '';
-                document.getElementById('config-payment-info').value = salesConfig.payInfo || '';
-                document.getElementById('config-s1-name').value = salesConfig.s1_name; document.getElementById('config-s1-price').value = salesConfig.s1_price;
-                document.getElementById('config-s1-closed').checked = salesConfig.s1_closed || false;
-                document.getElementById('config-s2-name').value = salesConfig.s2_name; document.getElementById('config-s2-price').value = salesConfig.s2_price;
-                document.getElementById('config-s2-closed').checked = salesConfig.s2_closed || false;
-                updateLandingUI(); renderBuyStages(); updateSalesUI();
-            });
-            fbDB.ref('events/' + FB_EVENT_ID + '/pending').on('value', function(s) { pendingPayments = s.val() ? Object.values(s.val()) : []; renderPendingPayments(); updateUI(); });
-        } catch(e) { document.getElementById('fb-badge').className = 'firebase-status fb-disconnected'; document.getElementById('fb-badge').textContent = 'Nube Error'; }
+/* ================= VENTAS ================= */
+function toggleSales(){
+  salesConfig.sales_paused=!salesConfig.sales_paused;
+  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/config').update({sales_paused:salesConfig.sales_paused});
+  updateSalesUI();renderBuyStages();
+  showToast(salesConfig.sales_paused?'Ventas pausadas':'Ventas activadas','i');
+}
+function updateSalesUI(){
+  var btn=document.getElementById('sales-toggle-btn'),lab=document.getElementById('buy-cta-label'),land=document.getElementById('btn-buy-landing');
+  if(!btn||!lab||!land)return;
+  if(salesConfig.sales_paused){
+    btn.innerHTML='<i class="fa-solid fa-play mr-2"></i>Reanudar ventas';btn.classList.add('paused');
+    lab.textContent='Ventas cerradas';land.disabled=true;land.style.opacity=.45;land.style.pointerEvents='none';
+  }else{
+    btn.innerHTML='<i class="fa-solid fa-pause mr-2"></i>Pausar ventas';btn.classList.remove('paused');
+    lab.textContent='Comprar entradas';land.disabled=false;land.style.opacity=1;land.style.pointerEvents='auto';
+  }
+}
+function stageCard(n,name,price){
+  return '<button type="button" class="stage'+(selectedStage===n?' sel':'')+'" onclick="selectStage('+n+')">'
+    +'<span class="stage-name">'+esc(name)+'</span>'
+    +'<span class="stage-price">$'+price+'</span>'
+    +'<span class="stage-hint mono">'+(selectedStage===n?'SELECCIONADA':'DISPONIBLE')+'</span></button>';
+}
+function renderBuyStages(){
+  var box=document.getElementById('buy-checkout');
+  var st=document.getElementById('buy-stages');
+  if(salesConfig.sales_paused){st.innerHTML='<div class="notice">Ventas pausadas — vuelve a intentar más tarde</div>';box.style.display='none';return;}
+  var c1=!!salesConfig.s1_closed,c2=!!salesConfig.s2_closed;
+  if(c1&&c2){st.innerHTML='<div class="notice">Agotado — no quedan etapas disponibles</div>';box.style.display='none';return;}
+  var h='<p class="step-label mono">PASO 01 — ELIGE TU ETAPA</p><div class="stages">';
+  if(!c1)h+=stageCard(1,salesConfig.s1_name,salesConfig.s1_price);
+  if(!c2)h+=stageCard(2,salesConfig.s2_name,salesConfig.s2_price);
+  h+='</div>';
+  st.innerHTML=h;
+  if(selectedStage===1&&c1)selectedStage=0;
+  if(selectedStage===2&&c2)selectedStage=0;
+  if(selectedStage)box.style.display='block';
+  updateTotal();
+}
+function selectStage(n){selectedStage=n;renderBuyStages();var box=document.getElementById('buy-checkout');box.style.display='block';box.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function updateTotal(){
+  var qty=Math.max(1,parseInt(document.getElementById('buy-qty').value,10)||1);
+  var price=selectedStage===1?(salesConfig.s1_price||0):(salesConfig.s2_price||0);
+  var name=selectedStage===1?salesConfig.s1_name:salesConfig.s2_name;
+  var t=document.getElementById('buy-total');if(t)t.textContent='$'+(qty*price);
+  var l=document.getElementById('buy-stage-label');if(l)l.textContent=name||'—';
+}
+function submitPurchase(){
+  var name=document.getElementById('buy-name').value.trim();
+  var dni=nD(document.getElementById('buy-dni').value);
+  var phone=nD(document.getElementById('buy-phone').value);
+  var qty=Math.max(1,parseInt(document.getElementById('buy-qty').value,10)||1);
+  var ref=document.getElementById('buy-ref').value.trim();
+  if(!name||!dni||!ref){showToast('Completa nombre, cédula y referencia de pago','e');return;}
+  var sc=selectedStage===1?{name:salesConfig.s1_name,price:salesConfig.s1_price||0}:{name:salesConfig.s2_name,price:salesConfig.s2_price||0};
+  var rec={name:name,dni:dni,phone:phone,qty:qty,ref:ref,stage:sc.name||'Venta',total:qty*sc.price,ts:Date.now(),status:'pendiente'};
+  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/pending').push(rec).catch(function(){showToast('Error al enviar. Revisa tu conexión','e');return;});
+  else{rec.id='L'+Date.now();pendingPayments.push(rec);renderPendingPayments();}
+  document.getElementById('confirm-name').textContent=name;
+  document.getElementById('confirm-ref').textContent=ref;
+  document.getElementById('confirm-stage').textContent=(qty+' × '+(sc.name||'Venta'));
+  document.getElementById('confirm-total').textContent='$'+rec.total;
+  ['buy-name','buy-dni','buy-phone','buy-ref'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('buy-qty').value=1;
+  showView('ticket');
+}
+async function saveSalesConfig(){
+  var nc={
+    active_day:document.getElementById('config-active-day').value,
+    day_color:document.getElementById('config-day-color').value,
+    admin_pin:document.getElementById('config-admin-pin').value||'2025',
+    portero_pin:document.getElementById('config-portero-pin').value||'1234',
+    event_name:document.getElementById('config-event-name').value,
+    event_sub:document.getElementById('config-event-sub').value,
+    event_date:document.getElementById('config-event-date').value,
+    event_city:document.getElementById('config-event-city').value,
+    event_logo:document.getElementById('config-event-logo').value,
+    payInfo:document.getElementById('config-payment-info').value,
+    s1_name:document.getElementById('config-s1-name').value,
+    s1_price:parseFloat(document.getElementById('config-s1-price').value)||0,
+    s1_closed:document.getElementById('config-s1-closed').checked,
+    s2_name:document.getElementById('config-s2-name').value,
+    s2_price:parseFloat(document.getElementById('config-s2-price').value)||0,
+    s2_closed:document.getElementById('config-s2-closed').checked,
+    sales_paused:salesConfig.sales_paused||false
+  };
+  salesConfig=nc;
+  CFG.PIN=nc.admin_pin;localStorage.setItem('bleedit_pin',CFG.PIN);
+  CFG.PORTERO_PIN=nc.portero_pin;localStorage.setItem('bleedit_portero_pin',CFG.PORTERO_PIN);
+  document.getElementById('payment-info').textContent=nc.payInfo;
+  if(fbConnected){
+    try{await fbDB.ref('events/'+FB_EVENT_ID+'/config').set(nc);showToast('Configuración guardada en la nube','s');}
+    catch(error){showToast('Error Firebase: revisa las reglas de tu DB','e');}
+  }else showToast('Configuración guardada localmente','s');
+  updateLandingUI();renderBuyStages();updateSalesUI();updateTotal();
+}
+
+/* ================= SERIALES ÚNICOS (NÚCLEO) ================= */
+var SERIAL_AB='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function genSerial(){
+  for(var tries=0;tries<80;tries++){
+    var s='';
+    for(var i=0;i<8;i++)s+=SERIAL_AB.charAt(Math.floor(Math.random()*SERIAL_AB.length));
+    if(s.replace(/[^A-Z]/g,'').length<2)continue;   /* nunca puro numérico: evita chocar con cédulas */
+    if(!tickets[s])return s;
+  }
+  var fb='X'+Date.now().toString(36).toUpperCase().replace(/[^A-Z0-9]/g,'');
+  while(fb.length<8)fb+='Z';
+  return fb.slice(0,8);
+}
+function ticketsArr(){return Object.keys(tickets).map(function(k){return tickets[k];});}
+function ticketsOf(dni,day){
+  var out=[];
+  for(var s in tickets){var t=tickets[s];if(t&&nD(t.d)===nD(dni)){if(!day||t.day===day)out.push(t);}}
+  out.sort(function(a,b){return (a.i||0)-(b.i||0);});
+  return out;
+}
+function findAttendeeExact(dni,day){
+  dni=nD(dni);
+  for(var i=0;i<attendees.length;i++){
+    var a=attendees[i];
+    if(a&&nD(a.D)===dni&&(a.E_D||'General')===(day||'General'))return a;
+  }
+  return null;
+}
+function findByDNI(d){d=nD(d);for(var i=0;i<attendees.length;i++){if(attendees[i]&&nD(attendees[i].D)===d)return attendees[i];}return null;}
+function usedCountFor(a){
+  var ts=ticketsOf(nD(a.D),a.E_D||null);
+  if(ts.length)return ts.filter(function(t){return t.u;}).length;
+  var d=nD(a.D),p1='LCR26|'+d+'|',p2=d+'|',c=0;
+  usedIDs.forEach(function(u){if(typeof u==='string'&&(u.indexOf(p1)===0||u.indexOf(p2)===0))c++;});
+  return c;
+}
+function ensureTicketsFor(dni,day){
+  dni=nD(dni);if(!dni)return[];
+  day=day||'General';
+  var a=findAttendeeExact(dni,day);
+  if(!a||!isPaid(a.P))return[];
+  var have=ticketsOf(dni,day),created=[],nextIx=0;
+  have.forEach(function(t){if((t.i||0)>nextIx)nextIx=t.i;});
+  for(var k=have.length;k<(a.C||1);k++){
+    nextIx++;
+    var s=genSerial();
+    var t={s:s,d:dni,n:a.N||'',e:a.E||'General',day:day,i:nextIx,u:false,ua:null,ts:Date.now()};
+    var lk1='LCR26|'+dni+'|'+(nextIx-1),lk2=dni+'|'+(nextIx-1);
+    if(usedIDs.has(lk1)||usedIDs.has(lk2)){t.u=true;t.ua=Date.now();}
+    tickets[s]=t;created.push(t);
+  }
+  if(created.length&&fbConnected){
+    var upd={};created.forEach(function(t){upd[t.s]=t;});
+    fbDB.ref('events/'+FB_EVENT_ID+'/tickets').update(upd).catch(function(){});
+  }
+  return created;
+}
+function ensureAllTickets(){
+  var n=0,seen={};
+  attendees.forEach(function(a){
+    if(!a||!isPaid(a.P))return;
+    var day=a.E_D||'General',key=nD(a.D)+'|'+day;
+    if(seen[key])return;seen[key]=1;
+    n+=ensureTicketsFor(a.D,day).length;
+  });
+  return n;
+}
+function markTicketUsed(t){
+  t.u=true;t.ua=Date.now();
+  patchTicketCards();
+  if(fbConnected){
+    fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).transaction(function(cur){
+      if(cur&&cur.u)return;           /* otro punto ya la marcó: aborta */
+      if(cur){cur.u=true;cur.ua=Date.now();return cur;}
+      return{u:true,ua:Date.now()};
+    });
+  }
+}
+function ownerTotal(t){var a=findAttendeeExact(t.d,t.day);return a?(a.C||1):Math.max(1,ticketsOf(t.d,t.day).length);}
+function legacyConsume(a){
+  for(var i=0;i<(a.C||1);i++){
+    var k1='LCR26|'+nD(a.D)+'|'+i,k2=nD(a.D)+'|'+i;
+    if(!usedIDs.has(k1)&&!usedIDs.has(k2)){usedIDs.add(k1);saveUsed();return{num:i+1};}
+  }
+  return null;
+}
+
+/* ================= VERIFICACIÓN (enrutador universal) ================= */
+function coreVerify(code){
+  code=String(code||'').trim();
+  if(!code)return{s:'invalid',t:'CÓDIGO VACÍO',m:'Nada que verificar.'};
+  if(code.indexOf('|')>-1)return verifyLegacy(code);
+  var clean=code.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(/^\d+$/.test(clean))return verifyDNIPath(clean);
+  if(/^[A-Z2-9]{8}$/.test(clean))return verifySerial(clean);
+  return{s:'invalid',t:'FORMATO NO RECONOCIDO',m:'Escanea un QR válido, un serial (8 caracteres) o una cédula.'};
+}
+function verifySerial(sr){
+  var t=tickets[sr];
+  if(!t)return{s:'invalid',t:'SERIAL DESCONOCIDO',m:'«'+sr+'» no pertenece a este evento.'};
+  var owner=findAttendeeExact(t.d,t.day);
+  if(owner&&!isPaid(owner.P))return{s:'unpaid',t:'PAGO ANULADO',tk:t,m:'El pago de esta entrada fue anulado. No admite ingreso.'};
+  if(t.u)return{s:'used',t:'YA UTILIZADA',tk:t,m:'Entrada Nº '+t.i+' — usada'+(t.ua?' el '+fmtDT(t.ua):'')+'.'};
+  var ad=salesConfig.active_day;
+  if(ad&&t.day&&t.day!==ad)return{s:'wrongday',t:'ENTRADA DE OTRO DÍA',tk:t,m:'Es para «'+t.day+'» y hoy es «'+ad+'». No se marca.'};
+  markTicketUsed(t);
+  var left=ticketsOf(t.d,t.day).filter(function(x){return !x.u;}).length;
+  return{s:'ok',t:'ACCESO CONCEDIDO',tk:t,m:'Entrada Nº '+t.i+' de '+ownerTotal(t)+(left?' · le quedan '+left:' · era la última')};
+}
+function verifyDNIPath(dni){
+  var ad=salesConfig.active_day;
+  var list=attendees.filter(function(a){return a&&nD(a.D)===nD(dni);});
+  if(!list.length)return{s:'invalid',t:'NO ENCONTRADA',m:'Cédula '+dni+' sin entradas registradas.'};
+  if(ad){
+    var m=list.filter(function(a){return (a.E_D||'General')===ad;});
+    if(!m.length){
+      var dias={};list.forEach(function(a){dias[a.E_D||'General']=1;});
+      return{s:'wrongday',t:'SIN ENTRADAS HOY',a:list[0],m:'Tiene entradas para: '+Object.keys(dias).join(', ')+' — hoy es «'+ad+'».'};
     }
+    list=m;
+  }
+  var a=list[0];
+  if(!isPaid(a.P))return{s:'unpaid',t:'PAGO PENDIENTE',a:a,m:'No figura como pagada. No se marca el ingreso.'};
+  var day=a.E_D||'General';
+  var free=ticketsOf(a.D,ad||null).filter(function(t){return !t.u;});
+  if(free.length){
+    var t=free[0];
+    markTicketUsed(t);
+    var left=ticketsOf(a.D,ad||null).filter(function(x){return !x.u;}).length;
+    return{s:'ok',t:'ACCESO CONCEDIDO',a:a,tk:t,m:'Entrada Nº '+t.i+' · serial '+t.s+(left?' · quedan '+left:' · era la última')};
+  }
+  if(!ticketsOf(a.D,ad||null).length){
+    var le=legacyConsume(a);
+    if(le)return{s:'ok',t:'ACCESO CONCEDIDO',a:a,m:'Ingreso '+le.num+' de '+(a.C||1)+' (registro local)'};
+  }
+  return{s:'full',t:'SIN ENTRADAS',a:a,m:'Ya usó todas sus entradas ('+usedCountFor(a)+'/'+(a.C||1)+').'};
+}
+function verifyLegacy(code){
+  var parts=code.split('|');
+  var dni=nD(parts[1]),idx=parseInt(parts[2],10);
+  var a=findByDNI(dni);
+  if(!a)return{s:'invalid',t:'INVÁLIDA',m:'Esta entrada no existe en la base de datos.'};
+  if(!isPaid(a.P))return{s:'unpaid',t:'PAGO PENDIENTE',a:a,m:'No figura como pagada.'};
+  var ts=ticketsOf(a.D,null);
+  if(ts.length){
+    var t=null;
+    for(var i=0;i<ts.length;i++)if(ts[i].i===idx+1){t=ts[i];break;}
+    if(t)return verifySerial(t.s);
+    return{s:'invalid',t:'INVÁLIDA',a:a,m:'Número de entrada fuera de rango.'};
+  }
+  if(usedIDs.has(code))return{s:'used',t:'YA UTILIZADA',a:a,m:'Esta entrada ya pasó por puerta.'};
+  if(isNaN(idx)||idx<0||idx>=(a.C||1))return{s:'invalid',t:'INVÁLIDA',a:a,m:'Número de entrada fuera de rango.'};
+  usedIDs.add(code);saveUsed();
+  return{s:'ok',t:'ACCESO CONCEDIDO',a:a,m:'Entrada Nº '+(idx+1)+' de '+(a.C||1)};
+}
+function resultHTML(r){
+  var cls=r.s==='ok'?'ok':(r.s==='invalid'?'bad':'warn');
+  var icon=r.s==='ok'?'fa-circle-check':(r.s==='invalid'?'fa-circle-xmark':'fa-triangle-exclamation');
+  var det='';
+  if(r.tk){
+    var tot=ownerTotal(r.tk),used=ticketsOf(r.tk.d,r.tk.day).filter(function(x){return x.u;}).length;
+    det='<div class="res-grid">'
+      +'<div><b>Serial</b><span class="mono">'+dashSerial(r.tk.s)+'</span></div>'
+      +'<div><b>Comprador</b><span>'+esc(r.tk.n||'—')+'</span></div>'
+      +'<div><b>Cédula</b><span class="mono">'+esc(r.tk.d)+'</span></div>'
+      +'<div><b>Etapa / Día</b><span>'+esc(r.tk.e||'—')+' · '+esc(r.tk.day||'—')+'</span></div>'
+      +'<div><b>Del pedido</b><span class="mono">'+used+' / '+tot+' usadas</span></div>'
+      +'<div><b>Nº de entrada</b><span class="mono">'+(r.tk.i||'—')+'</span></div>'
+      +'</div>';
+  }else if(r.a){
+    det='<div class="res-grid">'
+      +'<div><b>Nombre</b><span>'+esc(r.a.N||'—')+'</span></div>'
+      +'<div><b>Cédula</b><span class="mono">'+esc(r.a.D)+'</span></div>'
+      +'<div><b>Etapa</b><span>'+esc(r.a.E||'—')+'</span></div>'
+      +'<div><b>Ingresos</b><span class="mono">'+usedCountFor(r.a)+' / '+(r.a.C||1)+'</span></div>'
+      +'</div>';
+  }
+  return '<div class="res res-'+cls+'"><div class="res-head"><i class="fa-solid '+icon+'"></i><span>'+esc(r.t)+'</span></div>'
+    +(r.m?'<p class="res-msg">'+esc(r.m)+'</p>':'')+det+'</div>';
+}
 
-    function updateLandingUI() {
-        var name = document.getElementById('config-event-name').value || 'LIVE CAFÉ ROCK';
-        document.getElementById('landing-title').textContent = name; document.getElementById('landing-title').setAttribute('data-text', name);
-        document.getElementById('landing-subtitle').textContent = document.getElementById('config-event-sub').value || '';
-        document.getElementById('landing-date').textContent = document.getElementById('config-event-date').value || '';
-        document.getElementById('landing-city').textContent = document.getElementById('config-event-city').value || '';
-        var logo = document.getElementById('config-event-logo').value;
-        var img = document.getElementById('landing-logo');
-        if(logo) { img.src = logo; img.style.display = 'block'; document.getElementById('ft').style.display = 'none'; }
+/* consulta pública: muestra TODAS las entradas con QR de la cédula */
+function verifyDNI(){
+  var box=document.getElementById('verify-result');box.style.display='block';
+  var dni=nD(document.getElementById('verify-dni').value);
+  if(!dni){box.innerHTML=resultHTML({s:'invalid',t:'INGRESA UNA CÉDULA',m:'Escribe la cédula con la que compraste.'});return;}
+  var list=attendees.filter(function(a){return a&&nD(a.D)===dni;});
+  var ts=ticketsOf(dni,null);
+  if(!list.length&&!ts.length){box.innerHTML=resultHTML({s:'invalid',t:'NO ENCONTRADA',m:'No hay entradas registradas con la cédula '+dni+'.'});return;}
+  if(ts.length){
+    var anyUnpaid=list.some(function(a){return !isPaid(a.P);});
+    if(anyUnpaid){box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',a:list[0],m:'Cuando el organizador apruebe el pago verás aquí tus entradas con QR.'});return;}
+    var used=ts.filter(function(t){return t.u;}).length;
+    var state=used>=ts.length?'warn':'ok';
+    var h='<div class="res res-'+state+'">'
+      +'<div class="res-head"><i class="fa-solid fa-circle-check"></i><span>'+(state==='ok'?'TUS ENTRADAS':'ENTRADAS AGOTADAS')+'</span></div>'
+      +'<p class="res-msg">Comprador: '+esc(list[0]?list[0].N:(ts[0].n||''))+' · '+(ts.length-used)+' de '+ts.length+' sin usar</p>'
+      +'<p class="res-share">Cada serial es una entrada independiente · comparte cada QR con quien la vaya a usar</p>'
+      +'<div class="tk-list">';
+    ts.forEach(function(t){
+      h+='<div class="tk-chip'+(t.u?' off':'')+'">'
+        +'<div class="tk-qr-box"><img id="pvq-'+t.s+'" alt="QR '+esc(t.s)+'"></div>'
+        +'<div class="tk-srl">'+dashSerial(t.s)+'</div>'
+        +'<div class="tk-meta">'+esc(t.e||'')+(t.day&&t.day!=='General'?' · '+esc(t.day):'')+' · Nº '+t.i+(t.u?' · <b>USADA</b>':'')+'</div>'
+        +'</div>';
+    });
+    h+='</div></div>';
+    box.innerHTML=h;
+    ts.forEach(function(t){
+      makeQR(t.s,320).then(function(url){
+        var el=document.getElementById('pvq-'+t.s);
+        if(el){if(url)el.src=url;else el.parentNode.innerHTML='<span class="mono" style="font-size:11px">'+esc(t.s)+'</span>';}
+      });
+    });
+    return;
+  }
+  var a=list[0];
+  if(!isPaid(a.P))box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',a:a,m:'Cuando el organizador apruebe el pago verás aquí tus entradas con QR.'});
+  else box.innerHTML=resultHTML({s:'ok',t:'ENTRADAS VÁLIDAS',a:a,m:'Tienes '+(a.C||1)+' entradas · usadas '+usedCountFor(a)+'. Los QR aún no han sido emitidos; vuelve a consultar.'});
+}
+
+/* ================= CÁMARA + jsQR (lector propio, sin html5-qrcode) ================= */
+var CAM={video:null,statusId:'',onResult:null,stream:null,track:null,running:false,raf:0,lastFrame:0,flip:false,lockUntil:0,lastCode:'',lastShown:0,wantDevice:null,camIx:0,torchOn:false,cv:null,cx:null};
+function camStart(videoId,statusId,onResult){
+  camStop();
+  CAM.video=document.getElementById(videoId);
+  CAM.statusId=statusId;
+  CAM.onResult=onResult;
+  if(!window.isSecureContext){camStatus('<i class="fa-solid fa-lock mr-2"></i>La cámara necesita conexión segura (HTTPS o localhost). Mientras tanto: sube la foto del QR o escribe el serial.');return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camStatus('<i class="fa-solid fa-lock mr-2"></i>Cámara no disponible en este navegador. Usa la subida de foto o el serial manual.');return;}
+  ensureJsQR(function(ok){
+    if(!ok){camStatus('No se pudo cargar el motor de lectura QR. Revisa tu conexión.');return;}
+    camOpen();
+  });
+}
+function camStatus(html){var el=document.getElementById(CAM.statusId);if(el)el.innerHTML=html;}
+function camOpen(){
+  if(CAM.stream){CAM.stream.getTracks().forEach(function(t){t.stop();});CAM.stream=null;}
+  var v=CAM.video;if(!v)return;
+  v.setAttribute('playsinline','');v.muted=true;v.playsInline=true;
+  CAM.running=true;CAM.lastCode='';CAM.lastShown=0;CAM.lockUntil=0;
+  camStatus('<i class="fa-solid fa-spinner fa-spin mr-2"></i>Encendiendo cámara…');
+  var vc=CAM.wantDevice?{deviceId:{exact:CAM.wantDevice},width:{ideal:1280},height:{ideal:720}}:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}};
+  navigator.mediaDevices.getUserMedia({audio:false,video:vc}).then(function(st){
+    CAM.stream=st;CAM.track=st.getVideoTracks()[0];
+    v.srcObject=st;
+    var caps={};try{caps=CAM.track.getCapabilities?CAM.track.getCapabilities():{};}catch(e){}
+    setTorchUI(!!(caps&&caps.torch));
+    return v.play();
+  }).then(function(){
+    camStatus('<span class="ok-t"><i class="fa-solid fa-video mr-2"></i>CÁMARA LISTA · APUNTA AL QR</span>');
+    CAM.cv=document.createElement('canvas');
+    CAM.cx=CAM.cv.getContext('2d',{willReadFrequently:true});
+    cancelAnimationFrame(CAM.raf);
+    CAM.raf=requestAnimationFrame(camTick);
+  }).catch(function(err){
+    CAM.running=false;
+    var msg='No se pudo abrir la cámara.';
+    if(err&&err.name==='NotAllowedError')msg='Permiso denegado. Habilita la cámara en el navegador y reintenta.';
+    else if(err&&err.name==='NotFoundError')msg='Este dispositivo no tiene cámara.';
+    else if(err&&err.name==='NotReadableError')msg='La cámara está en uso por otra aplicación.';
+    camStatus('<i class="fa-solid fa-video-slash mr-2"></i>'+msg+' — Sube la foto del QR o escribe el serial.');
+  });
+}
+function camTick(){
+  if(!CAM.running)return;
+  CAM.raf=requestAnimationFrame(camTick);
+  var v=CAM.video;
+  if(!v||v.readyState<2||!v.videoWidth)return;
+  var now=performance.now();
+  if(now-CAM.lastFrame<110)return;
+  CAM.lastFrame=now;
+  var sw=Math.min(v.videoWidth,800),sh=Math.max(1,Math.round(v.videoHeight*sw/v.videoWidth));
+  CAM.cv.width=sw;CAM.cv.height=sh;
+  CAM.cx.drawImage(v,0,0,sw,sh);
+  var d;try{d=CAM.cx.getImageData(0,0,sw,sh);}catch(e){return;}
+  CAM.flip=!CAM.flip;   /* alterna normal/invertido para cubrir ambos con la mitad de CPU */
+  var r=null;
+  try{r=jsQR(d.data,sw,sh,{inversionAttempts:CAM.flip?'dontInvert':'onlyInvert'});}catch(e){}
+  if(r&&r.data)camResult(r.data);
+}
+function camResult(txt){
+  var now=Date.now();
+  if(now<CAM.lockUntil)return;
+  var key=String(txt).trim().toUpperCase();
+  if(key===CAM.lastCode&&now-CAM.lastShown<10000)return;
+  CAM.lastCode=key;CAM.lastShown=now;CAM.lockUntil=now+2600;
+  var r=coreVerify(key);
+  feedback(r);
+  if(CAM.onResult)CAM.onResult(r,txt);
+}
+function feedback(r){if(r.s==='ok'){beepGood();vib(70);}else{beepBad();vib([120,60,120]);}}
+function camStop(){
+  CAM.running=false;
+  cancelAnimationFrame(CAM.raf);
+  if(CAM.stream){CAM.stream.getTracks().forEach(function(t){t.stop();});CAM.stream=null;}
+  if(CAM.video){try{CAM.video.srcObject=null;}catch(e){}}
+  CAM.track=null;setTorchUI(false);
+}
+function setTorchUI(av){
+  ['torch-btn','kiosk-torch-btn'].forEach(function(id){var b=document.getElementById(id);if(b){b.style.display=av?'inline-flex':'none';b.classList.remove('on');}});
+  CAM.torchOn=false;
+}
+function toggleTorch(){
+  if(!CAM.track)return;
+  CAM.torchOn=!CAM.torchOn;
+  CAM.track.applyConstraints({advanced:[{torch:CAM.torchOn}]}).then(function(){
+    ['torch-btn','kiosk-torch-btn'].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.toggle('on',CAM.torchOn);});
+  }).catch(function(){showToast('La linterna no está disponible en este equipo','e');});
+}
+function switchCam(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices){showToast('Cambio de cámara no disponible','i');return;}
+  navigator.mediaDevices.enumerateDevices().then(function(ds){
+    var cams=ds.filter(function(d){return d.kind==='videoinput';});
+    if(cams.length<2){showToast('Solo hay una cámara disponible','i');return;}
+    CAM.camIx=(CAM.camIx+1)%cams.length;
+    CAM.wantDevice=cams[CAM.camIx].deviceId;
+    camOpen();
+  }).catch(function(){});
+}
+/* lectura desde archivo de imagen, con varios reintentos de escala */
+function scanImageFile(file,cb){
+  if(!file)return;
+  if(!window.jsQR){ensureJsQR(function(ok){if(ok)scanImageFile(file,cb);else showToast('No se pudo cargar el lector QR','e');});return;}
+  var url=URL.createObjectURL(file);
+  var img=new Image();
+  img.onload=function(){
+    URL.revokeObjectURL(url);
+    var scales=[1];
+    if(img.naturalWidth<=500)scales=[1,2,3];
+    else if(img.naturalWidth>2000)scales=[1,0.5];
+    for(var a=0;a<scales.length;a++){
+      var w=Math.round(img.naturalWidth*scales[a]),h=Math.round(img.naturalHeight*scales[a]);
+      if(w<50||h<50)continue;
+      var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      var cx=cv.getContext('2d',{willReadFrequently:true});
+      cx.drawImage(img,0,0,w,h);
+      var d;try{d=cx.getImageData(0,0,w,h);}catch(e){continue;}
+      var r=null;
+      try{r=jsQR(d.data,w,h,{inversionAttempts:'attemptBoth'});}catch(e){}
+      if(r&&r.data){cb(r.data);return;}
     }
+    cb(null);
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);cb(null);};
+  img.src=url;
+}
+function scanQRFromFile(ev){
+  var f=ev.target.files&&ev.target.files[0];ev.target.value='';
+  if(!f)return;
+  scanImageFile(f,function(txt){
+    if(!txt){showToast('No se detectó un QR legible en esa imagen','e');return;}
+    var r=coreVerify(String(txt).trim().toUpperCase());
+    feedback(r);
+    var box=document.getElementById('scanner-result');box.style.display='block';box.innerHTML=resultHTML(r);
+    pushScanLog(r);updateUI();
+  });
+}
+function scanQRFromFileKiosk(ev){
+  var f=ev.target.files&&ev.target.files[0];ev.target.value='';
+  if(!f)return;
+  scanImageFile(f,function(txt){
+    if(!txt){showToast('No se detectó un QR legible','e');return;}
+    var r=coreVerify(String(txt).trim().toUpperCase());
+    feedback(r);
+    kioskShow(r);updateUI();
+  });
+}
+function openScanner(){
+  showView('scanner');
+  document.getElementById('scanner-result').style.display='none';
+  document.getElementById('scan-log-wrap').style.display='none';
+  SCANLOG=[];
+  setTimeout(function(){camStart('scanner-video','scanner-status',onScannerResult);},200);
+}
+function onScannerResult(r,txt){
+  var box=document.getElementById('scanner-result');box.style.display='block';
+  box.innerHTML=resultHTML(r);
+  var st=document.getElementById('scanner-status');
+  if(st)st.innerHTML=r.s==='ok'?'<span class="ok-t">LECTURA OK · SIGUE ESCANEANDO</span>':'<span class="warn-t">ÚLTIMO: '+esc(r.t)+'</span>';
+  pushScanLog(r);
+  updateUI();
+}
+function pushScanLog(r){
+  SCANLOG.unshift({t:r.t,ok:r.s==='ok',when:new Date(),ref:r.tk?r.tk.s:(r.a?nD(r.a.D):'—')});
+  if(SCANLOG.length>6)SCANLOG.pop();
+  var w=document.getElementById('scan-log-wrap');
+  if(w)w.style.display='';
+  var el=document.getElementById('scan-log');if(!el)return;
+  el.innerHTML=SCANLOG.map(function(x){
+    return '<div class="log-row '+(x.ok?'ok':'bad')+'"><span class="mono">'+x.when.toLocaleTimeString()+'</span><span>'+esc(x.t)+'</span><span class="mono">'+esc(x.ref)+'</span></div>';
+  }).join('');
+}
+function verifyFromScanner(){runManual('scanner-dni-input','scanner-result');}
+function adminVerify(){runManual('admin-dni-input','admin-verify-result');}
+function runManual(inId,outId){
+  var raw=document.getElementById(inId).value.trim();
+  var box=document.getElementById(outId);box.style.display='block';
+  if(!raw){box.innerHTML=resultHTML({s:'invalid',t:'ESCRIBE UN CÓDIGO',m:'Cédula o serial de la entrada.'});return;}
+  var r=coreVerify(raw);
+  feedback(r);
+  box.innerHTML=resultHTML(r);
+  document.getElementById(inId).value='';
+  pushScanLog(r);
+  updateUI();
+}
 
-    function toggleSales() { salesConfig.sales_paused = !salesConfig.sales_paused; if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/config').update({sales_paused: salesConfig.sales_paused}); updateSalesUI(); showToast(salesConfig.sales_paused ? 'Ventas Pausadas' : 'Ventas Activadas', 'i'); }
-    function updateSalesUI() { var btn = document.getElementById('sales-toggle-btn'); var landBtn = document.getElementById('btn-buy-landing'); if (!btn || !landBtn) return; if (salesConfig.sales_paused) { btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i>Reanudar Ventas'; btn.style.background = 'linear-gradient(135deg,#00cc44,#009933)'; landBtn.innerHTML = '<i class="fa-solid fa-ban mr-2"></i>Ventas Cerradas'; landBtn.disabled = true; landBtn.style.opacity = '0.5'; landBtn.style.pointerEvents = 'none'; } else { btn.innerHTML = '<i class="fa-solid fa-pause mr-2"></i>Pausar Ventas'; btn.style.background = 'linear-gradient(135deg,var(--accent),#990000)'; landBtn.innerHTML = '<i class="fa-solid fa-ticket mr-2"></i>Comprar Entradas'; landBtn.disabled = false; landBtn.style.opacity = '1'; landBtn.style.pointerEvents = 'auto'; } }
+/* ================= MODO PUERTA ================= */
+function enterKioskMode(){
+  document.getElementById('kiosk-mode').classList.add('active');
+  tone(660,.06,0);  /* desbloquea el audio con el gesto del usuario */
+  setTimeout(function(){camStart('kiosk-video','kiosk-status',function(r){kioskShow(r);updateUI();});},250);
+}
+function exitKioskMode(){
+  camStop();
+  document.getElementById('kiosk-mode').classList.remove('active');
+  document.getElementById('kiosk-anim').style.display='none';
+  kioskTok++;
+}
+function kioskManual(){
+  var el=document.getElementById('kiosk-manual');
+  var raw=el.value.trim();if(!raw)return;
+  var r=coreVerify(raw);
+  feedback(r);
+  el.value='';
+  kioskShow(r);updateUI();
+}
+function kioskShow(r){
+  var my=++kioskTok;
+  var el=document.getElementById('kiosk-anim');
+  var cls=r.s==='ok'?'green':(r.s==='invalid'?'red':'amber');
+  var words={ok:'PASA',invalid:'NO VÁLIDA',used:'YA USADA',full:'AGOTADA',unpaid:'SIN PAGO',wrongday:'OTRO DÍA'};
+  el.className='kiosk-anim '+cls+' show'+(r.s==='ok'?'':' shake');
+  el.style.display='flex';
+  var who=r.tk?(r.tk.n||''):(r.a?(r.a.N||''):'');
+  var sub=r.tk?(dashSerial(r.tk.s)+' · Nº '+r.tk.i+' · '+esc(r.tk.e||'')):(r.a?(nD(r.a.D)+' · '+esc(r.a.E||'')):'');
+  var rest='';
+  if(r.s==='ok'&&r.tk){
+    var left=ticketsOf(r.tk.d,r.tk.day).filter(function(t){return !t.u;}).length;
+    rest='LE QUEDAN '+left+' DE '+ownerTotal(r.tk);
+  }
+  el.innerHTML='<div class="kiosk-big">'+(words[r.s]||'ERROR')+'</div>'
+    +(who?'<div class="kiosk-info">'+esc(who)+'</div>':'')
+    +(sub?'<div class="kiosk-sub">'+sub+'</div>':'')
+    +(r.m?'<div class="kiosk-sub">'+esc(r.m)+'</div>':'')
+    +(rest?'<div class="kiosk-rest">'+rest+'</div>':'');
+  if(r.s==='ok')confetti(el);
+  setTimeout(function(){if(my===kioskTok){el.style.display='none';el.className='kiosk-anim';}},2400);
+}
+function confetti(host){
+  var cols=['#e0281a','#f3eee3','#d9a441','#3ecf6d'];
+  for(var i=0;i<26;i++){
+    var p=document.createElement('i');
+    p.className='cf';
+    p.style.left=(8+Math.random()*84)+'%';
+    p.style.background=cols[i%4];
+    p.style.animationDelay=(Math.random()*0.25)+'s';
+    p.style.animationDuration=(0.9+Math.random()*0.8)+'s';
+    p.style.setProperty('--dx',(Math.random()*180-90)+'px');
+    host.appendChild(p);
+    setTimeout(function(pp){return function(){pp.remove();};}(p),2100);
+  }
+}
 
-    async function saveSalesConfig() {
-        var newConfig = {
-            active_day: document.getElementById('config-active-day').value,
-            day_color: document.getElementById('config-day-color').value,
-            event_name: document.getElementById('config-event-name').value,
-            event_sub: document.getElementById('config-event-sub').value,
-            event_date: document.getElementById('config-event-date').value,
-            event_city: document.getElementById('config-event-city').value,
-            event_logo: document.getElementById('config-event-logo').value,
-            payInfo: document.getElementById('config-payment-info').value,
-            s1_name: document.getElementById('config-s1-name').value,
-            s1_price: parseFloat(document.getElementById('config-s1-price').value) || 0,
-            s1_closed: document.getElementById('config-s1-closed').checked,
-            s2_name: document.getElementById('config-s2-name').value,
-            s2_price: parseFloat(document.getElementById('config-s2-price').value) || 0,
-            s2_closed: document.getElementById('config-s2-closed').checked,
-            sales_paused: salesConfig.sales_paused || false
-        };
-        salesConfig = newConfig;
-        if (fbConnected) {
-            try {
-                await fbDB.ref('events/' + FB_EVENT_ID + '/config').set(newConfig);
-                showToast('Configuracion guardada en la nube', 's');
-            } catch(error) {
-                showToast('Error Firebase: Revisa las reglas de tu DB', 'e');
-            }
-        } else {
-            showToast('Configuracion guardada localmente', 's');
-        }
-        updateLandingUI(); renderBuyStages(); updateSalesUI();
+/* ================= PAGOS PENDIENTES ================= */
+function renderPendingPayments(){
+  var box=document.getElementById('pending-payments-list');if(!box)return;
+  var list=pendingPayments.filter(function(p){return p&&(!p.status||p.status==='pendiente');});
+  if(!list.length){box.innerHTML='<p class="empty">SIN PAGOS PENDIENTES DE REVISIÓN</p>';return;}
+  var h='';
+  list.forEach(function(p){
+    h+='<div class="pay">'
+      +'<div><div class="pay-name">'+esc(p.name||'—')+'</div>'
+      +'<div class="pay-meta">CI '+esc(p.dni||'—')+' · '+esc(p.qty||1)+' × '+esc(p.stage||'')+' · REF '+esc(p.ref||'—')+'</div>'
+      +(p.phone?'<div class="pay-meta">Telf '+esc(p.phone)+'</div>':'')
+      +(p.ts?'<div class="pay-meta">'+new Date(p.ts).toLocaleString()+'</div>':'')+'</div>'
+      +'<div class="pay-side"><div class="pay-total">$'+(p.total||0)+'</div>'
+      +'<div class="pay-actions">'
+      +'<button class="ibtn ok" title="Aprobar y emitir entradas" onclick="approvePayment(\''+esc(p.id)+'\')"><i class="fa-solid fa-check"></i></button>'
+      +'<button class="ibtn bad" title="Rechazar" onclick="rejectPayment(\''+esc(p.id)+'\')"><i class="fa-solid fa-xmark"></i></button>'
+      +'</div></div></div>';
+  });
+  box.innerHTML=h;
+}
+function approvePayment(id){
+  var p=null;
+  for(var i=0;i<pendingPayments.length;i++)if(pendingPayments[i]&&pendingPayments[i].id===id){p=pendingPayments[i];break;}
+  if(!p)return;
+  var day=salesConfig.active_day||'General',merged=false;
+  for(var j=0;j<attendees.length;j++){
+    if(attendees[j]&&nD(attendees[j].D)===nD(p.dni)&&attendees[j].E_D===day){
+      attendees[j].C=(attendees[j].C||1)+(p.qty||1);attendees[j].P=true;if(p.name)attendees[j].N=p.name;merged=true;break;
     }
+  }
+  if(!merged)attendees.push({N:p.name||'',D:nD(p.dni),E:p.stage||'Venta',E_D:day,C:p.qty||1,T:p.phone||'',P:true});
+  if(fbConnected){
+    fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees);
+    fbDB.ref('events/'+FB_EVENT_ID+'/pending/'+id).remove();
+  }else{pendingPayments=pendingPayments.filter(function(x){return x.id!==id;});}
+  var created=ensureTicketsFor(p.dni,day);
+  updateUI();beepGood();
+  showToast('Pago aprobado · '+(created.length||p.qty||1)+' entrada(s) con serial emitidas','s');
+}
+function rejectPayment(id){
+  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/pending/'+id).remove();
+  else pendingPayments=pendingPayments.filter(function(x){return x.id!==id;});
+  renderPendingPayments();showToast('Pago rechazado','e');
+}
 
-    // ============================================================
-    // LECTOR DE EXCEL Y PEGADO RÁPIDO (ASYNC PARA DETECTAR ERRORES)
-    // ============================================================
-    async function handleFileUpload() {
-        var fileInput = document.getElementById('file-input');
-        if (!fileInput || !fileInput.files || !fileInput.files.length) { showToast('Selecciona un archivo', 'e'); return; }
-        var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
-        var file = fileInput.files[0]; var reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                var data = new Uint8Array(e.target.result);
-                var wb = XLSX.read(data, {type: 'array'});
-                if (!wb || !wb.SheetNames || wb.SheetNames.length === 0) throw new Error('Archivo Excel vacío');
-                var ws = wb.Sheets[wb.SheetNames[0]];
-                var csv = XLSX.utils.sheet_to_csv(ws);
-                var parsed = parseCSV(csv, dayName);
-                if (!parsed || !parsed.length) throw new Error('No se encontraron datos válidos en el Excel');
-                if (!Array.isArray(attendees)) attendees = [];
-                for (var i=0; i<parsed.length; i++) {
-                    var exists = false;
-                    for (var j=0; j<attendees.length; j++) {
-                        if (attendees[j] && nD(attendees[j].D) === nD(parsed[i].D) && attendees[j].E_D === parsed[i].E_D) {
-                            attendees[j].C += parsed[i].C; exists = true; break;
-                        }
-                    }
-                    if (!exists) attendees.push(parsed[i]);
-                }
-                if (fbConnected) {
-                    showToast('Subiendo a la nube...', 'i');
-                    await fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
-                    showToast(parsed.length + ' registros cargados en la nube', 's');
-                } else {
-                    showToast(parsed.length + ' registros cargados local', 's');
-                }
-                updateUI(); fileInput.value = '';
-            } catch(err) {
-                console.error("Upload Error:", err);
-                if (err.code === 'PERMISSION_DENIED') {
-                    showToast('Error Firebase: Revisa las reglas de tu DB', 'e');
-                } else {
-                    showToast('Error: ' + err.message, 'e');
-                }
-            }
-        };
-        reader.readAsArrayBuffer(file);
+/* ================= LISTA Y ESTADÍSTICAS ================= */
+function updateUI(){
+  var c=document.getElementById('admin-data-count');if(c)c.textContent=attendees.length+' REG';
+  updateStats();renderList();renderPendingPayments();patchTicketCards();
+}
+function animNum(id,to){
+  var el=document.getElementById(id);if(!el)return;
+  var from=parseInt(el.dataset.v||'0',10);
+  if(from===to){el.textContent=to;return;}
+  el.dataset.v=to;
+  var t0=performance.now();
+  function step(t){var p=Math.min(1,(t-t0)/450);el.textContent=Math.round(from+(to-from)*p);if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+function updateStats(){
+  var tot=0,paid=0,pend=0,cort=0;
+  attendees.forEach(function(a){
+    if(!a)return;var c=a.C||1;tot+=c;
+    if(isPaid(a.P))paid+=c;else pend+=c;
+    if(normalizeStr(a.E||'').indexOf('cortes')>-1)cort+=c;
+  });
+  animNum('stat-total',tot);animNum('stat-paid',paid);animNum('stat-pending',pend);animNum('stat-cortesia',cort);
+  setTicketSummary();
+  var tArr=ticketsArr(),vEl=document.getElementById('verified-count'),tEl=document.getElementById('total-count');
+  if(tArr.length){vEl.textContent=tArr.filter(function(t){return t.u;}).length;tEl.textContent=tArr.length;}
+  else{var u=0,tt=0;attendees.forEach(function(a){if(a){u+=usedCountFor(a);tt+=(a.C||1);}});vEl.textContent=u;tEl.textContent=tt;}
+}
+function setTicketSummary(){
+  var el=document.getElementById('ticket-summary');if(!el)return;
+  var arr=ticketsArr();
+  if(!arr.length){el.textContent='SIN EMITIR';return;}
+  var used=arr.filter(function(t){return t.u;}).length;
+  el.innerHTML=arr.length+' EMITIDAS · <span style="color:var(--green)">'+(arr.length-used)+' DISPONIBLES</span> · <span style="color:var(--red)">'+used+' USADAS</span>';
+}
+function renderStageStats(){
+  var box=document.getElementById('stage-stats');if(!box)return;
+  var g={};
+  attendees.forEach(function(a){if(!a)return;var k=a.E_D||a.E||'General';if(!g[k])g[k]={sold:0,in:0};g[k].sold+=(a.C||1);});
+  Object.keys(tickets).forEach(function(s){var t=tickets[s];if(!t)return;var k=t.day||'General';if(!g[k])g[k]={sold:0,in:0};if(t.u)g[k].in++;});
+  var h='';
+  Object.keys(g).forEach(function(k){
+    var o=g[k],pct=o.sold?Math.min(100,Math.round(100*o.in/o.sold)):0;
+    h+='<div class="stg"><div class="stg-head"><span>'+esc(k)+'</span><span class="stg-nums">'+o.in+' / '+o.sold+' EN PUERTA</span></div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  });
+  box.innerHTML=h;
+}
+function renderList(){
+  var tb=document.getElementById('attendee-tbody');if(!tb)return;
+  var q=normalizeStr(document.getElementById('search-attendee').value||'');
+  var dq=nD(q);
+  var rows=attendees.map(function(a,i){return{i:i,a:a};}).filter(function(r){
+    if(!r.a)return false;
+    if(!q)return true;
+    return normalizeStr(r.a.N).indexOf(q)>-1||(dq&&nD(r.a.D).indexOf(dq)>-1);
+  });
+  var h='';
+  rows.forEach(function(r){
+    var a=r.a,u=usedCountFor(a);
+    h+='<tr>'
+      +'<td><span class="chip">'+esc(a.E||'—')+'</span>'+(a.E_D&&a.E_D!=='General'?'<span class="td-sub">'+esc(a.E_D)+'</span>':'')+'</td>'
+      +'<td class="td-name">'+esc(a.N||'—')+'</td>'
+      +'<td class="td-mono">'+esc(a.D)+'</td>'
+      +'<td><span class="u-count '+(u>=(a.C||1)?'full':(u>0?'part':''))+'">'+u+'/'+(a.C||1)+'</span>'+(isPaid(a.P)?'':' <span class="chip chip-warn">por pagar</span>')+'</td>'
+      +'<td class="td-actions"><button class="ibtn ok" title="Check-in" onclick="quickCheckIn('+r.i+')"><i class="fa-solid fa-right-to-bracket"></i></button>'
+      +'<button class="ibtn" title="Editar" onclick="openEditModal('+r.i+')"><i class="fa-solid fa-pen"></i></button></td>'
+      +'</tr>';
+  });
+  if(!rows.length)h='<tr><td colspan="5" class="empty">SIN RESULTADOS</td></tr>';
+  tb.innerHTML=h;
+  renderStageStats();
+}
+function quickCheckIn(i){
+  var a=attendees[i];if(!a)return;
+  var r=coreVerify(a.D);
+  feedback(r);
+  showToast(r.t,r.s==='ok'?'s':'e');
+  updateUI();
+}
+
+/* ================= ENTRADAS VISUALES ================= */
+function generateAllVisualTickets(){
+  var created=ensureAllTickets();
+  renderTicketCards();
+  var total=ticketsArr().length;
+  showToast(created?(created+' entrada(s) nueva(s) emitidas'):('Entradas al día · '+total),created?'s':'i');
+}
+function renderTicketCards(){
+  var grid=document.getElementById('qr-grid');if(!grid)return;
+  var arr=ticketsArr();
+  arr.sort(function(a,b){
+    var ka=(a.n||'')+'|'+(a.day||'')+'|'+(a.i||0),kb=(b.n||'')+'|'+(b.day||'')+'|'+(b.i||0);
+    return ka<kb?-1:ka>kb?1:0;
+  });
+  setTicketSummary();
+  if(!arr.length){grid.innerHTML='<p class="empty" style="grid-column:1/-1">AÚN NO HAY ENTRADAS EMITIDAS — PULSA «GENERAR / ACTUALIZAR»</p>';return;}
+  var color=salesConfig.day_color||'#e0281a';
+  var evName=(salesConfig.event_name||'LIVE CAFÉ ROCK').toUpperCase();
+  var evDate=(salesConfig.event_date||'').toUpperCase();
+  var img=salesConfig.event_logo||DEFAULT_TICKET_IMG;
+  var h='';
+  arr.forEach(function(t){
+    h+='<div class="vt-wrap">'
+      +'<div class="vt'+(t.u?' used':'')+'" id="vt-'+t.s+'">'
+      +'<div class="vt-media"><img src="'+esc(img)+'" crossorigin="anonymous" alt="" onerror="this.remove()"><div class="vt-shade"></div>'
+      +'<div class="vt-head"><span>'+esc(evName)+'</span><span>'+esc(evDate)+'</span></div></div>'
+      +'<div class="vt-body">'
+      +'<div class="vt-qr"><img id="q-'+t.s+'" alt="QR '+esc(t.s)+'"></div>'
+      +'<div class="vt-name">'+esc(t.n||'ASISTENTE')+'</div>'
+      +'<div class="vt-serial">'+dashSerial(t.s)+'</div>'
+      +'<div class="vt-row"><span class="chip" style="color:'+color+'">'+esc(t.e||'GENERAL')+'</span>'+(t.day&&t.day!=='General'?'<span class="chip">'+esc(t.day)+'</span>':'')+'<span class="vt-code">Nº '+t.i+'</span></div>'
+      +'</div>'
+      +'<div class="perf"></div>'
+      +'<div class="vt-stub"><span>Admit one</span><span class="mono">'+esc(t.s)+'</span></div>'
+      +'</div>'
+      +'<button class="bs vt-dl" onclick="downloadTicket(\''+t.s+'\')"><i class="fa-solid fa-download mr-2"></i>Descargar PNG</button>'
+      +'</div>';
+  });
+  grid.innerHTML=h;
+  arr.forEach(function(t){
+    makeQR(t.s,640).then(function(url){
+      var el=document.getElementById('q-'+t.s);
+      if(el){if(url)el.src=url;else el.parentNode.innerHTML='<span class="mono" style="font-size:11px;color:#111">'+esc(t.s)+'</span>';}
+    });
+  });
+}
+function patchTicketCards(){
+  ticketsArr().forEach(function(t){
+    var el=document.getElementById('vt-'+t.s);
+    if(el)el.classList.toggle('used',!!t.u);
+  });
+}
+function downloadTicket(s){
+  var el=document.getElementById('vt-'+s);if(!el)return;
+  if(!window.html2canvas){showToast('No se pudo cargar el exportador','e');return;}
+  html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#0c0a08',logging:false}).then(function(c){
+    var a=document.createElement('a');a.download='entrada-'+s+'.png';a.href=c.toDataURL('image/png');a.click();
+  }).catch(function(){showToast('No se pudo exportar la entrada','e');});
+}
+function downloadAllTickets(){
+  var arr=ticketsArr();
+  if(!arr.length){showToast('Primero genera las entradas','e');return;}
+  showToast('Descargando '+arr.length+' entradas…','i');
+  var i=0;
+  (function next(){
+    if(i>=arr.length){showToast('Descarga completa','s');return;}
+    var s=arr[i++].s;
+    var el=document.getElementById('vt-'+s);
+    if(el&&window.html2canvas){
+      html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#0c0a08',logging:false}).then(function(c){
+        var a=document.createElement('a');a.download='entrada-'+s+'.png';a.href=c.toDataURL('image/png');a.click();
+        setTimeout(next,450);
+      }).catch(function(){setTimeout(next,450);});
+    }else setTimeout(next,60);
+  })();
+}
+
+/* ================= PIN / EDICIÓN / MANUAL ================= */
+function checkPIN(){
+  var v=document.getElementById('pin-input').value.trim();
+  var want=currentRole==='portero'?CFG.PORTERO_PIN:CFG.PIN;
+  if(v===want){
+    closeModal('pin-modal');
+    document.getElementById('pin-input').value='';
+    document.getElementById('pin-error').style.display='none';
+    showView('admin');applyRole();
+  }else{
+    document.getElementById('pin-error').style.display='block';
+    document.getElementById('pin-input').value='';
+  }
+}
+function applyRole(){
+  var isAdmin=currentRole==='admin';
+  document.querySelectorAll('[data-admin-only]').forEach(function(el){el.style.display=isAdmin?'':'none';});
+  document.getElementById('panel-title').textContent=isAdmin?'ADMINISTRADOR':'PORTERO';
+  if(!isAdmin){var vb=document.querySelector('[data-tab="tab-verify"]');if(vb)switchTab('tab-verify',vb);}
+}
+function openEditModal(i){
+  var a=attendees[i];if(!a)return;
+  document.getElementById('edit-index').value=i;
+  document.getElementById('edit-nombre').value=a.N||'';
+  document.getElementById('edit-cedula').value=a.D||'';
+  document.getElementById('edit-cantidad').value=a.C||1;
+  document.getElementById('edit-etapa').value=a.E||'';
+  document.getElementById('edit-paid').checked=isPaid(a.P);
+  openModal('edit-modal');
+}
+function closeEditModal(){closeModal('edit-modal');}
+function saveEditedAttendee(){
+  var i=parseInt(document.getElementById('edit-index').value,10);
+  var a=attendees[i];if(!a)return;
+  var oldDay=a.E_D||'General';
+  a.N=document.getElementById('edit-nombre').value.trim()||a.N;
+  a.D=nD(document.getElementById('edit-cedula').value)||a.D;
+  a.C=Math.max(1,parseInt(document.getElementById('edit-cantidad').value,10)||1);
+  a.E=document.getElementById('edit-etapa').value.trim()||a.E;
+  a.P=document.getElementById('edit-paid').checked;
+  var newDay=a.E_D||'General';
+  saveAttendees();
+  syncTicketsForDni(a.D,newDay,oldDay!==newDay?oldDay:null);
+  closeEditModal();showToast('Asistente actualizado','s');
+}
+function syncTicketsForDni(dni,day,oldDay){
+  var a=findAttendeeExact(dni,day);if(!a)return;
+  var ts=ticketsOf(dni,oldDay||day);
+  var upd={};
+  if(oldDay){ts.forEach(function(t){t.day=day;upd[t.s]=t;});}
+  var extra=ts.filter(function(t){return (t.i||0)>(a.C||1);});
+  extra.forEach(function(t){delete tickets[t.s];});
+  if(isPaid(a.P))ensureTicketsFor(dni,day);
+  if(fbConnected){
+    extra.forEach(function(t){fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).remove().catch(function(){});});
+    if(Object.keys(upd).length)fbDB.ref('events/'+FB_EVENT_ID+'/tickets').update(upd).catch(function(){});
+  }
+  updateUI();
+}
+function resetAttendeeEntries(){
+  var i=parseInt(document.getElementById('edit-index').value,10);
+  var a=attendees[i];if(!a)return;
+  var day=a.E_D||'General';
+  var ts=ticketsOf(a.D,day);
+  ts.forEach(function(t){t.u=false;t.ua=null;});
+  var extra=ts.filter(function(t){return (t.i||0)>(a.C||1);});
+  extra.forEach(function(t){delete tickets[t.s];});
+  var d=nD(a.D),p1='LCR26|'+d+'|',p2=d+'|';
+  usedIDs.forEach(function(u){if(typeof u==='string'&&(u.indexOf(p1)===0||u.indexOf(p2)===0))usedIDs.delete(u);});
+  saveUsed();
+  if(fbConnected){
+    ts.forEach(function(t){
+      if(!extra.some(function(e){return e.s===t.s;}))fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).update({u:false,ua:null}).catch(function(){});
+    });
+    extra.forEach(function(t){fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).remove().catch(function(){});});
+  }
+  closeEditModal();updateUI();showToast('Ingresos reiniciados','s');
+}
+function addManualAttendee(){
+  var name=document.getElementById('manual-nombre').value.trim();
+  var dni=nD(document.getElementById('manual-cedula').value);
+  if(!name||!dni){showToast('Nombre y cédula son obligatorios','e');return;}
+  attendees.push({
+    N:name,D:dni,
+    E:document.getElementById('manual-etapa').value.trim()||'Manual',
+    E_D:salesConfig.active_day||'Manual',
+    C:Math.max(1,parseInt(document.getElementById('manual-cantidad').value,10)||1),
+    T:'',P:true
+  });
+  saveAttendees();
+  ensureTicketsFor(dni,salesConfig.active_day||'Manual');
+  document.getElementById('manual-nombre').value='';
+  document.getElementById('manual-cedula').value='';
+  showToast('Asistente agregado · seriales emitidos','s');
+}
+
+/* ================= CARGA MASIVA ================= */
+function parseLine(l){
+  var out=[],cur='',q=false;
+  for(var i=0;i<l.length;i++){
+    var ch=l[i];
+    if(ch==='"'){if(q&&l[i+1]==='"'){cur+='"';i++;}else q=!q;}
+    else if(ch===','&&!q){out.push(cur);cur='';}
+    else cur+=ch;
+  }
+  out.push(cur);return out;
+}
+function parseCSV(t,dayName){
+  if(!t)return[];
+  t=t.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  var ls=t.split('\n').filter(function(l){return l.trim();});
+  if(ls.length<2)throw new Error('No hay suficientes filas de datos.');
+  var headerIndex=-1;
+  for(var i=0;i<ls.length;i++){
+    var ln=normalizeStr(ls[i]);
+    if(ln.indexOf('cedula')>-1||ln.indexOf('dni')>-1){headerIndex=i;break;}
+  }
+  if(headerIndex===-1)throw new Error('No se encontró la columna Cédula.');
+  var hs=parseLine(ls[headerIndex]),hn=[];
+  for(var h=0;h<hs.length;h++)hn.push(normalizeStr(hs[h]));
+  var nI=-1,dI=-1,eI=-1,cI=-1,tI=-1,pI=-1;
+  for(var k=0;k<hn.length;k++){
+    if(nI===-1&&(hn[k].indexOf('nombre')>-1||hn[k].indexOf('name')>-1))nI=k;
+    if(dI===-1&&(hn[k].indexOf('cedula')>-1||hn[k].indexOf('dni')>-1))dI=k;
+    if(eI===-1&&(hn[k].indexOf('etapa')>-1||hn[k].indexOf('bloque')>-1||hn[k].indexOf('stage')>-1))eI=k;
+    if(cI===-1&&(hn[k].indexOf('cantidad')>-1||hn[k].indexOf('cant')>-1))cI=k;
+    if(tI===-1&&(hn[k].indexOf('tel')>-1||hn[k].indexOf('movil')>-1||hn[k].indexOf('phone')>-1))tI=k;
+    if(pI===-1&&(hn[k].indexOf('pagado')>-1||hn[k].indexOf('pago')>-1||hn[k].indexOf('status')>-1||hn[k].indexOf('estado')>-1))pI=k;
+  }
+  if(dI===-1)throw new Error('Columna Cédula no legible.');
+  var out=[];
+  for(var r=headerIndex+1;r<ls.length;r++){
+    var cs=parseLine(ls[r]);
+    var dni=nD(cs[dI]);
+    if(!dni)continue;
+    out.push({
+      N:(nI>-1&&cs[nI])?String(cs[nI]).trim():'',
+      D:dni,
+      E:(eI>-1&&cs[eI])?String(cs[eI]).trim():(salesConfig.active_day||'General'),
+      E_D:dayName,
+      C:Math.max(1,parseInt(nD(cs[cI]),10)||1),
+      T:(tI>-1&&cs[tI])?nD(cs[tI]):'',
+      P:(pI>-1&&cs[pI]!==undefined)?isPaid(cs[pI]):true
+    });
+  }
+  return out;
+}
+async function mergeAndUpload(parsed){
+  if(!Array.isArray(attendees))attendees=[];
+  for(var i=0;i<parsed.length;i++){
+    var exists=false;
+    for(var j=0;j<attendees.length;j++){
+      if(attendees[j]&&nD(attendees[j].D)===nD(parsed[i].D)&&attendees[j].E_D===parsed[i].E_D){
+        attendees[j].C+=parsed[i].C;exists=true;break;
+      }
     }
-
-    async function handlePasteUpload() {
-        var pasteText = document.getElementById('paste-list-input').value.trim();
-        if (!pasteText) { showToast('Pega los datos primero', 'e'); return; }
-        var dayName = document.getElementById('upload-day-name').value.trim() || salesConfig.active_day || 'Día No Especificado';
-        
-        try {
-            var parsed = parseCSV(pasteText, dayName);
-            if (!parsed || !parsed.length) throw new Error('No se encontraron datos válidos en el texto pegado.');
-            if (!Array.isArray(attendees)) attendees = [];
-            
-            for (var i=0; i<parsed.length; i++) {
-                var exists = false;
-                for (var j=0; j<attendees.length; j++) {
-                    if (attendees[j] && nD(attendees[j].D) === nD(parsed[i].D) && attendees[j].E_D === parsed[i].E_D) {
-                        attendees[j].C += parsed[i].C; exists = true; break;
-                    }
-                }
-                if (!exists) attendees.push(parsed[i]);
-            }
-            
-            if (fbConnected) {
-                showToast('Subiendo a la nube...', 'i');
-                await fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
-                showToast(parsed.length + ' registros cargados en la nube', 's');
-            } else {
-                showToast(parsed.length + ' registros cargados local', 's');
-            }
-            
-            updateUI();
-            document.getElementById('paste-list-input').value = '';
-        } catch(err) {
-            console.error("Paste Upload Error:", err);
-            if (err.code === 'PERMISSION_DENIED') {
-                showToast('Error Firebase: Revisa las reglas de tu DB', 'e');
-            } else {
-                showToast('Error: ' + err.message, 'e');
-            }
-        }
+    if(!exists)attendees.push(parsed[i]);
+  }
+  if(fbConnected){
+    showToast('Subiendo a la nube…','i');
+    try{
+      await fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees);
+      showToast(parsed.length+' registros cargados en la nube','s');
+    }catch(err){
+      if(err&&err.code==='PERMISSION_DENIED')showToast('Error Firebase: revisa las reglas de tu DB','e');
+      else showToast('Error: '+err.message,'e');
     }
+  }else showToast(parsed.length+' registros cargados local','s');
+  ensureAllTickets();   /* emite seriales de todo lo pagado */
+  updateUI();
+}
+function handleFileUpload(){
+  var fi=document.getElementById('file-input');
+  if(!fi||!fi.files||!fi.files.length){showToast('Selecciona un archivo','e');return;}
+  var dayName=document.getElementById('upload-day-name').value.trim()||salesConfig.active_day||'General';
+  var file=fi.files[0],reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=new Uint8Array(e.target.result);
+      var wb=XLSX.read(data,{type:'array'});
+      if(!wb||!wb.SheetNames||!wb.SheetNames.length)throw new Error('Archivo Excel vacío');
+      var csv=XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+      var parsed=parseCSV(csv,dayName);
+      if(!parsed.length)throw new Error('No se encontraron datos válidos en el Excel');
+      mergeAndUpload(parsed);fi.value='';
+    }catch(err){showToast('Error: '+err.message,'e');}
+  };
+  reader.readAsArrayBuffer(file);
+}
+function handlePasteUpload(){
+  var txt=document.getElementById('paste-list-input').value.trim();
+  if(!txt){showToast('Pega los datos primero','e');return;}
+  var dayName=document.getElementById('upload-day-name').value.trim()||salesConfig.active_day||'General';
+  try{
+    var parsed=parseCSV(txt,dayName);
+    if(!parsed.length)throw new Error('No se encontraron datos válidos en el texto pegado.');
+    mergeAndUpload(parsed);
+    document.getElementById('paste-list-input').value='';
+  }catch(err){showToast('Error: '+err.message,'e');}
+}
 
-    function parseCSV(t, dayName) {
-        if (!t) return [];
-        t = t.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-        var ls = t.split('\n').filter(function(l) { return l.trim(); });
-        if (ls.length < 2) return [];
-        
-        var headerIndex = -1;
-        for (var i = 0; i < ls.length; i++) {
-            var lineLower = ls[i].toLowerCase();
-            if (lineLower.includes('cédula') || lineLower.includes('cedula') || lineLower.includes('dni')) {
-                headerIndex = i; break;
-            }
-        }
-        if (headerIndex === -1) throw new Error('No se encontró la columna Cédula');
-        
-        var hs = parseLine(ls[headerIndex]), hn = [];
-        for (var h = 0; h < hs.length; h++) hn.push(hs[h].toLowerCase().trim());
-        
-        var nI = -1, dI = -1, eI = -1, cI = -1, tI = -1, pI = -1;
-        for (var i = 0; i < hn.length; i++) {
-            if (nI === -1 && (hn[i].includes('nombre') || hn[i].includes('name'))) nI = i;
-            if (dI === -1 && (hn[i].includes('cédula') || hn[i].includes('cedula') || hn[i].includes('dni'))) dI = i;
-            if (eI === -1 && (hn[i].includes('etapa') || hn[i].includes('bloque') || hn[i].includes('stage'))) eI = i;
-            if (cI === -1 && (hn[i].includes('cantidad') || hn[i].includes('cant'))) cI = i;
-            if (tI === -1 && (hn[i].includes('tel') || hn[i].includes('movil') || hn[i].includes('phone'))) tI = i;
-            if (pI === -1 && (hn[i].includes('pagado') || hn[i].includes('pago') || hn[i].includes('estado'))) pI = i;
-        }
-        if (dI === -1 || nI === -1) throw new Error('Columnas requeridas: Nombre y Cédula');
-        
-        var d = [];
-        for (var i = headerIndex + 1; i < ls.length; i++) {
-            var v = parseLine(ls[i]);
-            if (v.length < 2) continue;
-            var dni = (v[dI] || '').trim();
-            if (dni && nD(dni) !== '') {
-                var qty = 1;
-                if (cI !== -1 && v[cI]) {
-                    var parsedQty = parseInt((v[cI] || '1').replace(/[^0-9]/g, ''), 10);
-                    if (!isNaN(parsedQty) && parsedQty > 0) qty = parsedQty;
-                }
-                var paidStatus = 'Si';
-                if (pI !== -1) {
-                    var pVal = (v[pI] || '').toLowerCase().trim();
-                    if (pVal.includes('no') || pVal.includes('pendiente')) paidStatus = 'No';
-                }
-                d.push({
-                    N: (v[nI] || '').trim(),
-                    D: dni,
-                    C: qty,
-                    E: eI !== -1 ? (v[eI] || 'General').trim() : 'General',
-                    T: tI !== -1 ? (v[tI] || '').trim() : '',
-                    P: paidStatus,
-                    E_D: dayName
-                });
-            }
-        }
-        return d;
-    }
-
-    function parseLine(l) {
-        if (!l) return [];
-        var r = [], c = '', q = false;
-        for (var i = 0; i < l.length; i++) {
-            var ch = l[i];
-            if (ch === '"') { if (q && i + 1 < l.length && l[i + 1] === '"') { c += '"'; i++; } else q = !q; } 
-            else if ((ch === ',' || ch === '\t') && !q) { r.push(c); c = ''; } 
-            else c += ch;
-        }
-        r.push(c); return r;
-    }
-
-    function renderBuyStages() { var c = document.getElementById('buy-stages'); var h = ''; if (salesConfig.s1_name) { if(salesConfig.s1_closed) h += '<div class="ab rounded-sm p-6 opacity-50" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s1_name)+'</h3><div class="font-display text-2xl" style="color:var(--muted)">AGOTADO</div></div><button class="bs w-full mt-4 rounded-sm" disabled>No disponible</button></div>'; else h += '<div class="ab rounded-sm p-6" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s1_name)+'</h3><div class="font-display text-2xl" style="color:var(--accent-bright)">$'+salesConfig.s1_price+'</div></div><button class="bp w-full mt-4 rounded-sm" onclick="selectStage(1)">Comprar</button></div>'; } if (salesConfig.s2_name) { if(salesConfig.s2_closed) h += '<div class="ab rounded-sm p-6 opacity-50" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s2_name)+'</h3><div class="font-display text-2xl" style="color:var(--muted)">AGOTADO</div></div><button class="bs w-full mt-4 rounded-sm" disabled>No disponible</button></div>'; else h += '<div class="ab rounded-sm p-6" style="background:var(--card)"><div class="flex justify-between items-center"><h3 class="font-display text-xl tracking-wider">'+esc(salesConfig.s2_name)+'</h3><div class="font-display text-2xl" style="color:var(--accent-bright)">$'+salesConfig.s2_price+'</div></div><button class="bp w-full mt-4 rounded-sm" onclick="selectStage(2)">Comprar</button></div>'; } c.innerHTML = h || '<p class="text-center" style="color:var(--muted)">Las entradas no estan disponibles aún.</p>'; }
-    var selectedStage = 0; function selectStage(num) { selectedStage = num; var name = num === 1 ? salesConfig.s1_name : salesConfig.s2_name; document.getElementById('buy-stages').style.display = 'none'; document.getElementById('buy-checkout').style.display = 'block'; document.getElementById('payment-info').innerHTML = '<strong style="color:var(--accent)">'+name+'</strong><br><br>' + (salesConfig.payInfo || '').replace(/\n/g, '<br>'); updateTotal(); }
-    function updateTotal() { var qty = parseInt(document.getElementById('buy-qty').value) || 0; var price = selectedStage === 1 ? salesConfig.s1_price : salesConfig.s2_price; document.getElementById('buy-total').textContent = '$' + (qty * price); }
-    function submitPurchase() { var n = document.getElementById('buy-name').value.trim(); var d = nD(document.getElementById('buy-dni').value); var p = document.getElementById('buy-phone').value.trim(); var q = parseInt(document.getElementById('buy-qty').value) || 1; var r = document.getElementById('buy-ref').value.trim(); var stageName = selectedStage === 1 ? salesConfig.s1_name : salesConfig.s2_name; var price = selectedStage === 1 ? salesConfig.s1_price : salesConfig.s2_price; if (!n || !d || !r) { showToast('Completa todos los datos', 'e'); return; } var newPay = { id: 'pay_' + Date.now(), name: n, dni: d, phone: p, qty: q, ref: r, stage: stageName, total: q * price, status: 'pending' }; if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/pending/' + newPay.id).set(newPay); showView('ticket'); }
-    function renderPendingPayments() { var c = document.getElementById('pending-payments-list'); var h = ''; for (var i = 0; i < pendingPayments.length; i++) { var p = pendingPayments[i]; h += '<div class="ab rounded-sm p-4" style="background:var(--card)"><div class="flex justify-between mb-2"><span class="font-display text-lg">'+esc(p.name)+'</span><span class="font-display text-lg" style="color:var(--accent-bright)">$'+p.total+'</span></div><div class="text-sm" style="color:var(--muted)">C.I: '+esc(p.dni)+' | Cant: '+p.qty+'<br><strong>Ref: '+esc(p.ref)+'</strong></div><div class="flex gap-2 mt-3"><button class="bp flex-1 rounded-sm text-sm" onclick="approvePayment(\''+p.id+'\')">Aprobar</button><button class="bs rounded-sm text-sm" onclick="rejectPayment(\''+p.id+'\')">Rechazar</button></div></div>'; } c.innerHTML = h || '<p class="text-center py-10" style="color:var(--muted)">No hay pagos pendientes</p>'; }
-    function approvePayment(id) { var p = pendingPayments.find(x => x.id === id); if (!p) return; attendees.push({ N: p.name, D: p.dni, C: p.qty, E: p.stage, T: p.phone, P: 'Si', E_D: salesConfig.active_day || 'General' }); if (fbConnected) { fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees); fbDB.ref('events/' + FB_EVENT_ID + '/pending/' + id).remove(); } updateUI(); showToast('Pago aprobado', 's'); }
-    function rejectPayment(id) { if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/pending/' + id).remove(); showToast('Pago rechazado', 'i'); }
-    function checkPIN() { var p = document.getElementById('pin-input').value.trim(); if (p === CFG.PIN) { document.getElementById('pin-modal').style.display = 'none'; showView('admin'); } else { document.getElementById('pin-error').style.display = 'block'; } }
-    function savePIN() { var p1 = document.getElementById('pin-setup-input').value.trim(); if (p1.length < 4) return; CFG.PIN = p1; localStorage.setItem('bleedit_pin', p1); document.getElementById('pin-setup-modal').style.display = 'none'; showView('admin'); }
-    function resetPIN() { CFG.PIN = ''; localStorage.removeItem('bleedit_pin'); document.getElementById('pin-setup-input').value = ''; document.getElementById('pin-setup-modal').style.display = 'flex'; }
-
-    function verifyEntry(input, cid) {
-        var rawInput = input.trim();
-        var dni = nD(rawInput);
-        var ticketIdx = -1;
-        if (rawInput.includes('-')) { var parts = rawInput.split('-'); dni = nD(parts[0]); ticketIdx = parseInt(parts[1], 10); }
-        if (!dni) return;
-        
-        var a = null; var activeDay = salesConfig.active_day || 'General';
-        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni && attendees[i].E_D === activeDay) { a = attendees[i]; break; } }
-        var c = document.getElementById(cid); c.style.display = 'block';
-        
-        if (!a) { c.innerHTML = '<div class="rc rc-e"><h3>NO ENCONTRADO</h3><p>Para el día de hoy</p></div>'; return; }
-        if (!isPaid(a.P)) { c.innerHTML = '<div class="rc rc-u"><h3>PAGO PENDIENTE</h3><p>'+esc(a.N)+'</p></div>'; return; }
-        if (cid === 'verify-result') { c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>ENTRADA VERIFICADA</h3><p>¡Te esperamos en el evento!</p></div>'; return; }
-        
-        if (ticketIdx !== -1) {
-            if (usedIDs.has(dni + '-' + ticketIdx)) { c.innerHTML = '<div class="rc rc-e"><h3>ENTRADA YA USADA</h3><p>'+esc(a.N)+' (Ticket #'+ticketIdx+')</p></div>'; return; }
-            usedIDs.add(dni + '-' + ticketIdx);
-            localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
-            if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
-            updateUI();
-            c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Ticket '+ticketIdx+'/'+a.C+'</p></div>';
-            return;
-        }
-
-        var idx = -1; for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { idx = j; break; } }
-        if (idx === -1) { c.innerHTML = '<div class="rc rc-e"><h3>AGOTADAS</h3><p>'+esc(a.N)+'</p></div>'; return; }
-        usedIDs.add(dni + '-' + idx); localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs)));
-        if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs));
-        updateUI();
-        c.innerHTML = '<div class="rc rc-s"><i class="fa-solid fa-circle-check text-4xl mb-3" style="color:var(--success)"></i><h3>BIENVENIDO</h3><p>'+esc(a.N)+'</p><p class="text-sm">Ticket '+idx+'/'+a.C+'</p></div>';
-    }
-    function verifyDNI() { verifyEntry(document.getElementById('verify-dni').value, 'verify-result'); }
-    function adminVerify() { verifyEntry(document.getElementById('admin-dni-input').value, 'admin-verify-result'); }
-    function verifyFromScanner() { verifyEntry(document.getElementById('scanner-dni-input').value, 'scanner-result'); document.getElementById('scanner-dni-input').value=''; }
-
-    function updateUI() {
-        var activeDay = salesConfig.active_day || 'General';
-        var totalTickets = 0, usedTickets = 0, paidTickets = 0, courtesyTickets = 0;
-        var stageCounts = {};
-        var dayAttendeesCount = 0;
-        
-        for (var i = 0; i < attendees.length; i++) {
-            var a = attendees[i];
-            if (a.E_D !== activeDay) continue; 
-            dayAttendeesCount++;
-            var qty = a.C || 1; totalTickets += qty;
-            var stageName = a.E || 'General';
-            if (!stageCounts[stageName]) stageCounts[stageName] = { total: 0, used: 0 };
-            stageCounts[stageName].total += qty;
-            if (isPaid(a.P)) paidTickets += qty;
-            if (String(a.E).toLowerCase().includes('cortesia') || String(a.E).toLowerCase().includes('cortesía')) courtesyTickets += qty;
-            for (var j = 1; j <= qty; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) { usedTickets++; stageCounts[stageName].used++; } }
-        }
-        var pendingTickets = 0; for (var k = 0; k < pendingPayments.length; k++) { pendingTickets += (pendingPayments[k].qty || 1); }
-        
-        document.getElementById('admin-data-count').textContent = dayAttendeesCount + ' regs';
-        document.getElementById('stat-total').textContent = totalTickets;
-        document.getElementById('stat-paid').textContent = paidTickets;
-        document.getElementById('stat-pending').textContent = pendingTickets;
-        document.getElementById('stat-cortesia').textContent = courtesyTickets;
-        document.getElementById('total-count').textContent = totalTickets;
-        document.getElementById('verified-count').textContent = usedTickets;
-        var stageHtml = ''; for (var stage in stageCounts) { var sc = stageCounts[stage]; var pct = sc.total > 0 ? Math.round((sc.used / sc.total) * 100) : 0; stageHtml += '<div><div class="flex justify-between text-sm mb-1"><span class="font-display tracking-wider">'+esc(stage.toUpperCase())+'</span><span style="color:var(--muted)">'+sc.used+'/'+sc.total+' ('+pct+'%)</span></div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>'; }
-        document.getElementById('stage-stats').innerHTML = stageHtml;
-        renderList();
-    }
-
-    function renderList() {
-        var rawSearch = document.getElementById('search-attendee').value.toLowerCase().trim();
-        var sDni = nD(rawSearch); var activeDay = salesConfig.active_day || 'General';
-        var tb = document.getElementById('attendee-tbody'); var h = '';
-        for (var i = 0; i < attendees.length; i++) {
-            var a = attendees[i]; if (a.E_D !== activeDay) continue;
-            var aName = normalizeStr(a.N); var aDni = nD(a.D);
-            var matches = false; if (rawSearch === '') matches = true; else if (sDni && aDni.indexOf(sDni) !== -1) matches = true; else if (aName.indexOf(normalizeStr(rawSearch)) !== -1) matches = true;
-            if (matches) { var u = 0; for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) u++; } h += '<tr class="border-b" style="border-color:var(--border)"><td class="p-2">'+esc(a.E)+'</td><td class="p-2">'+esc(a.N)+'</td><td class="p-2">'+esc(nD(a.D))+'</td><td class="p-2">'+u+'/'+a.C+'</td><td class="p-2"><div class="flex gap-1"><button class="bs sm rounded-sm" onclick="openEditModal('+i+')"><i class="fa-solid fa-pen"></i></button></div></td></tr>'; }
-        } tb.innerHTML = h;
-    }
-
-    function addManualAttendee() {
-        var n = document.getElementById('manual-nombre').value.trim();
-        var d = nD(document.getElementById('manual-cedula').value);
-        var c = parseInt(document.getElementById('manual-cantidad').value) || 1;
-        var e = document.getElementById('manual-etapa').value.trim() || 'Manual';
-        if (!n || !d) { showToast('Nombre y Cedula son obligatorios', 'e'); return; }
-        attendees.push({N:n, D:d, C:c, E:e, P:'Si', E_D: salesConfig.active_day || 'Manual'});
-        if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees);
-        updateUI(); showToast('Agregado manualmente', 's');
-        document.getElementById('manual-nombre').value = '';
-        document.getElementById('manual-cedula').value = '';
-        document.getElementById('manual-cantidad').value = '1';
-        document.getElementById('manual-etapa').value = 'Manual';
-    }
-
-    function generateAllVisualTickets() {
-        var grid = document.getElementById('qr-grid'); grid.innerHTML = '';
-        var activeDay = salesConfig.active_day || 'General';
-        var dayColor = salesConfig.day_color || '#ff0000';
-        var templateUrl = salesConfig.event_logo || DEFAULT_TICKET_IMG; 
-        
-        if(attendees.length === 0){ showToast('No hay asistentes para hoy', 'e'); return; }
-        
-        for (var i = 0; i < attendees.length; i++) {
-            var a = attendees[i];
-            if (a.E_D !== activeDay) continue;
-            
-            for (var j = 1; j <= a.C; j++) {
-                var uid = nD(a.D) + '-' + j;
-                var card = document.createElement('div'); card.className = 'qc'; card.style.border = '4px solid ' + dayColor; 
-                
-                var bgDiv = document.createElement('div'); bgDiv.className = 'ticket-bg'; 
-                
-                var imgEl = document.createElement('img'); 
-                imgEl.crossOrigin = "anonymous";
-                imgEl.src = templateUrl;
-                bgDiv.appendChild(imgEl);
-                
-                var overlay = document.createElement('div'); overlay.className = 'ticket-overlay';
-                overlay.style.color = dayColor;
-                overlay.innerHTML = '<div class="qn">'+esc(a.N)+'</div><div class="qd">C.I: '+esc(nD(a.D))+'</div><div class="qct">Entrada '+j+' de '+a.C+' ('+esc(a.E)+')</div>';
-                
-                var qrBox = document.createElement('div'); qrBox.className = 'qr-box'; qrBox.id = 'qr-box-'+i+'-'+j; qrBox.style.width = '80px'; qrBox.style.height = '80px';
-                overlay.appendChild(qrBox);
-                
-                bgDiv.appendChild(overlay);
-                card.appendChild(bgDiv);
-                
-                var db = document.createElement('button'); db.className = 'qdl'; db.innerHTML = '<i class="fa-solid fa-download mr-1"></i>Descargar PNG';
-                (function(crd, nm, uId) { 
-                    db.onclick = function() { 
-                        html2canvas(crd, {allowTaint: true, useCORS: true}).then(function(canvas) {
-                            var lnk = document.createElement('a'); lnk.download = 'Entrada-' + nm.replace(/\s+/g, '-') + '-' + uId + '.png'; lnk.href = canvas.toDataURL('image/png'); document.body.appendChild(lnk); lnk.click(); document.body.removeChild(lnk);
-                        }).catch(function(){ showToast('Error al generar imagen', 'e'); });
-                    }; 
-                })(card, a.N, uid);
-                card.appendChild(db);
-                
-                var phone = nD(a.T);
-                if (phone) {
-                    var sendWrap = document.createElement('div'); sendWrap.className = 'qsend';
-                    var waBtn = document.createElement('a'); waBtn.className = 'qdl qwa'; waBtn.target = '_blank';
-                    var msgText = 'Hola ' + a.N + ', aqui esta tu entrada ' + j + ' de ' + a.C + ' para LIVE CAFÉ ROCK. Codigo: ' + uid + '. Presenta el QR en la puerta.';
-                    waBtn.href = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msgText); waBtn.innerHTML = '<i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp';
-                    sendWrap.appendChild(waBtn); card.appendChild(sendWrap);
-                }
-                
-                grid.appendChild(card);
-                new QRCode(qrBox, { text: uid, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
-            }
-        }
-        showToast('Entradas generadas para '+activeDay, 's');
-    }
-
-    function openEditModal(index) { var a = attendees[index]; document.getElementById('edit-index').value = index; document.getElementById('edit-nombre').value = a.N; document.getElementById('edit-cedula').value = a.D; document.getElementById('edit-cantidad').value = a.C; document.getElementById('edit-etapa').value = a.E; document.getElementById('edit-modal').style.display = 'flex'; }
-    function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
-    function saveEditedAttendee() { var index = parseInt(document.getElementById('edit-index').value); if (isNaN(index)) return; attendees[index].N = document.getElementById('edit-nombre').value.trim(); attendees[index].D = document.getElementById('edit-cedula').value.trim(); attendees[index].C = parseInt(document.getElementById('edit-cantidad').value) || 1; attendees[index].E = document.getElementById('edit-etapa').value.trim() || 'General'; if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/attendees').set(attendees); updateUI(); closeEditModal(); showToast('Asistente actualizado', 's'); }
-    function resetAttendeeEntries() { var index = parseInt(document.getElementById('edit-index').value); if (isNaN(index)) return; var a = attendees[index]; var cleanDni = nD(a.D); if(!confirm('¿Reiniciar entrada para '+a.N+'?')) return; var removed = false; for(var j=1; j<=a.C; j++){ var uid = cleanDni + '-' + j; if(usedIDs.has(uid)){ usedIDs.delete(uid); removed = true; } } if(removed){ localStorage.setItem('bleedit_used', JSON.stringify(Array.from(usedIDs))); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs)); updateUI(); showToast('Entradas reiniciadas', 's'); closeEditModal(); } }
-
-    function switchTab(id, btn) { var ts = document.querySelectorAll('.tab-c'); for (var i = 0; i < ts.length; i++) ts[i].style.display = 'none'; var bs = document.querySelectorAll('.at'); for (var j = 0; j < bs.length; j++) bs[j].classList.remove('ac'); document.getElementById(id).style.display = 'block'; btn.classList.add('ac'); }
-
-    function openScanner() { 
-        showView('scanner'); 
-        document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Iniciando camara...';
-        setTimeout(function() {
-            if (window.Html5Qrcode) { 
-                if (scannerInst) { scannerInst.clear().catch(function(){}); }
-                scannerInst = new Html5Qrcode("scanner-reader", { experimentalFeatures: { useBarCodeDetectorIfSupported: true } }); 
-                scannerInst.start({ facingMode: { ideal: "environment" } }, { fps: 15, qrbox: { width: 200, height: 200 } }, function(dt){ verifyEntry(dt, 'scanner-result'); scannerInst.pause(true); }, function(err){}).catch(function(err){ document.getElementById('scanner-status').innerHTML = '<i class="fa-solid fa-exclamation-triangle mr-2" style="color:var(--accent)"></i>Camara bloqueada. Usa el botón de Subir Imagen abajo.'; }); 
-            }
-        }, 300);
-    }
-    function stopScanner() { if (scannerInst) { scannerInst.stop().then(function(){ scannerInst.clear(); }).catch(function(){}); } }
-    function enterKioskMode() { document.getElementById('kiosk-mode').classList.add('active'); }
-    function exitKioskMode() { document.getElementById('kiosk-mode').classList.remove('active'); }
-
-    function scanQRFromFile(event) {
-        var file = event.target.files[0]; if (!file) return;
-        var tempDiv = document.createElement('div'); tempDiv.id = 'temp-qr-reader'; tempDiv.style.display = 'none'; document.body.appendChild(tempDiv);
-        var tempScanner = new Html5Qrcode("temp-qr-reader");
-        tempScanner.scanFile(file, true).then(function(decodedText) { verifyEntry(decodedText, 'scanner-result'); document.body.removeChild(tempDiv); }).catch(function(err) { showToast('No se pudo leer el QR en la imagen', 'e'); document.body.removeChild(tempDiv); });
-        event.target.value = '';
-    }
-    function scanQRFromFileKiosk(event) {
-        var file = event.target.files[0]; if (!file) return;
-        var tempDiv = document.createElement('div'); tempDiv.id = 'temp-qr-reader-kiosk'; tempDiv.style.display = 'none'; document.body.appendChild(tempDiv);
-        var tempScanner = new Html5Qrcode("temp-qr-reader-kiosk");
-        tempScanner.scanFile(file, true).then(function(decodedText) { verifyKiosk(decodedText); document.body.removeChild(tempDiv); }).catch(function(err) { showToast('No se pudo leer el QR en la imagen', 'e'); document.body.removeChild(tempDiv); });
-        event.target.value = '';
-    }
-    
-    function verifyKiosk(dt) { 
-        var dni = nD(dt); var ticketIdx = -1; if (dt.includes('-')) { var parts = dt.split('-'); dni = nD(parts[0]); ticketIdx = parseInt(parts[1], 10); }
-        var a = null; var activeDay = salesConfig.active_day || 'General';
-        for (var i = 0; i < attendees.length; i++) { if (nD(attendees[i].D) === dni && attendees[i].E_D === activeDay) { a = attendees[i]; break; } } 
-        if (!a) { showKioskAnim('error', 'NO ENCONTRADO', 'No registrado para hoy'); return; } 
-        if (!isPaid(a.P)) { showKioskAnim('warn', 'PAGO PENDIENTE', a.N); return; }
-        
-        if (ticketIdx === -1) { for (var j = 1; j <= a.C; j++) { if (!usedIDs.has(dni + '-' + j)) { ticketIdx = j; break; } } }
-        if (ticketIdx === -1 || usedIDs.has(dni + '-' + ticketIdx)) { showKioskAnim('error', 'AGOTADAS', a.N); return; } 
-        
-        usedIDs.add(dni+'-'+ticketIdx); if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID + '/used').set(Array.from(usedIDs)); 
-        updateUI(); showKioskAnim('success', 'BIENVENIDO', a.N + ' (Ticket ' + ticketIdx + '/' + a.C + ')'); 
-    }
-
-    function showKioskAnim(type, title, text) {
-        var animDiv = document.getElementById('kiosk-anim'); var icon = ''; var color = '';
-        if(type === 'success'){ color = 'var(--success)'; icon = '<i class="fa-solid fa-circle-check anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } 
-        else if(type === 'error'){ color = 'var(--accent-bright)'; icon = '<i class="fa-solid fa-circle-xmark anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); } 
-        else { color = 'var(--warning)'; icon = '<i class="fa-solid fa-triangle-exclamation anim-icon"></i>'; if (navigator.vibrate) navigator.vibrate(300); }
-        animDiv.style.background = color; animDiv.innerHTML = '<div style="color:#fff">' + icon + '<div class="anim-title">'+title+'</div><div class="anim-text">'+esc(text)+'</div></div>'; animDiv.style.display = 'flex';
-        setTimeout(function() { animDiv.style.display = 'none'; }, 3000);
-    }
-
-    function exportAudit() {
-        if (typeof XLSX === 'undefined') { showToast('Error libreria Excel', 'e'); return; }
-        var auditData = [];
-        for (var i = 0; i < attendees.length; i++) {
-            var a = attendees[i]; var usedCount = 0; var usedTickets = [];
-            for (var j = 1; j <= a.C; j++) { if (usedIDs.has(nD(a.D) + '-' + j)) { usedCount++; usedTickets.push(j); } }
-            auditData.push({ "Nombre": a.N, "Cedula": a.D, "Etapa": a.E, "Día del Evento": a.E_D || 'N/A', "Pagado": isPaid(a.P) ? "Si" : "No", "Cant. Total": a.C, "Cant. Ingresadas": usedCount, "Tickets Usados": usedTickets.join(", ") });
-        }
-        var wb = XLSX.utils.book_new(); var ws1 = XLSX.utils.json_to_sheet(auditData);
-        ws1['!cols'] = [{wch:25},{wch:15},{wch:15},{wch:15},{wch:10},{wch:12},{wch:15},{wch:15}];
-        XLSX.utils.book_append_sheet(wb, ws1, "Asistentes");
-        XLSX.writeFile(wb, "Auditoria.xlsx"); showToast('Auditoria descargada', 's');
-    }
-
-    function clearAllDataForNewEvent() {
-        if (confirm('⚠️ ¿ESTÁS SEGURO?\n\nEsto borrará TODOS los asistentes, entradas usadas, configuracion y pagos en la nube.')) {
-            attendees = []; usedIDs.clear(); pendingPayments = []; salesConfig = {};
-            if (fbConnected) fbDB.ref('events/' + FB_EVENT_ID).remove(); localStorage.removeItem('bleedit_used');
-            updateUI(); renderPendingPayments(); renderBuyStages(); showToast('App reiniciada', 's'); showView('landing');
-        }
-    }
-    </script>
+/* ================= DATOS ================= */
+function exportAudit(){
+  if(!window.XLSX){showToast('No se pudo cargar la librería Excel','e');return;}
+  var wb=XLSX.utils.book_new();
+  var rows=[['Nombre','Cédula','Etapa','Día','Cantidad','Usadas','Pagado','Teléfono']];
+  attendees.forEach(function(a){
+    if(a)rows.push([a.N||'',a.D||'',a.E||'',a.E_D||'',a.C||1,usedCountFor(a),isPaid(a.P)?'SÍ':'NO',a.T||'']);
+  });
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Asistentes');
+  var tk=[['Serial','Nombre','Cédula','Día','Etapa','Nº','Estado','Usada el']];
+  ticketsArr().forEach(function(t){
+    tk.push([t.s,t.n||'',t.d||'',t.day||'',t.e||'',t.i||1,t.u?'USADA':'VIGENTE',t.ua?fmtDT(t.ua):'']);
+  });
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(tk),'Entradas');
+  var pend=[['Nombre','Cédula','Teléfono','Cantidad','Etapa','Referencia','Total','Fecha']];
+  pendingPayments.forEach(function(p){
+    if(p)pend.push([p.name||'',p.dni||'',p.phone||'',p.qty||'',p.stage||'',p.ref||'',p.total||'',p.ts?new Date(p.ts).toLocaleString():'']);
+  });
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pend),'Pendientes');
+  XLSX.writeFile(wb,'live-cafe-rock-datos.xlsx');
+}
+function askConfirm(t,m,cb){
+  document.getElementById('confirm-title').textContent=t;
+  document.getElementById('confirm-msg').textContent=m;
+  confirmCb=cb;openModal('confirm-modal');
+}
+function runConfirm(){if(confirmCb)confirmCb();confirmCb=null;closeModal('confirm-modal');}
+function clearAllDataForNewEvent(){
+  askConfirm('BORRAR TODO','Se eliminarán asistentes, entradas con serial, ingresos y configuración en la nube. Esta acción no tiene vuelta atrás.',function(){
+    if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID).remove();
+    localStorage.removeItem('bleedit_pin');
+    localStorage.removeItem('bleedit_portero_pin');
+    localStorage.removeItem('bleedit_used');
+    setTimeout(function(){location.reload();},700);
+  });
+}
+</script>
 </body>
 </html>
