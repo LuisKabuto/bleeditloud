@@ -13,6 +13,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script>tailwind.config={theme:{extend:{fontFamily:{display:['Anton','sans-serif'],body:['"Barlow Condensed"','sans-serif'],mono:['"Space Mono"','monospace']}}}}</script>
@@ -83,7 +84,7 @@ textarea.di{resize:vertical;line-height:1.5}
 .mo{position:fixed;inset:0;background:rgba(5,4,3,.8);backdrop-filter:blur(4px);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
 .mb{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px;max-width:400px;width:100%;box-shadow:var(--shadow)}
 
-/* ============ LANDING ============ */
+/* LANDING */
 #view-landing{position:relative;overflow:hidden}
 #view-landing::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:120vw;height:70vh;background:radial-gradient(ellipse at center,var(--red-glow),transparent 60%);pointer-events:none;opacity:.35}
 .spot{position:absolute;top:-30%;width:44vw;height:85vh;background:radial-gradient(ellipse at top,var(--red-glow),transparent 65%);pointer-events:none;opacity:.4;filter:blur(8px);animation:sway 8s ease-in-out infinite alternate}
@@ -124,7 +125,7 @@ textarea.di{resize:vertical;line-height:1.5}
 .tbtn[disabled]{opacity:.45;pointer-events:none}
 .landing-footer{width:100%;text-align:center;padding:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;position:relative;z-index:2}
 
-/* ============ COMPRA ============ */
+/* COMPRA */
 .stages{display:grid;gap:14px;margin-top:14px}
 @media(min-width:520px){.stages{grid-template-columns:1fr 1fr}}
 .stage{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
@@ -141,7 +142,7 @@ textarea.di{resize:vertical;line-height:1.5}
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;text-align:left}
 .res-grid b{display:block;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-bottom:3px;font-weight:400}
 
-/* ============ RESULTADOS ============ */
+/* RESULTADOS */
 .res{border:1px solid var(--border);border-left:6px solid;padding:20px;border-radius:8px;animation:ri .3s ease-out;background:var(--card)}
 @keyframes ri{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .res-ok{border-left-color:var(--green);background:var(--green-bg)}
@@ -153,8 +154,6 @@ textarea.di{resize:vertical;line-height:1.5}
 .res-msg{color:var(--muted);margin-top:6px;font-size:15px}
 .res .res-grid{margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)}
 .res-share{margin-top:12px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
-
-/* entradas públicas del comprador */
 .tk-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px}
 .tk-chip{background:var(--field);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;position:relative;overflow:hidden}
 .tk-chip.off{opacity:.55}
@@ -165,7 +164,7 @@ textarea.di{resize:vertical;line-height:1.5}
 .tk-meta{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.08em;text-transform:uppercase}
 .tk-meta b{color:var(--red)}
 
-/* ============ ESCÁNER ============ */
+/* ESCÁNER */
 .vf{position:relative;width:min(300px,78vw);aspect-ratio:1;margin:0 auto}
 .kiosk-frame{position:relative;width:min(430px,86vw);aspect-ratio:1;border-radius:10px;overflow:hidden;background:#000}
 .scan-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;background:#000}
@@ -184,7 +183,7 @@ textarea.di{resize:vertical;line-height:1.5}
 .log-row.bad{border-left-color:var(--red)}
 .log-row .mono{font-size:10px;color:var(--muted)}
 
-/* ============ ADMIN ============ */
+/* ADMIN */
 .admin-head{position:sticky;top:0;z-index:60;background:var(--card)}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border)}
 .topbar h2{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.12em}
@@ -229,7 +228,7 @@ tr:hover td{background:var(--field)}
 .u-count{font-family:'Space Mono',monospace;font-size:13px}
 .u-count.full{color:var(--red)}.u-count.part{color:var(--amber)}
 
-/* ============ ENTRADAS VISUALES ============ */
+/* ENTRADAS VISUALES */
 .qg{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 @media(min-width:640px){.qg{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:1024px){.qg{grid-template-columns:repeat(4,1fr)}}
@@ -255,7 +254,7 @@ tr:hover td{background:var(--field)}
 .vt-dl{margin-top:10px;width:100%;justify-content:center}
 #ticket-summary{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:14px}
 
-/* ============ MODO PUERTA ============ */
+/* MODO PUERTA */
 .kiosk-mode{position:fixed;inset:0;z-index:99999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:18px;overflow-y:auto}
 .kiosk-mode.active{display:flex}
 .kiosk-anim{position:fixed;inset:0;z-index:100000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#060504;padding:20px;overflow:hidden}
@@ -272,6 +271,11 @@ tr:hover td{background:var(--field)}
 .kiosk-rest{margin-top:14px;font-family:'Space Mono',monospace;font-size:15px;color:#3ecf6d;letter-spacing:.2em}
 .cf{position:absolute;top:-14px;width:8px;height:14px;border-radius:2px;animation:cfall 1.2s ease-in forwards;z-index:1}
 @keyframes cfall{to{transform:translate(var(--dx),108vh) rotate(720deg);opacity:.5}}
+
+/* LOGIN */
+.login-box{max-width:360px}
+.login-note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--muted);margin-top:14px;line-height:1.7;text-transform:uppercase}
+#pub-progress{font-family:'Space Mono',monospace;font-size:11px;color:var(--green);letter-spacing:.15em;min-height:16px}
 
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
@@ -352,18 +356,18 @@ tr:hover td{background:var(--field)}
         <div><b>Etapa</b><span id="confirm-stage">—</span></div>
         <div><b>Total</b><span id="confirm-total" class="mono">—</span></div>
       </div>
-      <p style="color:var(--muted);font-size:15px">Cuando el organizador apruebe tu pago, cada entrada recibirá su <b style="color:var(--text)">serial único con QR</b>. Consulta la sección «Ya tengo mi entrada» con tu cédula: ahí podrás ver y compartir cada QR con quien lo vaya a usar.</p>
+      <p style="color:var(--muted);font-size:15px">Cuando el organizador apruebe tu pago, cada entrada recibirá su <b style="color:var(--text)">serial único con QR</b>. Consulta la sección «Ya tengo mi entrada» con tu cédula y tu teléfono: ahí verás y podrás compartir cada QR.</p>
       <button class="bp w-full" onclick="showView('landing')">Volver al inicio</button>
     </div>
   </div>
 </section>
 
-<!-- ============ VERIFICAR (PÚBLICO) ============ -->
+<!-- ============ MIS ENTRADAS (PÚBLICO) ============ -->
 <section id="view-verify" class="vw center-y">
   <div class="wrap-md">
     <button type="button" class="bs mb-6" onclick="showView('landing')"><i class="fa-solid fa-arrow-left"></i>Volver</button>
     <h2 style="font-family:'Anton';font-size:clamp(26px,6vw,36px);letter-spacing:.04em">MIS ENTRADAS</h2>
-    <p style="color:var(--muted);margin-top:6px">Consulta tus entradas con tu cédula. Cada QR es independiente: pásalo a quien lo vaya a usar.</p>
+    <p style="color:var(--muted);margin-top:6px">Consulta con tu cédula. Para ver tus QR también necesitas el teléfono con el que compraste.</p>
     <div class="ab p-6 mt-6">
       <input type="text" id="verify-dni" class="di" placeholder="12345678" inputmode="numeric" pattern="[0-9]*" onkeydown="if(event.key==='Enter')verifyDNI()">
       <button class="bp w-full mt-4" onclick="verifyDNI()"><i class="fa-solid fa-magnifying-glass"></i>Verificar</button>
@@ -415,7 +419,7 @@ tr:hover td{background:var(--field)}
 <section id="view-admin" class="vw">
   <div class="admin-head">
     <div class="topbar">
-      <button type="button" class="bs" onclick="showView('landing')"><i class="fa-solid fa-arrow-left"></i>Salir</button>
+      <button type="button" class="bs" onclick="signOutNow()"><i class="fa-solid fa-right-from-bracket"></i>Salir</button>
       <h2 id="panel-title">PANEL</h2>
       <div class="flex items-center gap-3">
         <span id="admin-data-count" class="mono" style="font-size:10px;color:var(--muted);letter-spacing:.1em">0 REG</span>
@@ -442,7 +446,7 @@ tr:hover td{background:var(--field)}
     <div class="wrap-xl" style="margin:0 auto">
       <div class="ab p-6">
         <div class="sec-h">Entradas con serial único</div>
-        <p class="hint">Cada entrada paga recibe un <b style="color:var(--text)">serial independiente de 8 caracteres</b>. Si alguien compra 4, se emiten 4 QR distintos: entra quien llegue con cualquiera de ellos, una vez por QR. Se emiten solas al aprobar pagos, subir listas o agregar manuales; este botón rellena cualquier faltante.</p>
+        <p class="hint">Cada entrada paga recibe un <b style="color:var(--text)">serial independiente</b>. Se emiten solas al aprobar pagos, subir listas o agregar manuales; este botón rellena faltantes y refresca el índice público.</p>
         <div id="ticket-summary">SIN EMITIR</div>
         <div class="flex flex-wrap gap-3">
           <button class="bp" onclick="generateAllVisualTickets()"><i class="fa-solid fa-ticket"></i>Generar / actualizar</button>
@@ -493,15 +497,27 @@ tr:hover td{background:var(--field)}
   <div id="tab-config" class="tab-c">
     <div class="wrap-md" style="margin:0 auto">
       <div class="ab p-6 mb-5" style="border-color:var(--red)">
-        <div class="sec-h">Control de evento y usuarios</div>
+        <div class="sec-h">Cuentas de acceso</div>
+        <p class="hint">El panel ya no usa PIN: usa cuentas de Firebase (resistentes a fuerza bruta).<br><br>
+        Admin: <b class="mono" id="auth-admin-mail" style="color:var(--text)">—</b><br>
+        Portero: <b class="mono" id="auth-portero-mail" style="color:var(--text)">—</b></p>
+        <p class="login-note">Las cuentas se crean y las contraseñas se restauran en Firebase Console → Authentication → Users. Los correos deben coincidir con las constantes ADMIN_EMAIL / PORTERO_EMAIL de este archivo y con las reglas de la base de datos.</p>
+      </div>
+
+      <div class="ab p-6 mb-5">
+        <div class="sec-h">Índice público (mis entradas)</div>
+        <p class="hint">Los asistentes ven sus QR con <b style="color:var(--text)">cédula + teléfono</b>. El teléfono actúa como llave de cifrado, así que los QR no quedan expuestos con solo conocer la cédula. Se regenera solo al aprobar/cargar datos; este botón repara faltantes.</p>
+        <div id="pub-status" class="mono" style="font-size:11px;color:var(--muted);margin-bottom:10px">—</div>
+        <div id="pub-progress"></div>
+        <button class="bp" onclick="buildPubAll()"><i class="fa-solid fa-database"></i>Regenerar índice público</button>
+      </div>
+
+      <div class="ab p-6 mb-5">
+        <div class="sec-h">Control de evento</div>
         <label class="lbl">Día activo (filtra la puerta en eventos de varios días)</label>
         <input type="text" id="config-active-day" class="di mb-4" placeholder="Día 1">
         <label class="lbl">Color para las entradas</label>
         <input type="color" id="config-day-color" class="di mb-4" style="height:48px;padding:5px" value="#e0281a">
-        <label class="lbl">PIN de administrador (acceso total)</label>
-        <input type="text" id="config-admin-pin" class="di mb-4" placeholder="2025" inputmode="numeric">
-        <label class="lbl">PIN de portero (solo verificar)</label>
-        <input type="text" id="config-portero-pin" class="di mb-4" placeholder="1234" inputmode="numeric">
         <button id="sales-toggle-btn" class="bp w-full" onclick="toggleSales()"><i class="fa-solid fa-pause mr-2"></i>Pausar ventas</button>
       </div>
 
@@ -540,6 +556,7 @@ tr:hover td{background:var(--field)}
           <input type="number" id="manual-cantidad" class="di" placeholder="Cant" value="1" min="1">
           <input type="text" id="manual-etapa" class="di" placeholder="Etapa" value="Manual">
         </div>
+        <input type="text" id="manual-phone" class="di mt-3" placeholder="Teléfono (llave para ver sus QR)" inputmode="numeric">
         <button class="bp w-full mt-3" onclick="addManualAttendee()"><i class="fa-solid fa-user-plus mr-2"></i>Agregar (emite sus seriales)</button>
       </div>
 
@@ -596,14 +613,16 @@ tr:hover td{background:var(--field)}
   </div>
 </div>
 
-<!-- ============ MODALES ============ -->
-<div id="pin-modal" class="mo" onclick="if(event.target===this)closeModal('pin-modal')">
-  <div class="mb" style="text-align:center">
+<!-- ============ MODAL DE ACCESO (CUENTAS) ============ -->
+<div id="login-modal" class="mo" onclick="if(event.target===this)closeModal('login-modal')">
+  <div class="mb login-box" style="text-align:center">
     <i class="fa-solid fa-shield-halved text-2xl mb-3" style="color:var(--red)"></i>
-    <h3 id="pin-modal-title" style="font-family:'Anton';font-size:20px;letter-spacing:.08em">ACCESO RESTRINGIDO</h3>
-    <input type="password" id="pin-input" class="di mt-5 mb-2" style="text-align:center;font-size:24px;letter-spacing:.5em;font-family:'Space Mono'" maxlength="10" inputmode="numeric">
-    <div id="pin-error" style="font-size:14px;color:var(--red);display:none">PIN incorrecto</div>
-    <button class="bp w-full mt-4" onclick="checkPIN()">Acceder</button>
+    <h3 id="login-title" style="font-family:'Anton';font-size:20px;letter-spacing:.08em">ACCESO EQUIPO</h3>
+    <input type="email" id="login-email" class="di mt-5 mb-3" placeholder="correo@equipo.com" autocomplete="username">
+    <input type="password" id="login-pass" class="di mb-2" placeholder="Contraseña" autocomplete="current-password">
+    <div id="login-error" style="font-size:14px;color:var(--red);display:none"></div>
+    <button class="bp w-full mt-4" onclick="doLogin()">Acceder</button>
+    <p class="login-note">Cuentas creadas en Firebase Console → Authentication.<br>La sesión permanece en este dispositivo.</p>
   </div>
 </div>
 
@@ -614,7 +633,8 @@ tr:hover td{background:var(--field)}
     <input type="text" id="edit-nombre" class="di mb-3" placeholder="Nombre">
     <input type="text" id="edit-cedula" class="di mb-3" placeholder="Cédula">
     <input type="number" id="edit-cantidad" class="di mb-3" placeholder="Cantidad" min="1">
-    <input type="text" id="edit-etapa" class="di mb-4" placeholder="Etapa">
+    <input type="text" id="edit-etapa" class="di mb-3" placeholder="Etapa">
+    <input type="text" id="edit-phone" class="di mb-4" placeholder="Teléfono (llave de sus QR)" inputmode="numeric">
     <div class="flex items-center gap-3 mb-4">
       <input type="checkbox" id="edit-paid" class="w-5 h-5" style="accent-color:var(--green)">
       <label for="edit-paid" style="font-size:15px">Pagado (habilita sus entradas con serial)</label>
@@ -642,20 +662,23 @@ tr:hover td{background:var(--field)}
 <div class="tc" id="toast-container"></div>
 
 <script>
+/* ================= CONFIGURACIÓN DE ACCESO — EDITAR ================= */
+var ADMIN_EMAIL  = 'admin@tucorreo.com';   /* EDITAR: correo de la cuenta ADMIN en Firebase Authentication */
+var PORTERO_EMAIL= 'puerta@tucorreo.com';  /* EDITAR: correo de la cuenta PORTERO en Firebase Authentication */
+
 /* ================= ESTADO ================= */
 var _k1="AIzaSyB",_k2="GDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE";
 var _a1="1:838453069044",_a2="web:ce6346a7089385fa628aa1";
 var FIREBASE_CONFIG={apiKey:_k1+_k2,authDomain:"bleeditloud-6fb33.firebaseapp.com",databaseURL:"https://bleeditloud-6fb33-default-rtdb.firebaseio.com",projectId:"bleeditloud-6fb33",storageBucket:"bleeditloud-6fb33.firebasestorage.app",messagingSenderId:"838453069044",appId:_a1+_a2};
 var FB_EVENT_ID='live-cafe-rock-2026';
-var CFG={PIN:'2025',PORTERO_PIN:'1234'};
-var currentRole='admin', attendees=[], usedIDs=new Set(), pendingPayments=[], salesConfig={}, tickets={};
+var currentRole='admin', attendees=[], pendingPayments=[], salesConfig={}, tickets={}, doorLog={}, pubData={};
 salesConfig.s1_name='Preventa 1'; salesConfig.s1_price=10;
 salesConfig.s2_name='Preventa 2'; salesConfig.s2_price=15;
 salesConfig.payInfo='Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
-try{ usedIDs=new Set(JSON.parse(localStorage.getItem('bleedit_used')||'[]')); }catch(e){}
-var fbApp=null, fbDB=null, fbConnected=false;
+var fbApp=null, fbDB=null, fbAuth=null, fbConnected=false;
+var AUTH={user:null,role:null,listenersOn:false};
+var wantLogin=false, selectedStage=0, confirmCb=null, SCANLOG=[], kioskTok=0;
 var currentTheme=localStorage.getItem('bleedit_theme')||'dark';
-var selectedStage=0, confirmCb=null, SCANLOG=[], kioskTok=0;
 var DEFAULT_TICKET_IMG="https://z-cdn-media.chatglm.cn/files/b5514a0a-8209-4f46-8693-d1877cff0de0.jpeg?auth_key=1887157655-9bac99754d044e79b867f92041dfb20c-0-0e1d71ab4f51dfca8b8c9e3a7061b690";
 
 /* ================= UTILIDADES ================= */
@@ -670,17 +693,43 @@ function openModal(id){document.getElementById(id).style.display='flex';}
 function closeModal(id){document.getElementById(id).style.display='none';}
 function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 
-/* tema */
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-icon').className=t==='dark'?'fa-solid fa-sun':'fa-solid fa-moon';var mt=document.querySelector('meta[name=theme-color]');if(mt)mt.content=t==='dark'?'#0c0a08':'#f1ece0';}
 function toggleTheme(){currentTheme=currentTheme==='dark'?'light':'dark';localStorage.setItem('bleedit_theme',currentTheme);applyTheme(currentTheme);}
 
-/* sonidos */
 var AC=null;
 function tone(f,d,delay,type,vol){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();var o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.value=f;o.connect(g);g.connect(AC.destination);var t=AC.currentTime+(delay||0);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol||.12,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.05);}catch(e){}}
 function beepGood(){tone(880,.12,0);tone(1318,.2,.12);}
 function beepBad(){tone(150,.35,0,'square',.15);}
 
-/* ================= CARGADORES DE LIBRERÍAS (con respaldo doble CDN) ================= */
+/* ================= CIFRADO DE QR (PBKDF2 + AES-GCM) ================= */
+function b64(u8){var s='';for(var i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);return btoa(s);}
+function ub64(str){var s=atob(str),u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;}
+function hasCrypto(){return !!(window.crypto&&window.crypto.subtle&&window.TextEncoder);}
+function deriveKey(ced,phone){
+  var enc=new TextEncoder();
+  return crypto.subtle.importKey('raw',enc.encode(phone),'PBKDF2',false,['deriveKey']).then(function(base){
+    return crypto.subtle.deriveKey({name:'PBKDF2',salt:enc.encode('LCR26|'+ced),iterations:150000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  });
+}
+function encryptSerials(ced,phone,arr){
+  if(!hasCrypto())return Promise.resolve(null);
+  return deriveKey(ced,phone).then(function(key){
+    var iv=crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(JSON.stringify(arr))).then(function(ct){
+      return {iv:b64(new Uint8Array(iv)),ct:b64(new Uint8Array(ct))};
+    });
+  }).catch(function(){return null;});
+}
+function decryptSerials(ced,phone,blob){
+  if(!hasCrypto()||!blob||!blob.iv||!blob.ct)return Promise.resolve(null);
+  return deriveKey(ced,phone).then(function(key){
+    return crypto.subtle.decrypt({name:'AES-GCM',iv:ub64(blob.iv)},key,ub64(blob.ct));
+  }).then(function(buf){
+    try{return JSON.parse(new TextDecoder().decode(buf));}catch(e){return null;}
+  }).catch(function(){return null;});
+}
+
+/* ================= CARGADORES DE LIBRERÍAS ================= */
 var LIBQ=['https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js','https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js'];
 var LIBJ=['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://unpkg.com/jsqr@1.4.0/dist/jsQR.js'];
 function loadSeq(urls,cb,ix){
@@ -692,8 +741,6 @@ function loadSeq(urls,cb,ix){
   document.head.appendChild(s);
 }
 function ensureJsQR(cb){if(window.jsQR)return cb(true);loadSeq(LIBJ,cb);}
-
-/* Genera el QR como imagen data-URL (a prueba de html2canvas). Devuelve Promise<string|null> */
 function makeQR(text,size){
   return new Promise(function(resolve){
     function viaSoldair(){
@@ -747,14 +794,15 @@ function stopScanner(){camStop();}
 document.addEventListener('DOMContentLoaded',function(){
   applyTheme(currentTheme);
   buildEq();
-  CFG.PIN=localStorage.getItem('bleedit_pin')||CFG.PIN;
-  CFG.PORTERO_PIN=localStorage.getItem('bleedit_portero_pin')||CFG.PORTERO_PIN;
-  loadSeq(LIBQ,function(){});           /* mejora silenciosa del generador QR */
-  ensureJsQR(function(){});             /* pre-calienta el lector */
+  document.getElementById('auth-admin-mail').textContent=ADMIN_EMAIL;
+  document.getElementById('auth-portero-mail').textContent=PORTERO_EMAIL;
+  loadSeq(LIBQ,function(){});
+  ensureJsQR(function(){});
   if(window.location.hash==='#admin'||window.location.hash==='#portero'){
+    wantLogin=true;
     currentRole=window.location.hash.replace('#','');
-    document.getElementById('pin-modal-title').textContent=currentRole==='admin'?'ACCESO ADMINISTRADOR':'ACCESO PORTERO';
-    openModal('pin-modal');
+    document.getElementById('login-title').textContent=currentRole==='admin'?'ACCESO ADMINISTRADOR':'ACCESO PORTERO';
+    openModal('login-modal');
   }else if(window.location.hash==='#verificar'){showView('verify');}
   else showView('landing');
   updateLandingUI();renderBuyStages();updateSalesUI();
@@ -762,8 +810,8 @@ document.addEventListener('DOMContentLoaded',function(){
   initFirebase();
 });
 document.addEventListener('keydown',function(e){
-  if(e.key==='Enter'&&document.getElementById('pin-modal').style.display==='flex')checkPIN();
-  if(e.key==='Escape'){closeModal('pin-modal');closeModal('edit-modal');closeModal('confirm-modal');}
+  if(e.key==='Enter'&&document.getElementById('login-modal').style.display==='flex')doLogin();
+  if(e.key==='Escape'){closeModal('login-modal');closeModal('edit-modal');closeModal('confirm-modal');}
 });
 function buildEq(){
   var eq=document.getElementById('eq');if(!eq)return;
@@ -776,16 +824,16 @@ function buildEq(){
   }
 }
 
-/* ================= FIREBASE ================= */
+/* ================= FIREBASE + AUTENTICACIÓN ================= */
+function classify(email){email=(email||'').toLowerCase();if(email===ADMIN_EMAIL)return 'admin';if(email===PORTERO_EMAIL)return 'portero';return null;}
 function initFirebase(){
   try{
     if(!fbApp)fbApp=firebase.initializeApp(FIREBASE_CONFIG,'live-cafe-app');
-    fbDB=fbApp.database();fbConnected=true;
+    fbDB=fbApp.database();
+    fbAuth=fbApp.auth();
+    fbConnected=true;
     setBadge('on','Nube online');
-    fbDB.ref('events/'+FB_EVENT_ID+'/attendees').on('value',function(s){attendees=s.val()?Object.values(s.val()):[];updateUI();});
-    fbDB.ref('events/'+FB_EVENT_ID+'/used').on('value',function(s){var d=s.val();usedIDs=new Set(d?(Array.isArray(d)?d:Object.values(d)):[]);try{localStorage.setItem('bleedit_used',JSON.stringify(Array.from(usedIDs)));}catch(e){}updateUI();});
-    fbDB.ref('events/'+FB_EVENT_ID+'/tickets').on('value',function(s){tickets=s.val()||{};updateUI();});
-    fbDB.ref('events/'+FB_EVENT_ID+'/pending').on('value',function(s){var v=s.val()||{};pendingPayments=Object.keys(v).map(function(k){var o=v[k]||{};o.id=k;return o;});renderPendingPayments();});
+    /* config es pública (datos del evento, sin secretos) */
     fbDB.ref('events/'+FB_EVENT_ID+'/config').on('value',function(s){
       salesConfig=s.val()||{};
       if(!salesConfig.s1_name)salesConfig.s1_name='Preventa 1';
@@ -795,8 +843,6 @@ function initFirebase(){
       if(!salesConfig.payInfo)salesConfig.payInfo='Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
       document.getElementById('config-active-day').value=salesConfig.active_day||'';
       document.getElementById('config-day-color').value=salesConfig.day_color||'#e0281a';
-      document.getElementById('config-admin-pin').value=salesConfig.admin_pin||CFG.PIN;
-      document.getElementById('config-portero-pin').value=salesConfig.portero_pin||CFG.PORTERO_PIN;
       document.getElementById('config-event-name').value=salesConfig.event_name||'LIVE CAFÉ ROCK';
       document.getElementById('config-event-sub').value=salesConfig.event_sub||'CONTROL DE ACCESO Y ENTRADAS';
       document.getElementById('config-event-date').value=salesConfig.event_date||'31 / 07 / 2026';
@@ -809,19 +855,72 @@ function initFirebase(){
       document.getElementById('config-s2-name').value=salesConfig.s2_name;
       document.getElementById('config-s2-price').value=salesConfig.s2_price;
       document.getElementById('config-s2-closed').checked=!!salesConfig.s2_closed;
-      CFG.PIN=salesConfig.admin_pin||CFG.PIN;
-      CFG.PORTERO_PIN=salesConfig.portero_pin||CFG.PORTERO_PIN;
       document.getElementById('payment-info').textContent=salesConfig.payInfo;
       updateLandingUI();renderBuyStages();updateSalesUI();updateTotal();updateUI();
     });
+    fbAuth.onAuthStateChanged(function(u){
+      AUTH.user=u;
+      AUTH.role=u?classify(u.email):null;
+      if(AUTH.role){
+        attachRoleListeners();
+        if(wantLogin)enterPanel();
+      }else if(u){
+        fbAuth.signOut();
+        if(wantLogin){loginError('Ese correo no es admin ni portero de este evento');}
+      }else{
+        setBadge(fbConnected?'on':'','Sin sesión');
+        if(wantLogin)openModal('login-modal');
+      }
+    });
   }catch(e){setBadge('err','Nube error');}
 }
-function setBadge(cls,txt){var b=document.getElementById('fb-badge');b.className='fb-badge '+(cls||'');b.textContent=txt;}
-function saveUsed(){
-  try{localStorage.setItem('bleedit_used',JSON.stringify(Array.from(usedIDs)));}catch(e){}
-  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/used').set(Array.from(usedIDs)).catch(function(){});
+function attachRoleListeners(){
+  if(AUTH.listenersOn)return;AUTH.listenersOn=true;
+  setBadge('on',AUTH.role==='admin'?'Admin online':'Portero online');
+  fbDB.ref('events/'+FB_EVENT_ID+'/attendees').on('value',function(s){attendees=s.val()?Object.values(s.val()):[];updateUI();checkMigrationHint();});
+  fbDB.ref('events/'+FB_EVENT_ID+'/tickets').on('value',function(s){tickets=s.val()||{};updateUI();});
+  fbDB.ref('events/'+FB_EVENT_ID+'/doorLog').on('value',function(s){doorLog=s.val()||{};renderTicketCards();});
+  if(AUTH.role==='admin'){
+    fbDB.ref('events/'+FB_EVENT_ID+'/pending').on('value',function(s){var v=s.val()||{};pendingPayments=Object.keys(v).map(function(k){var o=v[k]||{};o.id=k;return o;});renderPendingPayments();});
+    fbDB.ref('events/'+FB_EVENT_ID+'/pub').on('value',function(s){pubData=s.val()||{};updatePubStatus();});
+  }
 }
-function saveAttendees(){if(fbConnected){fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees).catch(function(){showToast('Error Firebase: revisa las reglas de tu DB','e');});}updateUI();}
+function setBadge(cls,txt){var b=document.getElementById('fb-badge');b.className='fb-badge '+(cls||'');b.textContent=txt;}
+function loginError(msg){var e=document.getElementById('login-error');e.textContent=msg;e.style.display='block';}
+function doLogin(){
+  var em=document.getElementById('login-email').value.trim().toLowerCase();
+  var pw=document.getElementById('login-pass').value;
+  var errEl=document.getElementById('login-error');errEl.style.display='none';
+  if(!em||!pw)return;
+  if(!fbAuth){loginError('Firebase no está disponible');return;}
+  fbAuth.signInWithEmailAndPassword(em,pw).then(function(){/* onAuthStateChanged enruta */})
+  .catch(function(e){loginError(friendlyAuthError(e&&e.code));});
+}
+function friendlyAuthError(code){
+  var m={'auth/invalid-email':'Correo no válido','auth/user-not-found':'Esa cuenta no existe (créala en Firebase Console)','auth/wrong-password':'Contraseña incorrecta','auth/invalid-credential':'Correo o contraseña incorrectos','auth/too-many-requests':'Demasiados intentos — espera un momento','auth/network-request-failed':'Sin conexión','auth/operation-not-allowed':'Habilita Email/Password en Authentication'};
+  return m[code]||'No se pudo iniciar sesión';
+}
+function enterPanel(){
+  closeModal('login-modal');
+  showView('admin');
+  applyRole();
+}
+function applyRole(){
+  var isAdmin=AUTH.role==='admin';
+  document.querySelectorAll('[data-admin-only]').forEach(function(el){el.style.display=isAdmin?'':'none';});
+  document.getElementById('panel-title').textContent=isAdmin?'ADMINISTRADOR':'PORTERO';
+  if(!isAdmin){var vb=document.querySelector('[data-tab="tab-verify"]');if(vb)switchTab('tab-verify',vb);}
+}
+function signOutNow(){
+  if(fbAuth)fbAuth.signOut();
+  setTimeout(function(){location.reload();},300);
+}
+function saveAttendees(){
+  if(!fbConnected){updateUI();return;}
+  fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees).catch(function(err){
+    showToast('Sin permiso para escribir la lista','e');updateUI();
+  });
+}
 
 /* ================= LANDING ================= */
 function updateLandingUI(){
@@ -851,7 +950,7 @@ function updateCountdown(){
   if(isNaN(ev.getTime())){el.style.display='none';return;}
   var today=new Date();today.setHours(0,0,0,0);
   var dd=Math.round((ev-today)/86400000);
-  if(dd>1){el.style.display='';el.innerHTML='<i class="fa-solid fa-bolt"></i> FALTAN '+dd+' DÍOS'.replace('DÍOS','DÍAS');}
+  if(dd>1){el.style.display='';el.innerHTML='<i class="fa-solid fa-bolt"></i> FALTAN '+dd+' DÍAS';}
   else if(dd===1){el.style.display='';el.innerHTML='<i class="fa-solid fa-bolt"></i> ¡MAÑANA ES EL SHOW!';}
   else if(dd===0){el.style.display='';el.innerHTML='<i class="fa-solid fa-bolt"></i> ¡ES HOY!';}
   else{el.style.display='';el.innerHTML='EVENTO REALIZADO';}
@@ -860,7 +959,7 @@ function updateCountdown(){
 /* ================= VENTAS ================= */
 function toggleSales(){
   salesConfig.sales_paused=!salesConfig.sales_paused;
-  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/config').update({sales_paused:salesConfig.sales_paused});
+  if(fbConnected&&AUTH.role==='admin')fbDB.ref('events/'+FB_EVENT_ID+'/config').update({sales_paused:salesConfig.sales_paused});
   updateSalesUI();renderBuyStages();
   showToast(salesConfig.sales_paused?'Ventas pausadas':'Ventas activadas','i');
 }
@@ -912,10 +1011,14 @@ function submitPurchase(){
   var qty=Math.max(1,parseInt(document.getElementById('buy-qty').value,10)||1);
   var ref=document.getElementById('buy-ref').value.trim();
   if(!name||!dni||!ref){showToast('Completa nombre, cédula y referencia de pago','e');return;}
+  if(!phone){showToast('El teléfono es necesario: será la llave para ver tus QR','e');return;}
   var sc=selectedStage===1?{name:salesConfig.s1_name,price:salesConfig.s1_price||0}:{name:salesConfig.s2_name,price:salesConfig.s2_price||0};
   var rec={name:name,dni:dni,phone:phone,qty:qty,ref:ref,stage:sc.name||'Venta',total:qty*sc.price,ts:Date.now(),status:'pendiente'};
-  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/pending').push(rec).catch(function(){showToast('Error al enviar. Revisa tu conexión','e');return;});
-  else{rec.id='L'+Date.now();pendingPayments.push(rec);renderPendingPayments();}
+  if(fbConnected){
+    fbDB.ref('events/'+FB_EVENT_ID+'/pending').push(rec).catch(function(err){
+      showToast('No se pudo enviar ('+(err&&err.code==='PERMISSION_DENIED'?'permisos':('conexión'))+')','e');
+    });
+  }else{rec.id='L'+Date.now();pendingPayments.push(rec);renderPendingPayments();}
   document.getElementById('confirm-name').textContent=name;
   document.getElementById('confirm-ref').textContent=ref;
   document.getElementById('confirm-stage').textContent=(qty+' × '+(sc.name||'Venta'));
@@ -928,8 +1031,6 @@ async function saveSalesConfig(){
   var nc={
     active_day:document.getElementById('config-active-day').value,
     day_color:document.getElementById('config-day-color').value,
-    admin_pin:document.getElementById('config-admin-pin').value||'2025',
-    portero_pin:document.getElementById('config-portero-pin').value||'1234',
     event_name:document.getElementById('config-event-name').value,
     event_sub:document.getElementById('config-event-sub').value,
     event_date:document.getElementById('config-event-date').value,
@@ -945,23 +1046,21 @@ async function saveSalesConfig(){
     sales_paused:salesConfig.sales_paused||false
   };
   salesConfig=nc;
-  CFG.PIN=nc.admin_pin;localStorage.setItem('bleedit_pin',CFG.PIN);
-  CFG.PORTERO_PIN=nc.portero_pin;localStorage.setItem('bleedit_portero_pin',CFG.PORTERO_PIN);
   document.getElementById('payment-info').textContent=nc.payInfo;
   if(fbConnected){
     try{await fbDB.ref('events/'+FB_EVENT_ID+'/config').set(nc);showToast('Configuración guardada en la nube','s');}
-    catch(error){showToast('Error Firebase: revisa las reglas de tu DB','e');}
-  }else showToast('Configuración guardada localmente','s');
+    catch(error){showToast('Sin permiso para guardar (inicia sesión como admin)','e');}
+  }else showToast('Sin conexión con la nube','e');
   updateLandingUI();renderBuyStages();updateSalesUI();updateTotal();
 }
 
-/* ================= SERIALES ÚNICOS (NÚCLEO) ================= */
+/* ================= SERIALES ÚNICOS ================= */
 var SERIAL_AB='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 function genSerial(){
   for(var tries=0;tries<80;tries++){
     var s='';
     for(var i=0;i<8;i++)s+=SERIAL_AB.charAt(Math.floor(Math.random()*SERIAL_AB.length));
-    if(s.replace(/[^A-Z]/g,'').length<2)continue;   /* nunca puro numérico: evita chocar con cédulas */
+    if(s.replace(/[^A-Z]/g,'').length<2)continue;
     if(!tickets[s])return s;
   }
   var fb='X'+Date.now().toString(36).toUpperCase().replace(/[^A-Z0-9]/g,'');
@@ -984,13 +1083,7 @@ function findAttendeeExact(dni,day){
   return null;
 }
 function findByDNI(d){d=nD(d);for(var i=0;i<attendees.length;i++){if(attendees[i]&&nD(attendees[i].D)===d)return attendees[i];}return null;}
-function usedCountFor(a){
-  var ts=ticketsOf(nD(a.D),a.E_D||null);
-  if(ts.length)return ts.filter(function(t){return t.u;}).length;
-  var d=nD(a.D),p1='LCR26|'+d+'|',p2=d+'|',c=0;
-  usedIDs.forEach(function(u){if(typeof u==='string'&&(u.indexOf(p1)===0||u.indexOf(p2)===0))c++;});
-  return c;
-}
+function usedCountFor(a){return ticketsOf(nD(a.D),null).filter(function(t){return t.u;}).length;}
 function ensureTicketsFor(dni,day){
   dni=nD(dni);if(!dni)return[];
   day=day||'General';
@@ -1001,14 +1094,12 @@ function ensureTicketsFor(dni,day){
   for(var k=have.length;k<(a.C||1);k++){
     nextIx++;
     var s=genSerial();
-    var t={s:s,d:dni,n:a.N||'',e:a.E||'General',day:day,i:nextIx,u:false,ua:null,ts:Date.now()};
-    var lk1='LCR26|'+dni+'|'+(nextIx-1),lk2=dni+'|'+(nextIx-1);
-    if(usedIDs.has(lk1)||usedIDs.has(lk2)){t.u=true;t.ua=Date.now();}
-    tickets[s]=t;created.push(t);
+    tickets[s]={s:s,d:dni,n:a.N||'',e:a.E||'General',day:day,i:nextIx,u:false,ua:null,ts:Date.now()};
+    created.push(tickets[s]);
   }
-  if(created.length&&fbConnected){
+  if(created.length&&fbConnected&&AUTH.role==='admin'){
     var upd={};created.forEach(function(t){upd[t.s]=t;});
-    fbDB.ref('events/'+FB_EVENT_ID+'/tickets').update(upd).catch(function(){});
+    fbDB.ref('events/'+FB_EVENT_ID+'/tickets').update(upd).catch(function(){showToast('Sin permiso para emitir entradas','e');});
   }
   return created;
 }
@@ -1022,27 +1113,59 @@ function ensureAllTickets(){
   });
   return n;
 }
-function markTicketUsed(t){
-  t.u=true;t.ua=Date.now();
-  patchTicketCards();
-  if(fbConnected){
-    fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).transaction(function(cur){
-      if(cur&&cur.u)return;           /* otro punto ya la marcó: aborta */
-      if(cur){cur.u=true;cur.ua=Date.now();return cur;}
-      return{u:true,ua:Date.now()};
-    });
+
+/* ================= ÍNDICE PÚBLICO (pub/) ================= */
+async function refreshPubFor(dni){
+  dni=nD(dni);if(!dni)return;
+  var rows=attendees.filter(function(a){return a&&nD(a.D)===dni;});
+  if(!rows.length){
+    if(fbConnected&&AUTH.role==='admin')fbDB.ref('events/'+FB_EVENT_ID+'/pub/'+dni).remove().catch(function(){});
+    return;
+  }
+  var name='',phone='',paid=true,total=0;
+  rows.forEach(function(a){if(a.N&&!name)name=a.N;if(a.T&&!phone)phone=nD(a.T);if(!isPaid(a.P))paid=false;total+=(a.C||1);});
+  var ts=ticketsOf(dni,null);
+  var qrs=null;
+  if(paid&&ts.length&&phone){
+    qrs=await encryptSerials(dni,phone,ts.map(function(t){return t.s;}));
+  }
+  var obj={n:name,p:paid,c:total,qrs:qrs};
+  if(fbConnected&&AUTH.role==='admin'){
+    fbDB.ref('events/'+FB_EVENT_ID+'/pub/'+dni).set(obj).catch(function(){showToast('Sin permiso para actualizar el índice','e');});
   }
 }
-function ownerTotal(t){var a=findAttendeeExact(t.d,t.day);return a?(a.C||1):Math.max(1,ticketsOf(t.d,t.day).length);}
-function legacyConsume(a){
-  for(var i=0;i<(a.C||1);i++){
-    var k1='LCR26|'+nD(a.D)+'|'+i,k2=nD(a.D)+'|'+i;
-    if(!usedIDs.has(k1)&&!usedIDs.has(k2)){usedIDs.add(k1);saveUsed();return{num:i+1};}
+async function buildPubAll(){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede regenerar el índice','e');return;}
+  var seen={},list=[];
+  attendees.forEach(function(a){if(!a)return;var d=nD(a.D);if(!d||seen[d])return;seen[d]=1;list.push(d);});
+  if(!list.length){showToast('No hay asistentes cargados','e');return;}
+  var el=document.getElementById('pub-progress');
+  for(var i=0;i<list.length;i++){
+    el.textContent='ÍNDICE: '+(i+1)+' / '+list.length;
+    await refreshPubFor(list[i]);
   }
-  return null;
+  el.textContent='COMPLETADO — '+list.length+' CÉDULAS';
+  showToast('Índice público regenerado','s');
+}
+function updatePubStatus(){
+  var el=document.getElementById('pub-status');if(!el)return;
+  var n=Object.keys(pubData).length;
+  if(!attendees.length){el.textContent='SIN ASISTENTES CARGADOS';return;}
+  if(!n){el.textContent='ÍNDICE VACÍO — PULSA «REGENERAR ÍNDICE PÚBLICO»';return;}
+  var total=0,seen={};
+  attendees.forEach(function(a){if(a){var d=nD(a.D);if(!seen[d]){seen[d]=1;total++;}}});
+  el.textContent=n+' / '+total+' CÉDULAS INDEXADAS';
+}
+function checkMigrationHint(){
+  if(AUTH.role!=='admin'||!attendees.length)return;
+  if(!Object.keys(pubData).length&&!checkMigrationHint.done){
+    checkMigrationHint.done=true;
+    showToast('Datos previos detectados: regenera el índice público en Config','i');
+  }
 }
 
-/* ================= VERIFICACIÓN (enrutador universal) ================= */
+/* ================= VERIFICACIÓN (EQUIPO, AUTENTICADO) ================= */
+function ownerTotal(t){var a=findAttendeeExact(t.d,t.day);return a?(a.C||1):Math.max(1,ticketsOf(t.d,t.day).length);}
 function coreVerify(code){
   code=String(code||'').trim();
   if(!code)return{s:'invalid',t:'CÓDIGO VACÍO',m:'Nada que verificar.'};
@@ -1086,10 +1209,6 @@ function verifyDNIPath(dni){
     var left=ticketsOf(a.D,ad||null).filter(function(x){return !x.u;}).length;
     return{s:'ok',t:'ACCESO CONCEDIDO',a:a,tk:t,m:'Entrada Nº '+t.i+' · serial '+t.s+(left?' · quedan '+left:' · era la última')};
   }
-  if(!ticketsOf(a.D,ad||null).length){
-    var le=legacyConsume(a);
-    if(le)return{s:'ok',t:'ACCESO CONCEDIDO',a:a,m:'Ingreso '+le.num+' de '+(a.C||1)+' (registro local)'};
-  }
   return{s:'full',t:'SIN ENTRADAS',a:a,m:'Ya usó todas sus entradas ('+usedCountFor(a)+'/'+(a.C||1)+').'};
 }
 function verifyLegacy(code){
@@ -1105,10 +1224,23 @@ function verifyLegacy(code){
     if(t)return verifySerial(t.s);
     return{s:'invalid',t:'INVÁLIDA',a:a,m:'Número de entrada fuera de rango.'};
   }
-  if(usedIDs.has(code))return{s:'used',t:'YA UTILIZADA',a:a,m:'Esta entrada ya pasó por puerta.'};
-  if(isNaN(idx)||idx<0||idx>=(a.C||1))return{s:'invalid',t:'INVÁLIDA',a:a,m:'Número de entrada fuera de rango.'};
-  usedIDs.add(code);saveUsed();
-  return{s:'ok',t:'ACCESO CONCEDIDO',a:a,m:'Entrada Nº '+(idx+1)+' de '+(a.C||1)};
+  return{s:'invalid',t:'ENTRADA ANTIGUA',a:a,m:'Genera las entradas con serial en la pestaña «Entradas».'};
+}
+/* escritura de puerta: autenticada + acotada por reglas (u=true únicamente) */
+function markTicketUsed(t){
+  t.u=true;t.ua=Date.now();
+  patchTicketCards();
+  if(!fbConnected||!AUTH.role)return;
+  fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s+'/u').transaction(function(cur){
+    return cur===true?undefined:true;
+  }).then(function(res){
+    if(res.committed){
+      fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).set({ts:Date.now(),by:(AUTH.user&&AUTH.user.email)||AUTH.role}).catch(function(){});
+    }
+  }).catch(function(){
+    showToast('Sin permiso para marcar el ingreso','e');
+    t.u=false;updateUI();
+  });
 }
 function resultHTML(r){
   var cls=r.s==='ok'?'ok':(r.s==='invalid'?'bad':'warn');
@@ -1136,57 +1268,92 @@ function resultHTML(r){
     +(r.m?'<p class="res-msg">'+esc(r.m)+'</p>':'')+det+'</div>';
 }
 
-/* consulta pública: muestra TODAS las entradas con QR de la cédula */
+/* ================= MIS ENTRADAS (PÚBLICO, con cifrado) ================= */
+var PV={ced:null,pub:null};
 function verifyDNI(){
   var box=document.getElementById('verify-result');box.style.display='block';
   var dni=nD(document.getElementById('verify-dni').value);
   if(!dni){box.innerHTML=resultHTML({s:'invalid',t:'INGRESA UNA CÉDULA',m:'Escribe la cédula con la que compraste.'});return;}
-  var list=attendees.filter(function(a){return a&&nD(a.D)===dni;});
-  var ts=ticketsOf(dni,null);
-  if(!list.length&&!ts.length){box.innerHTML=resultHTML({s:'invalid',t:'NO ENCONTRADA',m:'No hay entradas registradas con la cédula '+dni+'.'});return;}
-  if(ts.length){
-    var anyUnpaid=list.some(function(a){return !isPaid(a.P);});
-    if(anyUnpaid){box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',a:list[0],m:'Cuando el organizador apruebe el pago verás aquí tus entradas con QR.'});return;}
-    var used=ts.filter(function(t){return t.u;}).length;
-    var state=used>=ts.length?'warn':'ok';
-    var h='<div class="res res-'+state+'">'
-      +'<div class="res-head"><i class="fa-solid fa-circle-check"></i><span>'+(state==='ok'?'TUS ENTRADAS':'ENTRADAS AGOTADAS')+'</span></div>'
-      +'<p class="res-msg">Comprador: '+esc(list[0]?list[0].N:(ts[0].n||''))+' · '+(ts.length-used)+' de '+ts.length+' sin usar</p>'
-      +'<p class="res-share">Cada serial es una entrada independiente · comparte cada QR con quien la vaya a usar</p>'
-      +'<div class="tk-list">';
-    ts.forEach(function(t){
-      h+='<div class="tk-chip'+(t.u?' off':'')+'">'
-        +'<div class="tk-qr-box"><img id="pvq-'+t.s+'" alt="QR '+esc(t.s)+'"></div>'
-        +'<div class="tk-srl">'+dashSerial(t.s)+'</div>'
-        +'<div class="tk-meta">'+esc(t.e||'')+(t.day&&t.day!=='General'?' · '+esc(t.day):'')+' · Nº '+t.i+(t.u?' · <b>USADA</b>':'')+'</div>'
-        +'</div>';
-    });
-    h+='</div></div>';
-    box.innerHTML=h;
-    ts.forEach(function(t){
-      makeQR(t.s,320).then(function(url){
-        var el=document.getElementById('pvq-'+t.s);
-        if(el){if(url)el.src=url;else el.parentNode.innerHTML='<span class="mono" style="font-size:11px">'+esc(t.s)+'</span>';}
-      });
-    });
+  if(!fbConnected){box.innerHTML=resultHTML({s:'invalid',t:'SIN CONEXIÓN',m:'Revisa tu internet e inténtalo de nuevo.'});return;}
+  box.innerHTML='<p class="empty">BUSCANDO…</p>';
+  fbDB.ref('events/'+FB_EVENT_ID+'/pub/'+dni).once('value').then(function(s){
+    var p=s.val();
+    if(!p){box.innerHTML=resultHTML({s:'invalid',t:'NO ENCONTRADA',m:'No hay entradas registradas con la cédula '+dni+'. Si compraste antes de la última actualización, pide al organizador regenerar el índice.'});return;}
+    PV={ced:dni,pub:p};
+    if(!p.p){box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',m:'Hola'+(p.n?' '+p.n:'')+'. Cuando el organizador apruebe tu pago verás aquí tus entradas con QR.'});return;}
+    renderPhoneStep(box);
+  }).catch(function(){
+    box.innerHTML=resultHTML({s:'invalid',t:'ERROR DE CONSULTA',m:'No se pudo consultar. Inténtalo de nuevo.'});
+  });
+}
+function renderPhoneStep(box){
+  var p=PV.pub;
+  if(!p.qrs){
+    box.innerHTML=resultHTML({s:'warn',t:'SIN TELÉFONO REGISTRADO',m:'Tus '+p.c+' entradas están pagadas, pero no hay teléfono de contacto: presenta tu cédula en la puerta.'});
     return;
   }
-  var a=list[0];
-  if(!isPaid(a.P))box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',a:a,m:'Cuando el organizador apruebe el pago verás aquí tus entradas con QR.'});
-  else box.innerHTML=resultHTML({s:'ok',t:'ENTRADAS VÁLIDAS',a:a,m:'Tienes '+(a.C||1)+' entradas · usadas '+usedCountFor(a)+'. Los QR aún no han sido emitidos; vuelve a consultar.'});
+  box.innerHTML='<div class="res res-ok">'
+    +'<div class="res-head"><i class="fa-solid fa-circle-check"></i><span>ENTRADAS PAGADAS</span></div>'
+    +'<p class="res-msg">'+esc(p.n||'Comprador')+' · '+p.c+' entrada(s) · confirma tu teléfono para ver los QR</p>'
+    +'<div class="flex gap-3 mt-4">'
+    +'<input type="text" id="pv-phone" class="di" placeholder="Teléfono (Ej: 4141234567)" inputmode="numeric">'
+    +'<button class="bp px-6" onclick="revealPublicQRs()"><i class="fa-solid fa-unlock"></i></button>'
+    +'</div>'
+    +'<div id="pv-error" style="color:var(--red);font-size:14px;margin-top:10px;display:none"></div>'
+    +'</div>';
+  document.getElementById('pv-phone').addEventListener('keydown',function(e){if(e.key==='Enter')revealPublicQRs();});
+}
+async function revealPublicQRs(){
+  var box=document.getElementById('verify-result');
+  var err=document.getElementById('pv-error');
+  var phone=nD(document.getElementById('pv-phone').value);
+  if(phone.length<4){err.textContent='Escribe tu teléfono completo';err.style.display='block';return;}
+  err.style.display='none';
+  box.innerHTML='<p class="empty">DESCIFRANDO TUS ENTRADAS…</p>';
+  var arr=await decryptSerials(PV.ced,phone,PV.pub.qrs);
+  if(!arr||!arr.length){
+    renderPhoneStep(box);
+    var e2=document.getElementById('pv-error');
+    e2.textContent='El teléfono no coincide con el registrado en la compra';
+    e2.style.display='block';
+    return;
+  }
+  var h='<div class="res res-ok">'
+    +'<div class="res-head"><i class="fa-solid fa-circle-check"></i><span>TUS ENTRADAS</span></div>'
+    +'<p class="res-msg">'+esc(PV.pub.n||'Comprador')+' · '+arr.length+' entrada(s)</p>'
+    +'<p class="res-share">Cada serial es una entrada independiente · comparte cada QR con quien la vaya a usar</p>'
+    +'<div class="tk-list">';
+  var serials=[];
+  for(var i=0;i<arr.length;i++){
+    var s=String(arr[i]);
+    serials.push(s);
+    h+='<div class="tk-chip" id="tkc-'+s+'"><div class="tk-qr-box"><img id="pvq-'+s+'" alt="QR"></div>'
+      +'<div class="tk-srl">'+dashSerial(s)+'</div><div class="tk-meta" id="tkm-'+s+'">…</div></div>';
+  }
+  h+='</div></div>';
+  box.innerHTML=h;
+  serials.forEach(function(s){
+    makeQR(s,320).then(function(url){var el=document.getElementById('pvq-'+s);if(el&&url)el.src=url;});
+    fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+s).once('value').then(function(snap){
+      var t=snap.val(),meta=document.getElementById('tkm-'+s),chip=document.getElementById('tkc-'+s);
+      if(!t){if(chip)chip.remove();return;}
+      if(meta)meta.innerHTML=esc(t.e||'')+(t.day&&t.day!=='General'?' · '+esc(t.day):'')+' · Nº '+t.i+(t.u?' · <b>USADA</b>':'');
+      if(t.u&&chip)chip.classList.add('off');
+    }).catch(function(){});
+  });
 }
 
-/* ================= CÁMARA + jsQR (lector propio, sin html5-qrcode) ================= */
+/* ================= CÁMARA + jsQR ================= */
 var CAM={video:null,statusId:'',onResult:null,stream:null,track:null,running:false,raf:0,lastFrame:0,flip:false,lockUntil:0,lastCode:'',lastShown:0,wantDevice:null,camIx:0,torchOn:false,cv:null,cx:null};
 function camStart(videoId,statusId,onResult){
   camStop();
   CAM.video=document.getElementById(videoId);
   CAM.statusId=statusId;
   CAM.onResult=onResult;
-  if(!window.isSecureContext){camStatus('<i class="fa-solid fa-lock mr-2"></i>La cámara necesita conexión segura (HTTPS o localhost). Mientras tanto: sube la foto del QR o escribe el serial.');return;}
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camStatus('<i class="fa-solid fa-lock mr-2"></i>Cámara no disponible en este navegador. Usa la subida de foto o el serial manual.');return;}
+  if(!window.isSecureContext){camStatus('<i class="fa-solid fa-lock mr-2"></i>La cámara necesita conexión segura (HTTPS). Mientras tanto: sube la foto del QR o escribe el serial.');return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camStatus('<i class="fa-solid fa-lock mr-2"></i>Cámara no disponible. Usa la foto o el serial manual.');return;}
   ensureJsQR(function(ok){
-    if(!ok){camStatus('No se pudo cargar el motor de lectura QR. Revisa tu conexión.');return;}
+    if(!ok){camStatus('No se pudo cargar el motor de lectura QR');return;}
     camOpen();
   });
 }
@@ -1213,10 +1380,10 @@ function camOpen(){
   }).catch(function(err){
     CAM.running=false;
     var msg='No se pudo abrir la cámara.';
-    if(err&&err.name==='NotAllowedError')msg='Permiso denegado. Habilita la cámara en el navegador y reintenta.';
+    if(err&&err.name==='NotAllowedError')msg='Permiso denegado. Habilita la cámara y reintenta.';
     else if(err&&err.name==='NotFoundError')msg='Este dispositivo no tiene cámara.';
     else if(err&&err.name==='NotReadableError')msg='La cámara está en uso por otra aplicación.';
-    camStatus('<i class="fa-solid fa-video-slash mr-2"></i>'+msg+' — Sube la foto del QR o escribe el serial.');
+    camStatus('<i class="fa-solid fa-video-slash mr-2"></i>'+msg+' — Sube la foto o escribe el serial.');
   });
 }
 function camTick(){
@@ -1231,7 +1398,7 @@ function camTick(){
   CAM.cv.width=sw;CAM.cv.height=sh;
   CAM.cx.drawImage(v,0,0,sw,sh);
   var d;try{d=CAM.cx.getImageData(0,0,sw,sh);}catch(e){return;}
-  CAM.flip=!CAM.flip;   /* alterna normal/invertido para cubrir ambos con la mitad de CPU */
+  CAM.flip=!CAM.flip;
   var r=null;
   try{r=jsQR(d.data,sw,sh,{inversionAttempts:CAM.flip?'dontInvert':'onlyInvert'});}catch(e){}
   if(r&&r.data)camResult(r.data);
@@ -1275,7 +1442,6 @@ function switchCam(){
     camOpen();
   }).catch(function(){});
 }
-/* lectura desde archivo de imagen, con varios reintentos de escala */
 function scanImageFile(file,cb){
   if(!file)return;
   if(!window.jsQR){ensureJsQR(function(ok){if(ok)scanImageFile(file,cb);else showToast('No se pudo cargar el lector QR','e');});return;}
@@ -1324,6 +1490,7 @@ function scanQRFromFileKiosk(ev){
   });
 }
 function openScanner(){
+  if(!AUTH.role){showToast('Inicia sesión primero','e');return;}
   showView('scanner');
   document.getElementById('scanner-result').style.display='none';
   document.getElementById('scan-log-wrap').style.display='none';
@@ -1364,8 +1531,9 @@ function runManual(inId,outId){
 
 /* ================= MODO PUERTA ================= */
 function enterKioskMode(){
+  if(!AUTH.role){showToast('Inicia sesión primero','e');return;}
   document.getElementById('kiosk-mode').classList.add('active');
-  tone(660,.06,0);  /* desbloquea el audio con el gesto del usuario */
+  tone(660,.06,0);
   setTimeout(function(){camStart('kiosk-video','kiosk-status',function(r){kioskShow(r);updateUI();});},250);
 }
 function exitKioskMode(){
@@ -1422,6 +1590,7 @@ function confetti(host){
 /* ================= PAGOS PENDIENTES ================= */
 function renderPendingPayments(){
   var box=document.getElementById('pending-payments-list');if(!box)return;
+  if(AUTH.role!=='admin'){box.innerHTML='<p class="empty">DISPONIBLE SOLO PARA EL ADMINISTRADOR</p>';return;}
   var list=pendingPayments.filter(function(p){return p&&(!p.status||p.status==='pendiente');});
   if(!list.length){box.innerHTML='<p class="empty">SIN PAGOS PENDIENTES DE REVISIÓN</p>';return;}
   var h='';
@@ -1439,24 +1608,29 @@ function renderPendingPayments(){
   });
   box.innerHTML=h;
 }
-function approvePayment(id){
+async function approvePayment(id){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede aprobar','e');return;}
   var p=null;
   for(var i=0;i<pendingPayments.length;i++)if(pendingPayments[i]&&pendingPayments[i].id===id){p=pendingPayments[i];break;}
   if(!p)return;
   var day=salesConfig.active_day||'General',merged=false;
   for(var j=0;j<attendees.length;j++){
     if(attendees[j]&&nD(attendees[j].D)===nD(p.dni)&&attendees[j].E_D===day){
-      attendees[j].C=(attendees[j].C||1)+(p.qty||1);attendees[j].P=true;if(p.name)attendees[j].N=p.name;merged=true;break;
+      attendees[j].C=(attendees[j].C||1)+(p.qty||1);attendees[j].P=true;
+      if(p.name)attendees[j].N=p.name;
+      if(p.phone)attendees[j].T=nD(p.phone);
+      merged=true;break;
     }
   }
-  if(!merged)attendees.push({N:p.name||'',D:nD(p.dni),E:p.stage||'Venta',E_D:day,C:p.qty||1,T:p.phone||'',P:true});
+  if(!merged)attendees.push({N:p.name||'',D:nD(p.dni),E:p.stage||'Venta',E_D:day,C:p.qty||1,T:nD(p.phone||''),P:true});
   if(fbConnected){
     fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees);
     fbDB.ref('events/'+FB_EVENT_ID+'/pending/'+id).remove();
   }else{pendingPayments=pendingPayments.filter(function(x){return x.id!==id;});}
   var created=ensureTicketsFor(p.dni,day);
+  await refreshPubFor(p.dni);
   updateUI();beepGood();
-  showToast('Pago aprobado · '+(created.length||p.qty||1)+' entrada(s) con serial emitidas','s');
+  showToast('Pago aprobado · '+(created.length||p.qty||1)+' entrada(s) emitidas','s');
 }
 function rejectPayment(id){
   if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/pending/'+id).remove();
@@ -1489,7 +1663,7 @@ function updateStats(){
   setTicketSummary();
   var tArr=ticketsArr(),vEl=document.getElementById('verified-count'),tEl=document.getElementById('total-count');
   if(tArr.length){vEl.textContent=tArr.filter(function(t){return t.u;}).length;tEl.textContent=tArr.length;}
-  else{var u=0,tt=0;attendees.forEach(function(a){if(a){u+=usedCountFor(a);tt+=(a.C||1);}});vEl.textContent=u;tEl.textContent=tt;}
+  else{vEl.textContent=0;tEl.textContent=tot;}
 }
 function setTicketSummary(){
   var el=document.getElementById('ticket-summary');if(!el)return;
@@ -1544,11 +1718,15 @@ function quickCheckIn(i){
 }
 
 /* ================= ENTRADAS VISUALES ================= */
-function generateAllVisualTickets(){
+async function generateAllVisualTickets(){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede generar entradas','e');return;}
   var created=ensureAllTickets();
   renderTicketCards();
+  var el=document.getElementById('pub-progress');
+  el.textContent=created?('EMITIDAS '+created+' NUEVAS · ACTUALIZANDO ÍNDICE…'):'ACTUALIZANDO ÍNDICE…';
+  await buildPubAll();
   var total=ticketsArr().length;
-  showToast(created?(created+' entrada(s) nueva(s) emitidas'):('Entradas al día · '+total),created?'s':'i');
+  showToast('Entradas al día · '+total+' en total','s');
 }
 function renderTicketCards(){
   var grid=document.getElementById('qr-grid');if(!grid)return;
@@ -1558,7 +1736,7 @@ function renderTicketCards(){
     return ka<kb?-1:ka>kb?1:0;
   });
   setTicketSummary();
-  if(!arr.length){grid.innerHTML='<p class="empty" style="grid-column:1/-1">AÚN NO HAY ENTRADAS EMITIDAS — PULSA «GENERAR / ACTUALIZAR»</p>';return;}
+  if(!arr.length){grid.innerHTML='<p class="empty" style="grid-column:1/-1">AÚN NO HAY ENTRADAS EMITIDAS — APRUEBA PAGOS O PULSA «GENERAR / ACTUALIZAR»</p>';return;}
   var color=salesConfig.day_color||'#e0281a';
   var evName=(salesConfig.event_name||'LIVE CAFÉ ROCK').toUpperCase();
   var evDate=(salesConfig.event_date||'').toUpperCase();
@@ -1620,26 +1798,7 @@ function downloadAllTickets(){
   })();
 }
 
-/* ================= PIN / EDICIÓN / MANUAL ================= */
-function checkPIN(){
-  var v=document.getElementById('pin-input').value.trim();
-  var want=currentRole==='portero'?CFG.PORTERO_PIN:CFG.PIN;
-  if(v===want){
-    closeModal('pin-modal');
-    document.getElementById('pin-input').value='';
-    document.getElementById('pin-error').style.display='none';
-    showView('admin');applyRole();
-  }else{
-    document.getElementById('pin-error').style.display='block';
-    document.getElementById('pin-input').value='';
-  }
-}
-function applyRole(){
-  var isAdmin=currentRole==='admin';
-  document.querySelectorAll('[data-admin-only]').forEach(function(el){el.style.display=isAdmin?'':'none';});
-  document.getElementById('panel-title').textContent=isAdmin?'ADMINISTRADOR':'PORTERO';
-  if(!isAdmin){var vb=document.querySelector('[data-tab="tab-verify"]');if(vb)switchTab('tab-verify',vb);}
-}
+/* ================= EDICIÓN / MANUAL ================= */
 function openEditModal(i){
   var a=attendees[i];if(!a)return;
   document.getElementById('edit-index').value=i;
@@ -1647,73 +1806,87 @@ function openEditModal(i){
   document.getElementById('edit-cedula').value=a.D||'';
   document.getElementById('edit-cantidad').value=a.C||1;
   document.getElementById('edit-etapa').value=a.E||'';
+  document.getElementById('edit-phone').value=a.T||'';
   document.getElementById('edit-paid').checked=isPaid(a.P);
   openModal('edit-modal');
 }
 function closeEditModal(){closeModal('edit-modal');}
-function saveEditedAttendee(){
+async function saveEditedAttendee(){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede editar','e');return;}
   var i=parseInt(document.getElementById('edit-index').value,10);
   var a=attendees[i];if(!a)return;
-  var oldDay=a.E_D||'General';
   a.N=document.getElementById('edit-nombre').value.trim()||a.N;
   a.D=nD(document.getElementById('edit-cedula').value)||a.D;
   a.C=Math.max(1,parseInt(document.getElementById('edit-cantidad').value,10)||1);
   a.E=document.getElementById('edit-etapa').value.trim()||a.E;
+  a.T=nD(document.getElementById('edit-phone').value);
   a.P=document.getElementById('edit-paid').checked;
-  var newDay=a.E_D||'General';
   saveAttendees();
-  syncTicketsForDni(a.D,newDay,oldDay!==newDay?oldDay:null);
+  syncTicketsForDni(a.D);
+  await refreshPubFor(a.D);
   closeEditModal();showToast('Asistente actualizado','s');
 }
-function syncTicketsForDni(dni,day,oldDay){
-  var a=findAttendeeExact(dni,day);if(!a)return;
-  var ts=ticketsOf(dni,oldDay||day);
-  var upd={};
-  if(oldDay){ts.forEach(function(t){t.day=day;upd[t.s]=t;});}
-  var extra=ts.filter(function(t){return (t.i||0)>(a.C||1);});
+async function syncTicketsForDni(dni){
+  var rows=attendees.filter(function(a){return a&&nD(a.D)===nD(dni);});
+  if(!rows.length)return;
+  var total=0;rows.forEach(function(a){total+=(a.C||1);});
+  var ts=ticketsOf(dni,null);
+  var extra=ts.filter(function(t){return (t.i||0)>total;});
   extra.forEach(function(t){delete tickets[t.s];});
-  if(isPaid(a.P))ensureTicketsFor(dni,day);
-  if(fbConnected){
-    extra.forEach(function(t){fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).remove().catch(function(){});});
-    if(Object.keys(upd).length)fbDB.ref('events/'+FB_EVENT_ID+'/tickets').update(upd).catch(function(){});
+  ts.forEach(function(t){t.n=rows[0].N||t.n;});
+  if(fbConnected&&AUTH.role==='admin'){
+    extra.forEach(function(t){
+      fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).remove().catch(function(){});
+      fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).remove().catch(function(){});
+    });
   }
+  ensureTicketsFor(dni,rows[0].E_D||'General');
   updateUI();
 }
-function resetAttendeeEntries(){
+async function resetAttendeeEntries(){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede reiniciar','e');return;}
   var i=parseInt(document.getElementById('edit-index').value,10);
   var a=attendees[i];if(!a)return;
-  var day=a.E_D||'General';
-  var ts=ticketsOf(a.D,day);
-  ts.forEach(function(t){t.u=false;t.ua=null;});
-  var extra=ts.filter(function(t){return (t.i||0)>(a.C||1);});
+  var ts=ticketsOf(a.D,null);
+  ts.forEach(function(t){
+    t.u=false;t.ua=null;
+    if(fbConnected){
+      fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).update({u:false,ua:null}).catch(function(){});
+      fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).remove().catch(function(){});
+    }
+  });
+  var total=(a.C||1);
+  var extra=ts.filter(function(t){return (t.i||0)>total;});
   extra.forEach(function(t){delete tickets[t.s];});
-  var d=nD(a.D),p1='LCR26|'+d+'|',p2=d+'|';
-  usedIDs.forEach(function(u){if(typeof u==='string'&&(u.indexOf(p1)===0||u.indexOf(p2)===0))usedIDs.delete(u);});
-  saveUsed();
   if(fbConnected){
-    ts.forEach(function(t){
-      if(!extra.some(function(e){return e.s===t.s;}))fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).update({u:false,ua:null}).catch(function(){});
+    extra.forEach(function(t){
+      fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).remove().catch(function(){});
+      fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).remove().catch(function(){});
     });
-    extra.forEach(function(t){fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s).remove().catch(function(){});});
   }
+  await refreshPubFor(a.D);
   closeEditModal();updateUI();showToast('Ingresos reiniciados','s');
 }
-function addManualAttendee(){
+async function addManualAttendee(){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede agregar','e');return;}
   var name=document.getElementById('manual-nombre').value.trim();
   var dni=nD(document.getElementById('manual-cedula').value);
+  var phone=nD(document.getElementById('manual-phone').value);
   if(!name||!dni){showToast('Nombre y cédula son obligatorios','e');return;}
   attendees.push({
     N:name,D:dni,
     E:document.getElementById('manual-etapa').value.trim()||'Manual',
     E_D:salesConfig.active_day||'Manual',
     C:Math.max(1,parseInt(document.getElementById('manual-cantidad').value,10)||1),
-    T:'',P:true
+    T:phone,P:true
   });
   saveAttendees();
   ensureTicketsFor(dni,salesConfig.active_day||'Manual');
+  await refreshPubFor(dni);
   document.getElementById('manual-nombre').value='';
   document.getElementById('manual-cedula').value='';
-  showToast('Asistente agregado · seriales emitidos','s');
+  document.getElementById('manual-phone').value='';
+  showToast('Asistente agregado · seriales emitidos'+(phone?'':' (sin teléfono: QR no consultable)'),phone?'s':'i');
 }
 
 /* ================= CARGA MASIVA ================= */
@@ -1784,12 +1957,13 @@ async function mergeAndUpload(parsed){
       await fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees);
       showToast(parsed.length+' registros cargados en la nube','s');
     }catch(err){
-      if(err&&err.code==='PERMISSION_DENIED')showToast('Error Firebase: revisa las reglas de tu DB','e');
+      if(err&&err.code==='PERMISSION_DENIED')showToast('Sin permiso (inicia sesión como admin)','e');
       else showToast('Error: '+err.message,'e');
     }
-  }else showToast(parsed.length+' registros cargados local','s');
-  ensureAllTickets();   /* emite seriales de todo lo pagado */
+  }else showToast('Sin conexión con la nube','e');
+  ensureAllTickets();
   updateUI();
+  await buildPubAll();   /* indexa y cifra los QR de los pagados */
 }
 function handleFileUpload(){
   var fi=document.getElementById('file-input');
@@ -1830,9 +2004,10 @@ function exportAudit(){
     if(a)rows.push([a.N||'',a.D||'',a.E||'',a.E_D||'',a.C||1,usedCountFor(a),isPaid(a.P)?'SÍ':'NO',a.T||'']);
   });
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Asistentes');
-  var tk=[['Serial','Nombre','Cédula','Día','Etapa','Nº','Estado','Usada el']];
+  var tk=[['Serial','Nombre','Cédula','Día','Etapa','Nº','Estado','Usada el','Marcada por']];
   ticketsArr().forEach(function(t){
-    tk.push([t.s,t.n||'',t.d||'',t.day||'',t.e||'',t.i||1,t.u?'USADA':'VIGENTE',t.ua?fmtDT(t.ua):'']);
+    var lg=doorLog[t.s];
+    tk.push([t.s,t.n||'',t.d||'',t.day||'',t.e||'',t.i||1,t.u?'USADA':'VIGENTE',(t.ua||(lg&&lg.ts))?fmtDT(t.ua||(lg&&lg.ts)):'',lg?(lg.by||''):'']);
   });
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(tk),'Entradas');
   var pend=[['Nombre','Cédula','Teléfono','Cantidad','Etapa','Referencia','Total','Fecha']];
@@ -1849,12 +2024,14 @@ function askConfirm(t,m,cb){
 }
 function runConfirm(){if(confirmCb)confirmCb();confirmCb=null;closeModal('confirm-modal');}
 function clearAllDataForNewEvent(){
-  askConfirm('BORRAR TODO','Se eliminarán asistentes, entradas con serial, ingresos y configuración en la nube. Esta acción no tiene vuelta atrás.',function(){
-    if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID).remove();
-    localStorage.removeItem('bleedit_pin');
-    localStorage.removeItem('bleedit_portero_pin');
-    localStorage.removeItem('bleedit_used');
-    setTimeout(function(){location.reload();},700);
+  askConfirm('BORRAR TODO','Se eliminarán asistentes, entradas, índice público y configuración en la nube. Esta acción no tiene vuelta atrás.',function(){
+    if(fbConnected&&AUTH.role==='admin'){
+      ['config','attendees','pub','tickets','doorLog','pending','used'].forEach(function(k){
+        fbDB.ref('events/'+FB_EVENT_ID+'/'+k).remove().catch(function(){});
+      });
+    }
+    localStorage.removeItem('bleedit_theme2');
+    setTimeout(function(){location.reload();},900);
   });
 }
 </script>
