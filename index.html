@@ -939,7 +939,7 @@ function saveAttendees(){
 
 /* ================= LANDING ================= */
 function updateLandingUI(){
-  var name=salesConfig.event_name||'LIVE CAFÉ ROCK';
+  var name=salesConfig.event_name||'BLEED IT LOUD';
   var sub=salesConfig.event_sub||'CONTROL DE ACCESO Y ENTRADAS';
   var date=salesConfig.event_date||'31 / 07 / 2026';
   var city=salesConfig.event_city||'Maracaibo, estado Zulia';
@@ -1773,7 +1773,7 @@ function renderTicketCards(){
   setTicketSummary();
   if(!arr.length){grid.innerHTML='<p class="empty" style="grid-column:1/-1">AÚN NO HAY ENTRADAS EMITIDAS — APRUEBA PAGOS O PULSA «GENERAR / ACTUALIZAR»</p>';return;}
   var color=salesConfig.day_color||'#e0281a';
-  var evName=(salesConfig.event_name||'LIVE CAFÉ ROCK').toUpperCase();
+  var evName=(salesConfig.event_name||'BLEED IT LOUD').toUpperCase();
   var evDate=(salesConfig.event_date||'').toUpperCase();
   var img=salesConfig.event_logo||DEFAULT_TICKET_IMG;
   var h='';
@@ -2417,7 +2417,7 @@ async function downloadPublicTicket(serial){
     if(!blob)throw new Error('No se pudo generar la imagen');
     var file=new File([blob],'entrada-'+serial+'.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'Entrada LIVE CAFÉ ROCK',text:'Guarda esta entrada para presentarla en la puerta.'});
+      await navigator.share({files:[file],title:'Entrada BLEED IT LOUD',text:'Guarda esta entrada para presentarla en la puerta.'});
     }else{
       var url=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=url;a.download='entrada-'+serial+'.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
@@ -2822,7 +2822,7 @@ function renderTicketCards(){
   setTicketSummary();
   if(!arr.length){grid.innerHTML='<p class="empty" style="grid-column:1/-1">AÚN NO HAY ENTRADAS EMITIDAS — APRUEBA PAGOS O PULSA «GENERAR / ACTUALIZAR»</p>';return;}
   var color=salesConfig.day_color||'#e0281a';
-  var evName=(salesConfig.event_name||'LIVE CAFÉ ROCK').toUpperCase();
+  var evName=(salesConfig.event_name||'BLEED IT LOUD').toUpperCase();
   var evDate=(salesConfig.event_date||'').toUpperCase();
   var img=salesConfig.event_logo||DEFAULT_TICKET_IMG;
   var h='';
