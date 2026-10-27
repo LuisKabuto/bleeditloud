@@ -1669,16 +1669,26 @@ async function approvePayment(id){
   var p=null;
   for(var i=0;i<pendingPayments.length;i++)if(pendingPayments[i]&&pendingPayments[i].id===id){p=pendingPayments[i];break;}
   if(!p)return;
+  // Las solicitudes públicas son datos no confiables: no emitir cantidades arbitrarias.
+  var qty=Number(p.qty);
+  if(!Number.isSafeInteger(qty)||qty<1||qty>20){
+    showToast('Solicitud inválida: cantidad fuera de rango. Recházala.','e');return;
+  }
+  var stage=String(p.stage||'');
+  var validStage=stage===String(salesConfig.s1_name||'Preventa 1')||stage===String(salesConfig.s2_name||'Preventa 2');
+  if(!validStage){
+    showToast('Etapa no reconocida. Verifica el pago antes de aprobar.','e');return;
+  }
   var day=salesConfig.active_day||'General',merged=false;
   for(var j=0;j<attendees.length;j++){
     if(attendees[j]&&nD(attendees[j].D)===nD(p.dni)&&attendees[j].E_D===day){
-      attendees[j].C=(attendees[j].C||1)+(p.qty||1);attendees[j].P=true;
+      attendees[j].C=(attendees[j].C||1)+qty;attendees[j].P=true;
       if(p.name)attendees[j].N=p.name;
       if(p.phone)attendees[j].T=nD(p.phone);
       merged=true;break;
     }
   }
-  if(!merged)attendees.push({N:p.name||'',D:nD(p.dni),E:p.stage||'Venta',E_D:day,C:p.qty||1,T:nD(p.phone||''),P:true});
+  if(!merged)attendees.push({N:p.name||'',D:nD(p.dni),E:p.stage||'Venta',E_D:day,C:qty,T:nD(p.phone||''),P:true});
   if(fbConnected){
     fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees);
     fbDB.ref('events/'+FB_EVENT_ID+'/pending/'+id).remove();
