@@ -326,7 +326,8 @@ tr:hover td{background:var(--field)}
     <div id="buy-checkout" style="display:none" class="ab p-6">
       <p class="step-label mono">PASO 02 — PAGA Y ENVÍA TU COMPROBANTE</p>
       <div class="sec-h" style="margin:16px 0 12px">Datos de pago</div>
-      <div id="payment-info" class="receipt mb-5"></div>
+      <div id="payment-info" class="receipt mb-3"></div>
+      <button type="button" class="bs w-full mb-5" onclick="copyPaymentInfo()"><i class="fa-regular fa-copy"></i> Copiar datos de pago</button>
       <div class="space-y-3">
         <input type="text" id="buy-name" class="di" placeholder="Nombre completo del comprador">
         <input type="text" id="buy-dni" class="di" placeholder="Cédula (Ej: 12345678)" inputmode="numeric">
@@ -998,11 +999,27 @@ function renderBuyStages(){
 }
 function selectStage(n){selectedStage=n;renderBuyStages();var box=document.getElementById('buy-checkout');box.style.display='block';box.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function updateTotal(){
-  var qty=Math.max(1,parseInt(document.getElementById('buy-qty').value,10)||1);
-  var price=selectedStage===1?(salesConfig.s1_price||0):(salesConfig.s2_price||0);
+  var input=document.getElementById('buy-qty');
+  var qty=Math.max(1,Math.min(20,Math.floor(Number(input&&input.value)||1)));
+  var price=selectedStage===1?(Number(salesConfig.s1_price)||0):(Number(salesConfig.s2_price)||0);
   var name=selectedStage===1?salesConfig.s1_name:salesConfig.s2_name;
-  var t=document.getElementById('buy-total');if(t)t.textContent='$'+(qty*price);
+  var t=document.getElementById('buy-total');if(t)t.textContent='$'+(qty*price).toLocaleString('es-VE',{maximumFractionDigits:2});
   var l=document.getElementById('buy-stage-label');if(l)l.textContent=name||'—';
+}
+async function copyPaymentInfo(){
+  var info=String(salesConfig.payInfo||'').trim();
+  var qty=Math.max(1,Math.min(20,Math.floor(Number(document.getElementById('buy-qty').value)||1)));
+  var price=selectedStage===1?(Number(salesConfig.s1_price)||0):(Number(salesConfig.s2_price)||0);
+  var total='$'+(qty*price).toLocaleString('es-VE',{maximumFractionDigits:2});
+  var text='LIVE CAFÉ ROCK · DATOS DE PAGO\n'+info+'\nCantidad: '+qty+'\nTotal: '+total;
+  try{
+    if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);
+    else{
+      var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+      var ok=document.execCommand('copy');ta.remove();if(!ok)throw new Error('copy failed');
+    }
+    showToast('Datos de pago y total copiados','s');
+  }catch(e){showToast('No se pudo copiar. Selecciona los datos y cópialos manualmente.','e');}
 }
 async function submitPurchase(){
   var btn=document.querySelector('#buy-checkout button[onclick="submitPurchase()"]');
@@ -1334,8 +1351,11 @@ async function revealPublicQRs(){
   for(var i=0;i<arr.length;i++){
     var s=String(arr[i]);
     serials.push(s);
-    h+='<div class="tk-chip" id="tkc-'+s+'"><div class="tk-qr-box"><img id="pvq-'+s+'" alt="QR"></div>'
-      +'<div class="tk-srl">'+dashSerial(s)+'</div><div class="tk-meta" id="tkm-'+s+'">…</div></div>';
+    h+='<div class="tk-chip" id="tkc-'+s+'"><div id="public-ticket-'+s+'" style="background:#14110d;color:#f3eee3;padding:14px;border-radius:8px">'
+      +'<div style="font-family:Anton,sans-serif;font-size:16px;text-align:center;letter-spacing:.06em">LIVE CAFÉ ROCK</div>'
+      +'<div class="tk-qr-box" style="display:block;margin:12px auto;width:max-content"><img id="pvq-'+s+'" alt="QR '+esc(s)+'" style="width:180px;height:180px;max-width:100%"></div>'
+      +'<div class="tk-srl" style="text-align:center">'+dashSerial(s)+'</div><div class="tk-meta" id="tkm-'+s+'" style="text-align:center">Cargando datos…</div></div>'
+      +'<button type="button" class="bs w-full mt-3" onclick="downloadPublicTicket(\''+s+'\')"><i class="fa-solid fa-download"></i> Descargar entrada</button></div>';
   }
   h+='</div></div>';
   box.innerHTML=h;
@@ -1348,6 +1368,26 @@ async function revealPublicQRs(){
       if(t.u&&chip)chip.classList.add('off');
     }).catch(function(){});
   });
+}
+
+async function downloadPublicTicket(serial){
+  var el=document.getElementById('public-ticket-'+serial);
+  if(!el){showToast('No se encontró la entrada','e');return;}
+  if(!window.html2canvas){showToast('No se pudo cargar el exportador de imágenes','e');return;}
+  try{
+    var canvas=await html2canvas(el,{scale:3,useCORS:true,backgroundColor:'#14110d',logging:false});
+    var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/png');});
+    if(!blob)throw new Error('No se pudo generar la imagen');
+    var file=new File([blob],'entrada-'+serial+'.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'Entrada LIVE CAFÉ ROCK',text:'Guarda esta entrada para presentarla en la puerta.'});
+    }else{
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='entrada-'+serial+'.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(function(){URL.revokeObjectURL(url);},30000);
+      showToast('Entrada preparada para descargar','s');
+    }
+  }catch(e){showToast('No se pudo compartir/descargar. Mantén visible el QR o toma una captura de pantalla.','e');}
 }
 
 /* ================= CÁMARA + jsQR ================= */
