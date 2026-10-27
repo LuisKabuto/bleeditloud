@@ -3,7 +3,7 @@
 Este backend reemplaza las operaciones críticas que estaban preparadas para Cloud Functions. No está desplegado ni debe considerarse listo para producción hasta completar la lista de pruebas de `SECURITY-SPARK-DEPLOYMENT.md`.
 
 ## Requisitos
-- Node.js 20 LTS (recomendado para herramientas de despliegue).
+- Node.js 22 LTS (recomendado para herramientas de despliegue).
 - Cuenta Cloudflare con Workers.
 - Permisos de administrador sobre el proyecto Firebase `bleeditloud-6fb33`.
 
