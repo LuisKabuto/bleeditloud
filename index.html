@@ -1004,29 +1004,36 @@ function updateTotal(){
   var t=document.getElementById('buy-total');if(t)t.textContent='$'+(qty*price);
   var l=document.getElementById('buy-stage-label');if(l)l.textContent=name||'—';
 }
-function submitPurchase(){
+async function submitPurchase(){
+  var btn=document.querySelector('#buy-checkout button[onclick="submitPurchase()"]');
   var name=document.getElementById('buy-name').value.trim();
   var dni=nD(document.getElementById('buy-dni').value);
   var phone=nD(document.getElementById('buy-phone').value);
-  var qty=Math.max(1,parseInt(document.getElementById('buy-qty').value,10)||1);
+  var qtyRaw=Number(document.getElementById('buy-qty').value),qty=Math.floor(qtyRaw);
   var ref=document.getElementById('buy-ref').value.trim();
-  if(!name||!dni||!ref){showToast('Completa nombre, cédula y referencia de pago','e');return;}
-  if(!phone){showToast('El teléfono es necesario: será la llave para ver tus QR','e');return;}
-  var sc=selectedStage===1?{name:salesConfig.s1_name,price:salesConfig.s1_price||0}:{name:salesConfig.s2_name,price:salesConfig.s2_price||0};
+  if(!selectedStage){showToast('Selecciona una etapa de venta antes de continuar','e');return;}
+  if(!name||dni.length<5||!ref){showToast('Completa nombre, cédula válida y referencia de pago','e');return;}
+  if(phone.length<7){showToast('Introduce un teléfono válido para recuperar tus entradas','e');return;}
+  if(!Number.isFinite(qtyRaw)||qty<1||qty>20){showToast('La cantidad debe estar entre 1 y 20 entradas','e');return;}
+  if(salesConfig.sales_paused||(selectedStage===1&&salesConfig.s1_closed)||(selectedStage===2&&salesConfig.s2_closed)){showToast('Esta etapa ya no está disponible','e');renderBuyStages();return;}
+  if(!fbConnected||!fbDB){showToast('No hay conexión con el sistema. No se registró el pedido; inténtalo de nuevo.','e');return;}
+  var sc=selectedStage===1?{name:salesConfig.s1_name,price:Number(salesConfig.s1_price)||0}:{name:salesConfig.s2_name,price:Number(salesConfig.s2_price)||0};
+  if(!Number.isFinite(sc.price)||sc.price<0){showToast('El precio de esta etapa no es válido','e');return;}
   var rec={name:name,dni:dni,phone:phone,qty:qty,ref:ref,stage:sc.name||'Venta',total:qty*sc.price,ts:Date.now(),status:'pendiente'};
-  if(fbConnected){
-    fbDB.ref('events/'+FB_EVENT_ID+'/pending').push(rec).catch(function(err){
-      showToast('No se pudo enviar ('+(err&&err.code==='PERMISSION_DENIED'?'permisos':('conexión'))+')','e');
-    });
-  }else{rec.id='L'+Date.now();pendingPayments.push(rec);renderPendingPayments();}
-  document.getElementById('confirm-name').textContent=name;
-  document.getElementById('confirm-ref').textContent=ref;
-  document.getElementById('confirm-stage').textContent=(qty+' × '+(sc.name||'Venta'));
-  document.getElementById('confirm-total').textContent='$'+rec.total;
-  ['buy-name','buy-dni','buy-phone','buy-ref'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('buy-qty').value=1;
-  showView('ticket');
+  if(btn){btn.disabled=true;btn.dataset.originalText=btn.innerHTML;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Enviando…';}
+  try{
+    var result=await fbDB.ref('events/'+FB_EVENT_ID+'/pending').push(rec);
+    if(!result||!result.key)throw new Error('No se confirmó el registro');
+    document.getElementById('confirm-name').textContent=name;
+    document.getElementById('confirm-ref').textContent=ref;
+    document.getElementById('confirm-stage').textContent=(qty+' × '+(sc.name||'Venta'));
+    document.getElementById('confirm-total').textContent='$'+rec.total;
+    ['buy-name','buy-dni','buy-phone','buy-ref'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('buy-qty').value=1;showView('ticket');
+  }catch(err){showToast('No se confirmó el pedido. Revisa la conexión e inténtalo otra vez.','e');}
+  finally{if(btn){btn.disabled=false;btn.innerHTML=btn.dataset.originalText||'<i class="fa-solid fa-paper-plane"></i>Enviar comprobante';}}
 }
+
 async function saveSalesConfig(){
   var nc={
     active_day:document.getElementById('config-active-day').value,
