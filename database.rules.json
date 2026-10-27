@@ -1,0 +1,24 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "events": {
+      "$event": {
+        "config": { ".read": true, ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'" },
+        "attendees": { ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')", ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'" },
+        "pub": { "$ced": { ".read": true, ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "!newData.exists() || newData.hasChildren(['n','p','c'])" } },
+        "tickets": {
+          ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')",
+          "$s": {
+            ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')",
+            ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'",
+            "u": { ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "newData.isBoolean()" },
+            "ua": { ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'" }
+          }
+        },
+        "doorLog": { ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')", "$s": { ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "!newData.exists() || newData.hasChildren(['ts'])" } },
+        "pending": { ".read": "auth != null && auth.token.email == 'admin@bleeditloud.com'", "$pid": { ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "!newData.exists() || (newData.hasChildren(['name','dni','ref','qty','stage','total','status','ts']) && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 80 && newData.child('dni').isString() && newData.child('dni').val().length >= 4 && newData.child('dni').val().length <= 12 && newData.child('qty').isNumber() && newData.child('qty').val() >= 1 && newData.child('qty').val() <= 20)" } }
+      }
+    }
+  }
+}
