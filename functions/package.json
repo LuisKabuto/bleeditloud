@@ -1,0 +1,8 @@
+{
+  "name": "bleeditloud-functions",
+  "description": "Trusted backend for LIVE CAFE ROCK ticketing",
+  "main": "index.js",
+  "engines": {"node": "20"},
+  "scripts": {"lint": "node --check index.js"},
+  "dependencies": {"firebase-admin": "^13.0.2", "firebase-functions": "^6.3.2"}
+}
