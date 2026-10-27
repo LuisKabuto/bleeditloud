@@ -1,0 +1,26 @@
+name: Validate Firebase backend
+
+on:
+  pull_request:
+    paths:
+      - "functions/**"
+      - "firebase.json"
+      - "database.rules.json"
+      - ".github/workflows/validate-functions.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "functions/**"
+      - "firebase.json"
+      - "database.rules.json"
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm --prefix functions install
+      - run: npm --prefix functions run lint
