@@ -97,7 +97,9 @@ async function dbGet(env, path = "") {
   const token = await accessToken(env);
   const response = await fetch(dbUrl(env, path), { headers: { authorization: "Bearer " + token, "X-Firebase-ETag": "true" } });
   if (!response.ok) throw new ApiError(502, "No se pudo consultar Realtime Database.");
-  return { value: await response.json(), etag: response.headers.get("ETag") };
+  const etag = response.headers.get("ETag");
+  if (!etag) throw new ApiError(502, "Realtime Database no devolvió ETag; se canceló la operación para evitar sobrescribir datos.");
+  return { value: await response.json(), etag };
 }
 async function dbPut(env, path, value, etag = null) {
   const token = await accessToken(env);
