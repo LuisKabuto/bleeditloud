@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bleeditloud-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-27",
+  "vars": {
+    "FIREBASE_PROJECT_ID": "bleeditloud-6fb33",
+    "FIREBASE_DATABASE_URL": "https://bleeditloud-6fb33-default-rtdb.firebaseio.com",
+    "FIREBASE_WEB_API_KEY": "AIzaSyBGDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE",
+    "ALLOWED_ORIGINS": "https://luiskabuto.github.io,https://bleeditloud-6fb33.web.app,https://bleeditloud-6fb33.firebaseapp.com"
+  }
+}

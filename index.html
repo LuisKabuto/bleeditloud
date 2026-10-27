@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LIVE CAFÉ ROCK — Entradas</title>
+<title>Bleed It Loud — Entradas</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#0c0a08">
 <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2">
@@ -524,7 +524,7 @@ tr:hover td{background:var(--field)}
 
       <div class="ab p-6 mb-5">
         <div class="sec-h">Datos del evento</div>
-        <input type="text" id="config-event-name" class="di mb-4" placeholder="LIVE CAFÉ ROCK">
+        <input type="text" id="config-event-name" class="di mb-4" placeholder="BLEED IT LOUD">
         <input type="text" id="config-event-sub" class="di mb-4" placeholder="CONTROL DE ACCESO Y ENTRADAS">
         <div class="grid grid-cols-2 gap-4 mb-4">
           <input type="text" id="config-event-date" class="di" placeholder="31 / 07 / 2026">
@@ -672,6 +672,20 @@ var _k1="AIzaSyB",_k2="GDm3wNfwKQ1BzNw5XwrOapqG9nlYPiJE";
 var _a1="1:838453069044",_a2="web:ce6346a7089385fa628aa1";
 var FIREBASE_CONFIG={apiKey:_k1+_k2,authDomain:"bleeditloud-6fb33.firebaseapp.com",databaseURL:"https://bleeditloud-6fb33-default-rtdb.firebaseio.com",projectId:"bleeditloud-6fb33",storageBucket:"bleeditloud-6fb33.firebasestorage.app",messagingSenderId:"838453069044",appId:_a1+_a2};
 var FB_EVENT_ID='live-cafe-rock-2026';
+/* Backend seguro compatible con Firebase Spark. Configurar la URL después de desplegar el Worker. */
+var BACKEND_API_URL='';
+async function callBackend(action,payload){
+  if(!BACKEND_API_URL||!/^https:\/\/[a-z0-9.-]+$/.test(BACKEND_API_URL)){
+    throw new Error('El backend seguro todavía no está configurado. No se realizó ningún cambio.');
+  }
+  var headers={'Content-Type':'application/json'};
+  if(fbAuth&&fbAuth.currentUser)headers.Authorization='Bearer '+await fbAuth.currentUser.getIdToken();
+  var response=await fetch(BACKEND_API_URL+'/'+action,{method:'POST',headers:headers,body:JSON.stringify(payload||{})});
+  var data=await response.json().catch(function(){return{};});
+  if(!response.ok)throw new Error(data.error||'El servidor no pudo completar la operación.');
+  return data;
+}
+
 var currentRole='admin', attendees=[], pendingPayments=[], salesConfig={}, tickets={}, doorLog={}, pubData={};
 salesConfig.s1_name='Preventa 1'; salesConfig.s1_price=10;
 salesConfig.s2_name='Preventa 2'; salesConfig.s2_price=15;
@@ -844,7 +858,7 @@ function initFirebase(){
       if(!salesConfig.payInfo)salesConfig.payInfo='Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
       document.getElementById('config-active-day').value=salesConfig.active_day||'';
       document.getElementById('config-day-color').value=salesConfig.day_color||'#e0281a';
-      document.getElementById('config-event-name').value=salesConfig.event_name||'LIVE CAFÉ ROCK';
+      document.getElementById('config-event-name').value=salesConfig.event_name||'BLEED IT LOUD';
       document.getElementById('config-event-sub').value=salesConfig.event_sub||'CONTROL DE ACCESO Y ENTRADAS';
       document.getElementById('config-event-date').value=salesConfig.event_date||'31 / 07 / 2026';
       document.getElementById('config-event-city').value=salesConfig.event_city||'Maracaibo, estado Zulia';
@@ -925,7 +939,7 @@ function saveAttendees(){
 
 /* ================= LANDING ================= */
 function updateLandingUI(){
-  var name=salesConfig.event_name||'LIVE CAFÉ ROCK';
+  var name=salesConfig.event_name||'BLEED IT LOUD';
   var sub=salesConfig.event_sub||'CONTROL DE ACCESO Y ENTRADAS';
   var date=salesConfig.event_date||'31 / 07 / 2026';
   var city=salesConfig.event_city||'Maracaibo, estado Zulia';
@@ -1011,7 +1025,7 @@ async function copyPaymentInfo(){
   var qty=Math.max(1,Math.min(20,Math.floor(Number(document.getElementById('buy-qty').value)||1)));
   var price=selectedStage===1?(Number(salesConfig.s1_price)||0):(Number(salesConfig.s2_price)||0);
   var total='$'+(qty*price).toLocaleString('es-VE',{maximumFractionDigits:2});
-  var text='LIVE CAFÉ ROCK · DATOS DE PAGO\n'+info+'\nCantidad: '+qty+'\nTotal: '+total;
+  var text='BLEED IT LOUD · DATOS DE PAGO\n'+info+'\nCantidad: '+qty+'\nTotal: '+total;
   try{
     if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);
     else{
@@ -1033,21 +1047,17 @@ async function submitPurchase(){
   if(phone.length<7){showToast('Introduce un teléfono válido para recuperar tus entradas','e');return;}
   if(!Number.isFinite(qtyRaw)||qty<1||qty>20){showToast('La cantidad debe estar entre 1 y 20 entradas','e');return;}
   if(salesConfig.sales_paused||(selectedStage===1&&salesConfig.s1_closed)||(selectedStage===2&&salesConfig.s2_closed)){showToast('Esta etapa ya no está disponible','e');renderBuyStages();return;}
-  if(!fbConnected||!fbDB){showToast('No hay conexión con el sistema. No se registró el pedido; inténtalo de nuevo.','e');return;}
-  var sc=selectedStage===1?{name:salesConfig.s1_name,price:Number(salesConfig.s1_price)||0}:{name:salesConfig.s2_name,price:Number(salesConfig.s2_price)||0};
-  if(!Number.isFinite(sc.price)||sc.price<0){showToast('El precio de esta etapa no es válido','e');return;}
-  var rec={name:name,dni:dni,phone:phone,qty:qty,ref:ref,stage:sc.name||'Venta',total:qty*sc.price,ts:Date.now(),status:'pendiente'};
+  var sc=selectedStage===1?{name:salesConfig.s1_name}:{name:salesConfig.s2_name};
   if(btn){btn.disabled=true;btn.dataset.originalText=btn.innerHTML;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Enviando…';}
   try{
-    var result=await fbDB.ref('events/'+FB_EVENT_ID+'/pending').push(rec);
-    if(!result||!result.key)throw new Error('No se confirmó el registro');
+    var result=await callBackend('createPendingOrder',{name:name,dni:dni,phone:phone,qty:qty,ref:ref,stage:sc.name||'Venta'});
     document.getElementById('confirm-name').textContent=name;
     document.getElementById('confirm-ref').textContent=ref;
     document.getElementById('confirm-stage').textContent=(qty+' × '+(sc.name||'Venta'));
-    document.getElementById('confirm-total').textContent='$'+rec.total;
+    document.getElementById('confirm-total').textContent='$'+result.total;
     ['buy-name','buy-dni','buy-phone','buy-ref'].forEach(function(id){document.getElementById(id).value='';});
     document.getElementById('buy-qty').value=1;showView('ticket');
-  }catch(err){showToast('No se confirmó el pedido. Revisa la conexión e inténtalo otra vez.','e');}
+  }catch(err){showToast(err.message||'No se confirmó el pedido. No se realizó ningún cambio.','e');}
   finally{if(btn){btn.disabled=false;btn.innerHTML=btn.dataset.originalText||'<i class="fa-solid fa-paper-plane"></i>Enviar comprobante';}}
 }
 
@@ -1262,19 +1272,14 @@ async function verifyLegacy(code){
 async function markTicketUsed(t){
   if(!fbConnected||!fbDB||!AUTH.role)return{committed:false,unavailable:true};
   try{
-    var ts=Date.now();
-    var res=await fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s+'/u').transaction(function(cur){return cur===true?undefined:true;});
-    if(!res.committed){
-      var already=!!(res.snapshot&&res.snapshot.val()===true);
-      if(already){t.u=true;patchTicketCards();}
-      return{committed:false,alreadyUsed:already,ts:ts};
-    }
-    t.u=true;t.ua=ts;patchTicketCards();
-    try{await fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).set({ts:ts,by:(AUTH.user&&AUTH.user.email)||AUTH.role});}
-    catch(logError){showToast('Ingreso confirmado, pero no se pudo guardar el registro de auditoría','e');}
-    return{committed:true,ts:ts};
-  }catch(error){showToast('No se pudo confirmar el ingreso. No autorices el acceso.','e');return{committed:false,error:error};}
+    var result=await callBackend('checkInTicket',{serial:t.s});
+    if(result.alreadyUsed){t.u=true;patchTicketCards();return{committed:false,alreadyUsed:true,ts:result.ts};}
+    if(!result.ok)return{committed:false,unknown:!result.exists};
+    t.u=true;t.ua=result.ts;patchTicketCards();
+    return{committed:true,ts:result.ts};
+  }catch(error){showToast(error.message||'No se pudo confirmar el ingreso. No autorices el acceso.','e');return{committed:false,error:error};}
 }
+
 function resultHTML(r){
   var cls=r.s==='ok'?'ok':(r.s==='invalid'?'bad':'warn');
   var icon=r.s==='ok'?'fa-circle-check':(r.s==='invalid'?'fa-circle-xmark':'fa-triangle-exclamation');
@@ -1306,30 +1311,16 @@ var PV={ced:null,pub:null};
 function verifyDNI(){
   var box=document.getElementById('verify-result');box.style.display='block';
   var dni=nD(document.getElementById('verify-dni').value);
-  if(!dni){box.innerHTML=resultHTML({s:'invalid',t:'INGRESA UNA CÉDULA',m:'Escribe la cédula con la que compraste.'});return;}
-  if(!fbConnected){box.innerHTML=resultHTML({s:'invalid',t:'SIN CONEXIÓN',m:'Revisa tu internet e inténtalo de nuevo.'});return;}
-  box.innerHTML='<p class="empty">BUSCANDO…</p>';
-  fbDB.ref('events/'+FB_EVENT_ID+'/pub/'+dni).once('value').then(function(s){
-    var p=s.val();
-    if(!p){box.innerHTML=resultHTML({s:'invalid',t:'NO ENCONTRADA',m:'No hay entradas registradas con la cédula '+dni+'. Si compraste antes de la última actualización, pide al organizador regenerar el índice.'});return;}
-    PV={ced:dni,pub:p};
-    if(!p.p){box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',m:'Hola'+(p.n?' '+p.n:'')+'. Cuando el organizador apruebe tu pago verás aquí tus entradas con QR.'});return;}
-    renderPhoneStep(box);
-  }).catch(function(){
-    box.innerHTML=resultHTML({s:'invalid',t:'ERROR DE CONSULTA',m:'No se pudo consultar. Inténtalo de nuevo.'});
-  });
+  if(!/^[0-9]{5,12}$/.test(dni)){box.innerHTML=resultHTML({s:'invalid',t:'CÉDULA NO VÁLIDA',m:'Escribe la cédula con la que compraste.'});return;}
+  PV={ced:dni,pub:{}};
+  renderPhoneStep(box);
 }
 function renderPhoneStep(box){
-  var p=PV.pub;
-  if(!p.qrs){
-    box.innerHTML=resultHTML({s:'warn',t:'SIN TELÉFONO REGISTRADO',m:'Tus '+p.c+' entradas están pagadas, pero no hay teléfono de contacto: presenta tu cédula en la puerta.'});
-    return;
-  }
   box.innerHTML='<div class="res res-ok">'
-    +'<div class="res-head"><i class="fa-solid fa-circle-check"></i><span>ENTRADAS PAGADAS</span></div>'
-    +'<p class="res-msg">'+esc(p.n||'Comprador')+' · '+p.c+' entrada(s) · confirma tu teléfono para ver los QR</p>'
+    +'<div class="res-head"><i class="fa-solid fa-ticket"></i><span>CONSULTAR MIS ENTRADAS</span></div>'
+    +'<p class="res-msg">Introduce el teléfono registrado al comprar. La consulta valida la cédula y el teléfono juntos.</p>'
     +'<div class="flex gap-3 mt-4">'
-    +'<input type="text" id="pv-phone" class="di" placeholder="Teléfono (Ej: 4141234567)" inputmode="numeric">'
+    +'<input type="text" id="pv-phone" class="di" placeholder="Teléfono registrado" inputmode="numeric">'
     +'<button class="bp px-6" onclick="revealPublicQRs()"><i class="fa-solid fa-unlock"></i></button>'
     +'</div>'
     +'<div id="pv-error" style="color:var(--red);font-size:14px;margin-top:10px;display:none"></div>'
@@ -1340,44 +1331,50 @@ async function revealPublicQRs(){
   var box=document.getElementById('verify-result');
   var err=document.getElementById('pv-error');
   var phone=nD(document.getElementById('pv-phone').value);
-  if(phone.length<4){err.textContent='Escribe tu teléfono completo';err.style.display='block';return;}
+  if(phone.length<7){err.textContent='Escribe el teléfono completo';err.style.display='block';return;}
   err.style.display='none';
-  box.innerHTML='<p class="empty">DESCIFRANDO TUS ENTRADAS…</p>';
-  var arr=await decryptSerials(PV.ced,phone,PV.pub.qrs);
-  if(!arr||!arr.length){
-    renderPhoneStep(box);
-    var e2=document.getElementById('pv-error');
-    e2.textContent='El teléfono no coincide con el registrado en la compra';
-    e2.style.display='block';
-    return;
+  box.innerHTML='<p class="empty">VALIDANDO DATOS…</p>';
+  try{
+    var result=await callBackend('getPublicOrderIndex',{dni:PV.ced,phone:phone});
+    if(!result.found){
+      box.innerHTML=resultHTML({s:'invalid',t:'NO ENCONTRADA',m:'No se encontraron entradas con esa cédula y teléfono. Comprueba los datos e inténtalo de nuevo.'});
+      return;
+    }
+    if(result.status==='pending'||!result.p){
+      box.innerHTML=resultHTML({s:'warn',t:'PAGO EN REVISIÓN',m:'Hola'+(result.n?' '+result.n:'')+'. El pago sigue pendiente de aprobación.'});
+      return;
+    }
+    var arr=result.serials||[];
+    if(!arr.length){box.innerHTML=resultHTML({s:'warn',t:'ENTRADAS NO DISPONIBLES',m:'Contacta al organizador para revisar tu compra.'});return;}
+    var h='<div class="res res-ok">'
+      +'<div class="res-head"><i class="fa-solid fa-circle-check"></i><span>TUS ENTRADAS</span></div>'
+      +'<p class="res-msg">'+esc(result.n||'Comprador')+' · '+arr.length+' entrada(s)</p>'
+      +'<p class="res-share">Cada serial es una entrada independiente · comparte cada QR con quien la vaya a usar</p>'
+      +'<div class="tk-list">';
+    for(var i=0;i<arr.length;i++){
+      var serial=String(arr[i]);
+      if(!/^[A-Z2-9]{8}$/.test(serial))continue;
+      h+='<div class="tk-chip" id="tkc-'+serial+'"><div id="public-ticket-'+serial+'" style="background:#14110d;color:#f3eee3;padding:14px;border-radius:8px">'
+        +'<div style="font-family:Anton,sans-serif;font-size:16px;text-align:center;letter-spacing:.06em">BLEED IT LOUD</div>'
+        +'<div class="tk-qr-box" style="display:block;margin:12px auto;width:max-content"><img id="pvq-'+serial+'" alt="QR '+esc(serial)+'" style="width:180px;height:180px;max-width:100%"></div>'
+        +'<div class="tk-srl" style="text-align:center">'+dashSerial(serial)+'</div><div class="tk-meta" id="tkm-'+serial+'" style="text-align:center">Cargando datos…</div></div>'
+        +'<button type="button" class="bs w-full mt-3" onclick="downloadPublicTicket(\''+serial+'\')"><i class="fa-solid fa-download"></i> Descargar entrada</button></div>';
+    }
+    h+='</div></div>';box.innerHTML=h;
+    arr.forEach(function(serial){
+      makeQR(serial,320).then(function(url){var el=document.getElementById('pvq-'+serial);if(el&&url)el.src=url;});
+      callBackend('getPublicTicketInfo',{serial:serial}).then(function(t){
+        var meta=document.getElementById('tkm-'+serial),chip=document.getElementById('tkc-'+serial);
+        if(!t.exists){if(chip)chip.remove();return;}
+        if(meta)meta.innerHTML=esc(t.e||'')+(t.day&&t.day!=='General'?' · '+esc(t.day):'')+' · Nº '+t.i+(t.u?' · <b>USADA</b>':'');
+        if(t.u&&chip)chip.classList.add('off');
+      }).catch(function(){var meta=document.getElementById('tkm-'+serial);if(meta)meta.textContent='No se pudieron cargar los datos';});
+    });
+  }catch(error){
+    box.innerHTML=resultHTML({s:'invalid',t:'ERROR DE CONSULTA',m:error.message||'No se pudo consultar. Inténtalo de nuevo.'});
   }
-  var h='<div class="res res-ok">'
-    +'<div class="res-head"><i class="fa-solid fa-circle-check"></i><span>TUS ENTRADAS</span></div>'
-    +'<p class="res-msg">'+esc(PV.pub.n||'Comprador')+' · '+arr.length+' entrada(s)</p>'
-    +'<p class="res-share">Cada serial es una entrada independiente · comparte cada QR con quien la vaya a usar</p>'
-    +'<div class="tk-list">';
-  var serials=[];
-  for(var i=0;i<arr.length;i++){
-    var s=String(arr[i]);
-    serials.push(s);
-    h+='<div class="tk-chip" id="tkc-'+s+'"><div id="public-ticket-'+s+'" style="background:#14110d;color:#f3eee3;padding:14px;border-radius:8px">'
-      +'<div style="font-family:Anton,sans-serif;font-size:16px;text-align:center;letter-spacing:.06em">LIVE CAFÉ ROCK</div>'
-      +'<div class="tk-qr-box" style="display:block;margin:12px auto;width:max-content"><img id="pvq-'+s+'" alt="QR '+esc(s)+'" style="width:180px;height:180px;max-width:100%"></div>'
-      +'<div class="tk-srl" style="text-align:center">'+dashSerial(s)+'</div><div class="tk-meta" id="tkm-'+s+'" style="text-align:center">Cargando datos…</div></div>'
-      +'<button type="button" class="bs w-full mt-3" onclick="downloadPublicTicket(\''+s+'\')"><i class="fa-solid fa-download"></i> Descargar entrada</button></div>';
-  }
-  h+='</div></div>';
-  box.innerHTML=h;
-  serials.forEach(function(s){
-    makeQR(s,320).then(function(url){var el=document.getElementById('pvq-'+s);if(el&&url)el.src=url;});
-    fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+s).once('value').then(function(snap){
-      var t=snap.val(),meta=document.getElementById('tkm-'+s),chip=document.getElementById('tkc-'+s);
-      if(!t){if(chip)chip.remove();return;}
-      if(meta)meta.innerHTML=esc(t.e||'')+(t.day&&t.day!=='General'?' · '+esc(t.day):'')+' · Nº '+t.i+(t.u?' · <b>USADA</b>':'');
-      if(t.u&&chip)chip.classList.add('off');
-    }).catch(function(){});
-  });
 }
+
 
 async function downloadPublicTicket(serial){
   var el=document.getElementById('public-ticket-'+serial);
@@ -1389,7 +1386,7 @@ async function downloadPublicTicket(serial){
     if(!blob)throw new Error('No se pudo generar la imagen');
     var file=new File([blob],'entrada-'+serial+'.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'Entrada LIVE CAFÉ ROCK',text:'Guarda esta entrada para presentarla en la puerta.'});
+      await navigator.share({files:[file],title:'Entrada BLEED IT LOUD',text:'Guarda esta entrada para presentarla en la puerta.'});
     }else{
       var url=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=url;a.download='entrada-'+serial+'.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
@@ -1669,29 +1666,23 @@ async function approvePayment(id){
   var p=null;
   for(var i=0;i<pendingPayments.length;i++)if(pendingPayments[i]&&pendingPayments[i].id===id){p=pendingPayments[i];break;}
   if(!p)return;
-  var day=salesConfig.active_day||'General',merged=false;
-  for(var j=0;j<attendees.length;j++){
-    if(attendees[j]&&nD(attendees[j].D)===nD(p.dni)&&attendees[j].E_D===day){
-      attendees[j].C=(attendees[j].C||1)+(p.qty||1);attendees[j].P=true;
-      if(p.name)attendees[j].N=p.name;
-      if(p.phone)attendees[j].T=nD(p.phone);
-      merged=true;break;
-    }
+  var result;
+  try{result=await callBackend('approvePayment',{id:id});}
+  catch(err){showToast(err.message||'No se pudo aprobar el pago.','e');return;}
+  if(result.phone&&result.serials&&result.serials.length){
+    try{
+      var qrs=await encryptSerials(result.dni,result.phone,result.serials);
+      if(qrs)await callBackend('setPublicIndex',{dni:result.dni,qrs:qrs});
+      else showToast('Pago aprobado, pero no se pudo preparar la descarga de QR. Regenera el índice público.','e');
+    }catch(indexError){showToast('Pago aprobado, pero el índice de descarga no se actualizó. Usa «Regenerar índice público».','e');}
   }
-  if(!merged)attendees.push({N:p.name||'',D:nD(p.dni),E:p.stage||'Venta',E_D:day,C:p.qty||1,T:nD(p.phone||''),P:true});
-  if(fbConnected){
-    fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees);
-    fbDB.ref('events/'+FB_EVENT_ID+'/pending/'+id).remove();
-  }else{pendingPayments=pendingPayments.filter(function(x){return x.id!==id;});}
-  var created=ensureTicketsFor(p.dni,day);
-  await refreshPubFor(p.dni);
-  updateUI();beepGood();
-  showToast('Pago aprobado · '+(created.length||p.qty||1)+' entrada(s) emitidas','s');
+  showToast('Pago aprobado · '+(result.count||p.qty||1)+' entrada(s) emitidas','s');
+  beepGood();
 }
-function rejectPayment(id){
-  if(fbConnected)fbDB.ref('events/'+FB_EVENT_ID+'/pending/'+id).remove();
-  else pendingPayments=pendingPayments.filter(function(x){return x.id!==id;});
-  renderPendingPayments();showToast('Pago rechazado','e');
+async function rejectPayment(id){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede rechazar','e');return;}
+  try{await callBackend('rejectPayment',{id:id});showToast('Solicitud rechazada','s');}
+  catch(err){showToast(err.message||'No se pudo rechazar el pago.','e');}
 }
 
 /* ================= LISTA Y ESTADÍSTICAS ================= */
@@ -1794,7 +1785,7 @@ function renderTicketCards(){
   setTicketSummary();
   if(!arr.length){grid.innerHTML='<p class="empty" style="grid-column:1/-1">AÚN NO HAY ENTRADAS EMITIDAS — APRUEBA PAGOS O PULSA «GENERAR / ACTUALIZAR»</p>';return;}
   var color=salesConfig.day_color||'#e0281a';
-  var evName=(salesConfig.event_name||'LIVE CAFÉ ROCK').toUpperCase();
+  var evName=(salesConfig.event_name||'BLEED IT LOUD').toUpperCase();
   var evDate=(salesConfig.event_date||'').toUpperCase();
   var img=salesConfig.event_logo||DEFAULT_TICKET_IMG;
   var h='';
