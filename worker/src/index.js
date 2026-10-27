@@ -288,12 +288,17 @@ async function getPublicOrderIndex(request, env, data) {
   rateLimit(request, "orderLookup", 20, 10 * 60 * 1000);
   const dni = digits(data.dni), phone = digits(data.phone);
   if (!/^[0-9]{5,12}$/.test(dni) || phone.length < 7 || phone.length > 16) return { found: false };
-  const snap = await dbGet(env, "pub/" + dni);
-  const p = snap.value;
-  if (!p || p.p !== true || !p.qrs) return { found: false };
-  const serials = await decryptSerials(dni, phone, p.qrs);
-  if (!serials || !serials.length) return { found: false };
-  return { found: true, p: true, c: Number(p.c) || serials.length, n: clean(p.n, 80), serials };
+  const snap = await dbGet(env);
+  const event = snap.value || {};
+  const p = event.pub && event.pub[dni];
+  if (p && p.p === true && p.qrs) {
+    const serials = await decryptSerials(dni, phone, p.qrs);
+    if (!serials || !serials.length) return { found: false };
+    return { found: true, status: "paid", p: true, c: Number(p.c) || serials.length, n: clean(p.n, 80), serials };
+  }
+  const pending = Object.values(event.pending || {}).find(x => x && digits(x.dni) === dni && digits(x.phone) === phone && x.status === "pendiente");
+  if (pending) return { found: true, status: "pending", p: false, n: clean(pending.name, 80), c: Number(pending.qty) || 1 };
+  return { found: false };
 }
 
 async function getPublicTicketInfo(request, env, data) {
