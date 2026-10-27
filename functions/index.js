@@ -78,6 +78,12 @@ exports.createPendingOrder = functions.region("us-central1").https.onCall(async 
   const root = await eventRef().once("value");
   const event = root.val() || {};
   const config = event.config || {};
+  // Catch duplicate references in legacy pending orders created before the index existed.
+  for (const [pendingId, pendingOrder] of Object.entries(event.pending || {})) {
+    if (pendingOrder && pendingId !== "" && hash(pendingOrder.ref || "") === key && pendingOrder.status !== "rechazado") {
+      fail("already-exists", "Esta referencia ya aparece en otra solicitud.");
+    }
+  }
   if (config.sales_paused) fail("failed-precondition", "Las ventas están pausadas.");
   const stage = stageConfig(config, stageName);
   const key = hash(ref);
@@ -123,6 +129,12 @@ exports.approvePayment = functions.region("us-central1").https.onCall(async (dat
     const name = text(p.name, 80);
     if (dni.length < 4 || dni.length > 12 || name.length < 2) return;
     const config = event.config || {};
+    const referenceKey = p.refKey || hash(p.ref || "");
+    const referenceLock = event.paymentRefs && event.paymentRefs[referenceKey];
+    if (referenceLock && referenceLock.pid && referenceLock.pid !== id) return;
+    for (const [otherId, otherOrder] of Object.entries(event.pending || {})) {
+      if (otherId !== id && otherOrder && hash(otherOrder.ref || "") === referenceKey && otherOrder.status !== "rechazado") return;
+    }
     const stage = stageConfig(config, text(p.stage, 80));
     // Recalculate total using current server config; never trust the browser total.
     p.total = Math.round(stage.price * qty * 100) / 100;
