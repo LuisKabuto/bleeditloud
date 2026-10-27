@@ -173,7 +173,7 @@ async function createPendingOrder(request, env, data) {
     throw new ApiError(400, "Revisa nombre, cédula, teléfono, referencia y cantidad (1–20).");
   }
   const key = await refHash(ref);
-  return eventTransaction(env, event => {
+  return eventTransaction(env, async event => {
     event.config = event.config || {};
     event.pending = event.pending || {};
     event._security = event._security || {};
