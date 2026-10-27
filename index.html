@@ -1675,7 +1675,7 @@ async function approvePayment(id){
     showToast('Solicitud inválida: cantidad fuera de rango. Recházala.','e');return;
   }
   var stage=String(p.stage||'');
-  var validStage=stage===String(salesConfig.s1_name||'Preventa 1')||stage===String(salesConfig.s2_name||'Preventa 2');
+  var validStage=stage===String(salesConfig.s1_name||'Venta')||stage===String(salesConfig.s2_name||'Venta');
   if(!validStage){
     showToast('Etapa no reconocida. Verifica el pago antes de aprobar.','e');return;
   }
