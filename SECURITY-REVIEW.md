@@ -37,6 +37,16 @@ La aplicación ya reconoce las rutas `#admin` y `#portero`; por ejemplo, el pane
 - Descarga/compartir en Android, iPhone y navegador de escritorio.
 - Importación Excel con filas duplicadas, cédulas vacías y columnas inesperadas.
 
+## Cambios nuevos preparados en la rama de seguridad
+
+- La compra pública se registra mediante `functions.createPendingOrder`: el servidor valida campos, calcula el total con el precio configurado en Firebase y limita la frecuencia por IP.
+- Se reserva la referencia bancaria mediante una transacción para evitar que dos solicitudes simultáneas usen la misma referencia.
+- `functions.approvePayment` valida rol, estado, etapa y cantidad; calcula el total en servidor y actualiza solicitud, asistentes, tickets e índice mediante una transacción.
+- `functions.checkInTicket` realiza la transacción de uso y escribe el registro de puerta desde el servidor. El portero ya no necesita permiso directo de escritura en tickets.
+- `functions.getPublicOrderIndex` y `functions.getPublicTicketInfo` reemplazan las lecturas públicas directas del índice y de los metadatos de tickets, con límites de frecuencia y respuesta reducida.
+- `database.rules.json` es una propuesta para la nueva versión: la lectura directa de tickets se restringe al personal y la lectura de `pub` al administrador.
+- El frontend llama a las funciones para crear solicitudes, aprobar/rechazar pagos, consultar metadatos de tickets y confirmar ingresos.
+
 ## Estado
 
-Esta rama es una primera entrega de interfaz y flujo de compra. **No representa una auditoría de seguridad completa ni está lista para producción** hasta cerrar los bloqueadores anteriores, revisar las reglas reales de Firebase y ejecutar las pruebas. No se modificaron los datos de producción ni las reglas de Firebase.
+Los cambios están en una rama y **no están desplegados en Firebase ni integrados en `main`**. No se han modificado los datos ni las reglas de producción. Antes de producción hay que instalar dependencias, ejecutar `npm --prefix functions run lint`, probar en Firebase Emulator y desplegar las funciones antes de publicar el frontend y las reglas. Consulta `SECURITY-DEPLOYMENT.md` para el orden. Esta entrega reduce riesgos importantes, pero no es una auditoría completa; la consulta pública por cédula aún debe endurecerse y la solución necesita pruebas integradas.
