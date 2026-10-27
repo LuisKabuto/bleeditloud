@@ -1,0 +1,61 @@
+name: Validate Spark-compatible backend
+
+on:
+  pull_request:
+    paths:
+      - "worker/**"
+      - "index.html"
+      - ".github/workflows/validate-spark-backend.yml"
+  push:
+    branches: ["security/spark-cloudflare-worker-20261027"]
+    paths:
+      - "worker/**"
+      - "index.html"
+      - ".github/workflows/validate-spark-backend.yml"
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check Worker syntax
+        run: node --check worker/src/index.js
+      - name: Install Worker tooling
+        working-directory: worker
+        run: npm install
+      - name: Check Worker package script
+        working-directory: worker
+        run: npm run check
+      - name: Check inline JavaScript in index.html
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import subprocess, tempfile, os, sys
+          class Scripts(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.active=False; self.skip=False; self.buf=[]; self.items=[]
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower() != "script": return
+                  attrs=dict(attrs); self.active=True; self.buf=[]
+                  typ=(attrs.get("type") or "").lower()
+                  self.skip=bool(attrs.get("src")) or (typ and typ not in ("text/javascript","application/javascript","module"))
+              def handle_data(self, data):
+                  if self.active and not self.skip: self.buf.append(data)
+              def handle_endtag(self, tag):
+                  if tag.lower()=="script" and self.active:
+                      if not self.skip and "".join(self.buf).strip(): self.items.append("".join(self.buf))
+                      self.active=False; self.skip=False; self.buf=[]
+          p=Scripts(); p.feed(Path("index.html").read_text(encoding="utf-8"))
+          if not p.items: sys.exit("No inline JavaScript found")
+          for i, code in enumerate(p.items):
+              name=f"/tmp/bleeditloud-inline-{i}.js"
+              Path(name).write_text(code,encoding="utf-8")
+              result=subprocess.run(["node","--check",name],text=True,capture_output=True)
+              if result.returncode:
+                  print(result.stderr); sys.exit(result.returncode)
+          print(f"Checked {len(p.items)} inline JavaScript block(s)")
+          PY
