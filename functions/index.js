@@ -109,6 +109,9 @@ exports.approvePayment = functions.region("us-central1").https.onCall(async (dat
   const id = text(data && data.id, 128);
   if (!/^[A-Za-z0-9_-]{5,128}$/.test(id)) fail("invalid-argument", "Solicitud inválida.");
   const now = Date.now();
+  const initialPending = await eventRef().child("pending/" + id).once("value");
+  const initialOrder = initialPending.val();
+  const expectedCount = Number(initialOrder && initialOrder.qty);
   const result = await eventRef().transaction((event) => {
     if (!event || !event.pending || !event.pending[id]) return;
     const p = event.pending[id];
@@ -156,17 +159,11 @@ exports.approvePayment = functions.region("us-central1").https.onCall(async (dat
     const key = p.refKey || hash(p.ref || "");
     event.paymentRefs = event.paymentRefs || {};
     event.paymentRefs[key] = { status: "approved", pid: id, at: now };
-    // The transaction result is used to refresh the response after commit.
-    event._lastApproval = { id, count: created.length, serials: created };
     return event;
   }, undefined, false);
   if (!result.committed) fail("failed-precondition", "No se pudo aprobar: la solicitud ya fue procesada o sus datos son inválidos.");
-  const event = result.snapshot.val() || {};
-  const approval = event._lastApproval;
-  if (!approval || approval.id !== id) fail("aborted", "La aprobación no quedó confirmada. Actualiza el panel antes de reintentar.");
-  // Remove transient transaction response data from the database.
-  await eventRef().child("_lastApproval").remove().catch(() => {});
-  return { ok: true, count: approval.count };
+  if (!Number.isSafeInteger(expectedCount) || expectedCount < 1 || expectedCount > 20) fail("failed-precondition", "Cantidad inválida en la solicitud.");
+  return { ok: true, count: expectedCount };
 });
 
 exports.rejectPayment = functions.region("us-central1").https.onCall(async (data, context) => {
