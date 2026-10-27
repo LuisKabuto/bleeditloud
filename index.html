@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LIVE CAFÉ ROCK — Entradas</title>
+<title>Bleed It Loud — Entradas</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#0c0a08">
 <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/09969b50-391c-4bf2-b499-212e4d450238.png?auth_key=1882155671-f2453c00fe0c48a2a283407a05977c9a-0-27285347a295f9a870cdfbd2ea01e7e2">
@@ -524,7 +524,7 @@ tr:hover td{background:var(--field)}
 
       <div class="ab p-6 mb-5">
         <div class="sec-h">Datos del evento</div>
-        <input type="text" id="config-event-name" class="di mb-4" placeholder="LIVE CAFÉ ROCK">
+        <input type="text" id="config-event-name" class="di mb-4" placeholder="BLEED IT LOUD">
         <input type="text" id="config-event-sub" class="di mb-4" placeholder="CONTROL DE ACCESO Y ENTRADAS">
         <div class="grid grid-cols-2 gap-4 mb-4">
           <input type="text" id="config-event-date" class="di" placeholder="31 / 07 / 2026">
@@ -858,7 +858,7 @@ function initFirebase(){
       if(!salesConfig.payInfo)salesConfig.payInfo='Banco X: 0102-1234-5678\nPago Móvil: 0414-1234567\nBinance ID: 12345678';
       document.getElementById('config-active-day').value=salesConfig.active_day||'';
       document.getElementById('config-day-color').value=salesConfig.day_color||'#e0281a';
-      document.getElementById('config-event-name').value=salesConfig.event_name||'LIVE CAFÉ ROCK';
+      document.getElementById('config-event-name').value=salesConfig.event_name||'BLEED IT LOUD';
       document.getElementById('config-event-sub').value=salesConfig.event_sub||'CONTROL DE ACCESO Y ENTRADAS';
       document.getElementById('config-event-date').value=salesConfig.event_date||'31 / 07 / 2026';
       document.getElementById('config-event-city').value=salesConfig.event_city||'Maracaibo, estado Zulia';
@@ -1025,7 +1025,7 @@ async function copyPaymentInfo(){
   var qty=Math.max(1,Math.min(20,Math.floor(Number(document.getElementById('buy-qty').value)||1)));
   var price=selectedStage===1?(Number(salesConfig.s1_price)||0):(Number(salesConfig.s2_price)||0);
   var total='$'+(qty*price).toLocaleString('es-VE',{maximumFractionDigits:2});
-  var text='LIVE CAFÉ ROCK · DATOS DE PAGO\n'+info+'\nCantidad: '+qty+'\nTotal: '+total;
+  var text='BLEED IT LOUD · DATOS DE PAGO\n'+info+'\nCantidad: '+qty+'\nTotal: '+total;
   try{
     if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);
     else{
@@ -1377,7 +1377,7 @@ async function downloadPublicTicket(serial){
     if(!blob)throw new Error('No se pudo generar la imagen');
     var file=new File([blob],'entrada-'+serial+'.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'Entrada LIVE CAFÉ ROCK',text:'Guarda esta entrada para presentarla en la puerta.'});
+      await navigator.share({files:[file],title:'Entrada Bleed It Loud',text:'Guarda esta entrada para presentarla en la puerta.'});
     }else{
       var url=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=url;a.download='entrada-'+serial+'.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
@@ -2389,7 +2389,7 @@ async function revealPublicQRs(){
     var s=String(arr[i]);
     serials.push(s);
     h+='<div class="tk-chip" id="tkc-'+s+'"><div id="public-ticket-'+s+'" style="background:#14110d;color:#f3eee3;padding:14px;border-radius:8px">'
-      +'<div style="font-family:Anton,sans-serif;font-size:16px;text-align:center;letter-spacing:.06em">LIVE CAFÉ ROCK</div>'
+      +'<div style="font-family:Anton,sans-serif;font-size:16px;text-align:center;letter-spacing:.06em">BLEED IT LOUD</div>'
       +'<div class="tk-qr-box" style="display:block;margin:12px auto;width:max-content"><img id="pvq-'+s+'" alt="QR '+esc(s)+'" style="width:180px;height:180px;max-width:100%"></div>'
       +'<div class="tk-srl" style="text-align:center">'+dashSerial(s)+'</div><div class="tk-meta" id="tkm-'+s+'" style="text-align:center">Cargando datos…</div></div>'
       +'<button type="button" class="bs w-full mt-3" onclick="downloadPublicTicket(\''+s+'\')"><i class="fa-solid fa-download"></i> Descargar entrada</button></div>';
