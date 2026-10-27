@@ -1190,16 +1190,16 @@ function checkMigrationHint(){
 
 /* ================= VERIFICACIÓN (EQUIPO, AUTENTICADO) ================= */
 function ownerTotal(t){var a=findAttendeeExact(t.d,t.day);return a?(a.C||1):Math.max(1,ticketsOf(t.d,t.day).length);}
-function coreVerify(code){
+async function coreVerify(code){
   code=String(code||'').trim();
   if(!code)return{s:'invalid',t:'CÓDIGO VACÍO',m:'Nada que verificar.'};
-  if(code.indexOf('|')>-1)return verifyLegacy(code);
+  if(code.indexOf('|')>-1)return await verifyLegacy(code);
   var clean=code.toUpperCase().replace(/[^A-Z0-9]/g,'');
-  if(/^\d+$/.test(clean))return verifyDNIPath(clean);
-  if(/^[A-Z2-9]{8}$/.test(clean))return verifySerial(clean);
+  if(/^\d+$/.test(clean))return await verifyDNIPath(clean);
+  if(/^[A-Z2-9]{8}$/.test(clean))return await verifySerial(clean);
   return{s:'invalid',t:'FORMATO NO RECONOCIDO',m:'Escanea un QR válido, un serial (8 caracteres) o una cédula.'};
 }
-function verifySerial(sr){
+async function verifySerial(sr){
   var t=tickets[sr];
   if(!t)return{s:'invalid',t:'SERIAL DESCONOCIDO',m:'«'+sr+'» no pertenece a este evento.'};
   var owner=findAttendeeExact(t.d,t.day);
@@ -1207,11 +1207,15 @@ function verifySerial(sr){
   if(t.u)return{s:'used',t:'YA UTILIZADA',tk:t,m:'Entrada Nº '+t.i+' — usada'+(t.ua?' el '+fmtDT(t.ua):'')+'.'};
   var ad=salesConfig.active_day;
   if(ad&&t.day&&t.day!==ad)return{s:'wrongday',t:'ENTRADA DE OTRO DÍA',tk:t,m:'Es para «'+t.day+'» y hoy es «'+ad+'». No se marca.'};
-  markTicketUsed(t);
+  var checkin=await markTicketUsed(t);
+  if(!checkin.committed){
+    if(checkin.alreadyUsed){t.u=true;t.ua=checkin.ts||t.ua;return{s:'used',t:'YA UTILIZADA',tk:t,m:'Esta entrada ya fue registrada por otro lector.'};}
+    return{s:'error',t:'NO SE PUDO CONFIRMAR EL INGRESO',tk:t,m:'No se autorizó el acceso. Comprueba la conexión y vuelve a consultar.'};
+  }
   var left=ticketsOf(t.d,t.day).filter(function(x){return !x.u;}).length;
   return{s:'ok',t:'ACCESO CONCEDIDO',tk:t,m:'Entrada Nº '+t.i+' de '+ownerTotal(t)+(left?' · le quedan '+left:' · era la última')};
 }
-function verifyDNIPath(dni){
+async function verifyDNIPath(dni){
   var ad=salesConfig.active_day;
   var list=attendees.filter(function(a){return a&&nD(a.D)===nD(dni);});
   if(!list.length)return{s:'invalid',t:'NO ENCONTRADA',m:'Cédula '+dni+' sin entradas registradas.'};
@@ -1229,13 +1233,17 @@ function verifyDNIPath(dni){
   var free=ticketsOf(a.D,ad||null).filter(function(t){return !t.u;});
   if(free.length){
     var t=free[0];
-    markTicketUsed(t);
+    var checkin=await markTicketUsed(t);
+    if(!checkin.committed){
+      if(checkin.alreadyUsed)return await verifyDNIPath(dni);
+      return{s:'error',t:'NO SE PUDO CONFIRMAR EL INGRESO',a:a,tk:t,m:'No se autorizó el acceso. Comprueba la conexión y vuelve a consultar.'};
+    }
     var left=ticketsOf(a.D,ad||null).filter(function(x){return !x.u;}).length;
     return{s:'ok',t:'ACCESO CONCEDIDO',a:a,tk:t,m:'Entrada Nº '+t.i+' · serial '+t.s+(left?' · quedan '+left:' · era la última')};
   }
   return{s:'full',t:'SIN ENTRADAS',a:a,m:'Ya usó todas sus entradas ('+usedCountFor(a)+'/'+(a.C||1)+').'};
 }
-function verifyLegacy(code){
+async function verifyLegacy(code){
   var parts=code.split('|');
   var dni=nD(parts[1]),idx=parseInt(parts[2],10);
   var a=findByDNI(dni);
@@ -1245,26 +1253,27 @@ function verifyLegacy(code){
   if(ts.length){
     var t=null;
     for(var i=0;i<ts.length;i++)if(ts[i].i===idx+1){t=ts[i];break;}
-    if(t)return verifySerial(t.s);
+    if(t)return await verifySerial(t.s);
     return{s:'invalid',t:'INVÁLIDA',a:a,m:'Número de entrada fuera de rango.'};
   }
   return{s:'invalid',t:'ENTRADA ANTIGUA',a:a,m:'Genera las entradas con serial en la pestaña «Entradas».'};
 }
 /* escritura de puerta: autenticada + acotada por reglas (u=true únicamente) */
-function markTicketUsed(t){
-  t.u=true;t.ua=Date.now();
-  patchTicketCards();
-  if(!fbConnected||!AUTH.role)return;
-  fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s+'/u').transaction(function(cur){
-    return cur===true?undefined:true;
-  }).then(function(res){
-    if(res.committed){
-      fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).set({ts:Date.now(),by:(AUTH.user&&AUTH.user.email)||AUTH.role}).catch(function(){});
+async function markTicketUsed(t){
+  if(!fbConnected||!fbDB||!AUTH.role)return{committed:false,unavailable:true};
+  try{
+    var ts=Date.now();
+    var res=await fbDB.ref('events/'+FB_EVENT_ID+'/tickets/'+t.s+'/u').transaction(function(cur){return cur===true?undefined:true;});
+    if(!res.committed){
+      var already=!!(res.snapshot&&res.snapshot.val()===true);
+      if(already){t.u=true;patchTicketCards();}
+      return{committed:false,alreadyUsed:already,ts:ts};
     }
-  }).catch(function(){
-    showToast('Sin permiso para marcar el ingreso','e');
-    t.u=false;updateUI();
-  });
+    t.u=true;t.ua=ts;patchTicketCards();
+    try{await fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).set({ts:ts,by:(AUTH.user&&AUTH.user.email)||AUTH.role});}
+    catch(logError){showToast('Ingreso confirmado, pero no se pudo guardar el registro de auditoría','e');}
+    return{committed:true,ts:ts};
+  }catch(error){showToast('No se pudo confirmar el ingreso. No autorices el acceso.','e');return{committed:false,error:error};}
 }
 function resultHTML(r){
   var cls=r.s==='ok'?'ok':(r.s==='invalid'?'bad':'warn');
@@ -1450,13 +1459,13 @@ function camTick(){
   try{r=jsQR(d.data,sw,sh,{inversionAttempts:CAM.flip?'dontInvert':'onlyInvert'});}catch(e){}
   if(r&&r.data)camResult(r.data);
 }
-function camResult(txt){
+async function camResult(txt){
   var now=Date.now();
   if(now<CAM.lockUntil)return;
   var key=String(txt).trim().toUpperCase();
   if(key===CAM.lastCode&&now-CAM.lastShown<10000)return;
   CAM.lastCode=key;CAM.lastShown=now;CAM.lockUntil=now+2600;
-  var r=coreVerify(key);
+  var r=await coreVerify(key);
   feedback(r);
   if(CAM.onResult)CAM.onResult(r,txt);
 }
@@ -1518,9 +1527,9 @@ function scanImageFile(file,cb){
 function scanQRFromFile(ev){
   var f=ev.target.files&&ev.target.files[0];ev.target.value='';
   if(!f)return;
-  scanImageFile(f,function(txt){
+  scanImageFile(f,async function(txt){
     if(!txt){showToast('No se detectó un QR legible en esa imagen','e');return;}
-    var r=coreVerify(String(txt).trim().toUpperCase());
+    var r=await coreVerify(String(txt).trim().toUpperCase());
     feedback(r);
     var box=document.getElementById('scanner-result');box.style.display='block';box.innerHTML=resultHTML(r);
     pushScanLog(r);updateUI();
@@ -1529,9 +1538,9 @@ function scanQRFromFile(ev){
 function scanQRFromFileKiosk(ev){
   var f=ev.target.files&&ev.target.files[0];ev.target.value='';
   if(!f)return;
-  scanImageFile(f,function(txt){
+  scanImageFile(f,async function(txt){
     if(!txt){showToast('No se detectó un QR legible','e');return;}
-    var r=coreVerify(String(txt).trim().toUpperCase());
+    var r=await coreVerify(String(txt).trim().toUpperCase());
     feedback(r);
     kioskShow(r);updateUI();
   });
@@ -1564,11 +1573,11 @@ function pushScanLog(r){
 }
 function verifyFromScanner(){runManual('scanner-dni-input','scanner-result');}
 function adminVerify(){runManual('admin-dni-input','admin-verify-result');}
-function runManual(inId,outId){
+async function runManual(inId,outId){
   var raw=document.getElementById(inId).value.trim();
   var box=document.getElementById(outId);box.style.display='block';
   if(!raw){box.innerHTML=resultHTML({s:'invalid',t:'ESCRIBE UN CÓDIGO',m:'Cédula o serial de la entrada.'});return;}
-  var r=coreVerify(raw);
+  var r=await coreVerify(raw);
   feedback(r);
   box.innerHTML=resultHTML(r);
   document.getElementById(inId).value='';
@@ -1589,10 +1598,10 @@ function exitKioskMode(){
   document.getElementById('kiosk-anim').style.display='none';
   kioskTok++;
 }
-function kioskManual(){
+async function kioskManual(){
   var el=document.getElementById('kiosk-manual');
   var raw=el.value.trim();if(!raw)return;
-  var r=coreVerify(raw);
+  var r=await coreVerify(raw);
   feedback(r);
   el.value='';
   kioskShow(r);updateUI();
@@ -1756,9 +1765,9 @@ function renderList(){
   tb.innerHTML=h;
   renderStageStats();
 }
-function quickCheckIn(i){
+async function quickCheckIn(i){
   var a=attendees[i];if(!a)return;
-  var r=coreVerify(a.D);
+  var r=await coreVerify(a.D);
   feedback(r);
   showToast(r.t,r.s==='ok'?'s':'e');
   updateUI();
