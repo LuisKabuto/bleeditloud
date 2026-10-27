@@ -208,3 +208,14 @@ exports.getPublicTicketInfo = functions.region("us-central1").https.onCall(async
   // Return only fields used by the public ticket display; never return DNI or phone.
   return { exists: true, e: text(t.e, 80), day: text(t.day, 80), i: Number(t.i) || 0, u: t.u === true };
 });
+
+exports.getPublicOrderIndex = functions.region("us-central1").https.onCall(async (data, context) => {
+  await applyRateLimit(context, "orderLookup", 10, 10 * 60 * 1000);
+  const dni = digits(data && data.dni);
+  if (!/^[0-9]{4,12}$/.test(dni)) fail("invalid-argument", "Cédula inválida.");
+  const snap = await eventRef().child("pub/" + dni).once("value");
+  const p = snap.val();
+  if (!p) return { found: false };
+  // No name, phone, DNI, or raw serials are returned by this public lookup.
+  return { found: true, p: p.p === true, c: Number(p.c) || 0, qrs: p.qrs || null };
+});
