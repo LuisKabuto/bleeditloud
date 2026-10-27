@@ -1270,7 +1270,7 @@ async function markTicketUsed(t){
       return{committed:false,alreadyUsed:already,ts:ts};
     }
     t.u=true;t.ua=ts;patchTicketCards();
-    try{await fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).set({ts:ts,by:(AUTH.user&&AUTH.user.email)||AUTH.role});
+    try{await fbDB.ref('events/'+FB_EVENT_ID+'/doorLog/'+t.s).set({ts:ts,by:(AUTH.user&&AUTH.user.email)||AUTH.role});}
     catch(logError){showToast('Ingreso confirmado, pero no se pudo guardar el registro de auditoría','e');}
     return{committed:true,ts:ts};
   }catch(error){showToast('No se pudo confirmar el ingreso. No autorices el acceso.','e');return{committed:false,error:error};}
