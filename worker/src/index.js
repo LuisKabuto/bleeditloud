@@ -212,7 +212,7 @@ async function approvePayment(request, env, data) {
     const stage = configStage(event.config, clean(p.stage, 80));
     p.total = Math.round(stage.price * qty * 100) / 100;
     const day = clean(event.config.active_day || "General", 80);
-    event.attendees = Array.isArray(event.attendees) ? event.attendees : [];
+    event.attendees = Array.isArray(event.attendees) ? event.attendees : Object.values(event.attendees || {});
     let attendee = event.attendees.find(a => a && digits(a.D) === dni && clean(a.E_D || "General", 80) === day);
     if (attendee) {
       attendee.C = (Number(attendee.C) || 1) + qty;
@@ -227,7 +227,8 @@ async function approvePayment(request, env, data) {
     event.tickets = event.tickets || {};
     const mine = Object.values(event.tickets).filter(t => t && digits(t.d) === dni && clean(t.day || "General", 80) === day);
     let next = mine.reduce((n, t) => Math.max(n, Number(t.i) || 0), 0);
-    for (let i = 0; i < qty; i++) {
+    const targetCount = Math.max(qty, Number(attendee.C) || qty);
+    for (let i = mine.length; i < targetCount; i++) {
       const serial = newSerial(event.tickets);
       event.tickets[serial] = { s: serial, d: dni, n: name, e: stage.name, day, i: ++next, u: false, ua: null, ts: Date.now() };
     }
