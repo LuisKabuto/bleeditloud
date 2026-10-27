@@ -2073,7 +2073,7 @@ function runConfirm(){if(confirmCb)confirmCb();confirmCb=null;closeModal('confir
 function clearAllDataForNewEvent(){
   askConfirm('BORRAR TODO','Se eliminarán asistentes, entradas, índice público y configuración en la nube. Esta acción no tiene vuelta atrás.',function(){
     if(fbConnected&&AUTH.role==='admin'){
-      ['config','attendees','pub','tickets','doorLog','pending','used'].forEach(function(k){
+      ['config','attendees','pub','tickets','doorLog','pending','paymentRefs','used'].forEach(function(k){
         fbDB.ref('events/'+FB_EVENT_ID+'/'+k).remove().catch(function(){});
       });
     }
