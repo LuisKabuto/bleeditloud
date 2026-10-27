@@ -6,7 +6,7 @@
       "$event": {
         "config": { ".read": true, ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'" },
         "attendees": { ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')", ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'" },
-        "pub": { "$ced": { ".read": true, ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "!newData.exists() || newData.hasChildren(['n','p','c'])" } },
+        "pub": { "$ced": { ".read": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "!newData.exists() || newData.hasChildren(['n','p','c'])" } },
         "tickets": {
           ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')",
           "$s": {
