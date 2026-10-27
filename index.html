@@ -1666,22 +1666,24 @@ async function approvePayment(id){
   var p=null;
   for(var i=0;i<pendingPayments.length;i++)if(pendingPayments[i]&&pendingPayments[i].id===id){p=pendingPayments[i];break;}
   if(!p)return;
-  try{
-    var result=await callBackend('approvePayment',{id:id});
-    if(result.phone&&result.serials&&result.serials.length){
+  var result;
+  try{result=await callBackend('approvePayment',{id:id});}
+  catch(err){showToast(err.message||'No se pudo aprobar el pago.','e');return;}
+  if(result.phone&&result.serials&&result.serials.length){
+    try{
       var qrs=await encryptSerials(result.dni,result.phone,result.serials);
       if(qrs)await callBackend('setPublicIndex',{dni:result.dni,qrs:qrs});
-    }
-    showToast('Pago aprobado · '+(result.count||p.qty||1)+' entrada(s) emitidas','s');
-    beepGood();
-  }catch(err){showToast(err.message||'No se pudo aprobar el pago.','e');}
+      else showToast('Pago aprobado, pero no se pudo preparar la descarga de QR. Regenera el índice público.','e');
+    }catch(indexError){showToast('Pago aprobado, pero el índice de descarga no se actualizó. Usa «Regenerar índice público».','e');}
+  }
+  showToast('Pago aprobado · '+(result.count||p.qty||1)+' entrada(s) emitidas','s');
+  beepGood();
 }
 async function rejectPayment(id){
   if(AUTH.role!=='admin'){showToast('Solo el admin puede rechazar','e');return;}
   try{await callBackend('rejectPayment',{id:id});showToast('Solicitud rechazada','s');}
   catch(err){showToast(err.message||'No se pudo rechazar el pago.','e');}
 }
-
 
 /* ================= LISTA Y ESTADÍSTICAS ================= */
 function updateUI(){
