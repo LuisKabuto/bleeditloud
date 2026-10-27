@@ -115,7 +115,7 @@ exports.approvePayment = functions.region("us-central1").https.onCall(async (dat
   const result = await eventRef().transaction((event) => {
     if (!event || !event.pending || !event.pending[id]) return;
     const p = event.pending[id];
-    if (p.status !== "pendiente" && p.status !== "processing") return;
+    if (p.status && p.status !== "pendiente" && p.status !== "processing") return;
     const qty = Number(p.qty);
     if (!Number.isSafeInteger(qty) || qty < 1 || qty > 20) return;
     const dni = digits(p.dni);
@@ -173,7 +173,7 @@ exports.rejectPayment = functions.region("us-central1").https.onCall(async (data
   const ref = eventRef().child("pending/" + id);
   const snap = await ref.once("value");
   const p = snap.val();
-  if (!p || p.status !== "pendiente") fail("failed-precondition", "La solicitud ya fue procesada.");
+  if (!p || (p.status && p.status !== "pendiente")) fail("failed-precondition", "La solicitud ya fue procesada.");
   await ref.update({ status: "rechazado", rejectedAt: Date.now() });
   if (p.refKey) await eventRef().child("paymentRefs/" + p.refKey).update({ status: "rejected", at: Date.now() }).catch(() => {});
   return { ok: true };
