@@ -1,0 +1,38 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "events": {
+      "$event": {
+        "config": {
+          ".read": true,
+          ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'"
+        },
+        "attendees": {
+          ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')",
+          ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'"
+        },
+        "pending": {
+          ".read": "auth != null && auth.token.email == 'admin@bleeditloud.com'",
+          ".write": false
+        },
+        "pub": {
+          ".read": "auth != null && auth.token.email == 'admin@bleeditloud.com'",
+          ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'"
+        },
+        "tickets": {
+          ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')",
+          ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'"
+        },
+        "doorLog": {
+          ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')",
+          ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'"
+        },
+        "_security": {
+          ".read": false,
+          ".write": false
+        }
+      }
+    }
+  }
+}
