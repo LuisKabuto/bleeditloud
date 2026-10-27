@@ -76,11 +76,13 @@ exports.createPendingOrder = functions.region("us-central1").https.onCall(async 
     fail("invalid-argument", "Revisa nombre, cédula, teléfono, referencia y cantidad (1–20).");
   }
   const key = hash(ref);
-  const root = await eventRef().once("value");
-  const event = root.val() || {};
-  const config = event.config || {};
+  const [configSnap, pendingSnap] = await Promise.all([
+    eventRef().child("config").once("value"),
+    eventRef().child("pending").once("value")
+  ]);
+  const config = configSnap.val() || {};
   // Catch duplicate references in legacy pending orders created before the index existed.
-  for (const [pendingId, pendingOrder] of Object.entries(event.pending || {})) {
+  for (const [pendingId, pendingOrder] of Object.entries(pendingSnap.val() || {})) {
     if (pendingOrder && pendingId !== "" && hash(pendingOrder.ref || "") === key && pendingOrder.status !== "rechazado") {
       fail("already-exists", "Esta referencia ya aparece en otra solicitud.");
     }
