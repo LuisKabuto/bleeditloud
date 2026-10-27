@@ -82,10 +82,10 @@ exports.createPendingOrder = functions.region("us-central1").https.onCall(async 
   const stage = stageConfig(config, stageName);
   const key = hash(ref);
   const refLock = db.ref("events/" + EVENT_ID + "/paymentRefs/" + key);
-  const lock = await refLock.transaction((old) => old || { status: "reserved", at: Date.now() }, undefined, false);
+  const lock = await refLock.transaction((old) => old ? undefined : { status: "reserved", at: Date.now() }, undefined, false);
   if (!lock.committed) fail("already-exists", "Esta referencia ya fue registrada. Contacta al organizador si se trata de un error.");
   const existing = lock.snapshot.val();
-  if (existing && existing.status !== "reserved") fail("already-exists", "Esta referencia ya fue registrada.");
+  if (!existing || existing.status !== "reserved") fail("already-exists", "Esta referencia ya fue registrada.");
   const pendingRef = db.ref("events/" + EVENT_ID + "/pending").push();
   const order = {
     name, dni, phone, ref, refKey: key, qty, stage: stage.name,
