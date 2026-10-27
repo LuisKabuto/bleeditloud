@@ -75,6 +75,7 @@ exports.createPendingOrder = functions.region("us-central1").https.onCall(async 
       !Number.isSafeInteger(qty) || qty < 1 || qty > 20 || ref.length < 4 || !stageName) {
     fail("invalid-argument", "Revisa nombre, cédula, teléfono, referencia y cantidad (1–20).");
   }
+  const key = hash(ref);
   const root = await eventRef().once("value");
   const event = root.val() || {};
   const config = event.config || {};
@@ -86,7 +87,6 @@ exports.createPendingOrder = functions.region("us-central1").https.onCall(async 
   }
   if (config.sales_paused) fail("failed-precondition", "Las ventas están pausadas.");
   const stage = stageConfig(config, stageName);
-  const key = hash(ref);
   const refLock = db.ref("events/" + EVENT_ID + "/paymentRefs/" + key);
   const lock = await refLock.transaction((old) => old ? undefined : { status: "reserved", at: Date.now() }, undefined, false);
   if (!lock.committed) fail("already-exists", "Esta referencia ya fue registrada. Contacta al organizador si se trata de un error.");
