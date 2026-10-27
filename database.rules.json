@@ -17,6 +17,7 @@
           }
         },
         "doorLog": { ".read": "auth != null && (auth.token.email == 'admin@bleeditloud.com' || auth.token.email == 'portero@bleeditloud.com')", "$s": { ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "!newData.exists() || newData.hasChildren(['ts'])" } },
+        "paymentRefs": { ".read": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'" },
         "pending": { ".read": "auth != null && auth.token.email == 'admin@bleeditloud.com'", "$pid": { ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'", ".validate": "!newData.exists() || (newData.hasChildren(['name','dni','ref','qty','stage','total','status','ts']) && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 80 && newData.child('dni').isString() && newData.child('dni').val().length >= 4 && newData.child('dni').val().length <= 12 && newData.child('qty').isNumber() && newData.child('qty').val() >= 1 && newData.child('qty').val() <= 20)" } }
       }
     }
