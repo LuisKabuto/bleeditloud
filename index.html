@@ -1306,14 +1306,15 @@ function verifyDNI(){
   if(!dni){box.innerHTML=resultHTML({s:'invalid',t:'INGRESA UNA CÉDULA',m:'Escribe la cédula con la que compraste.'});return;}
   if(!fbConnected){box.innerHTML=resultHTML({s:'invalid',t:'SIN CONEXIÓN',m:'Revisa tu internet e inténtalo de nuevo.'});return;}
   box.innerHTML='<p class="empty">BUSCANDO…</p>';
-  fbDB.ref('events/'+FB_EVENT_ID+'/pub/'+dni).once('value').then(function(s){
-    var p=s.val();
-    if(!p){box.innerHTML=resultHTML({s:'invalid',t:'NO ENCONTRADA',m:'No hay entradas registradas con la cédula '+dni+'. Si compraste antes de la última actualización, pide al organizador regenerar el índice.'});return;}
+  if(!window.fbFunctions){box.innerHTML=resultHTML({s:'invalid',t:'SERVICIO NO DISPONIBLE',m:'No se puede consultar ahora. Inténtalo más tarde.'});return;}
+  window.fbFunctions.httpsCallable('getPublicOrderIndex')({dni:dni}).then(function(result){
+    var p=result&&result.data;
+    if(!p||!p.found){box.innerHTML=resultHTML({s:'invalid',t:'NO ENCONTRADA',m:'No hay entradas registradas con esa cédula. Si compraste antes de la última actualización, contacta al organizador.'});return;}
     PV={ced:dni,pub:p};
-    if(!p.p){box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',m:'Hola'+(p.n?' '+p.n:'')+'. Cuando el organizador apruebe tu pago verás aquí tus entradas con QR.'});return;}
+    if(!p.p){box.innerHTML=resultHTML({s:'unpaid',t:'PAGO EN REVISIÓN',m:'Cuando el organizador apruebe tu pago, podrás consultar aquí tus entradas con QR.'});return;}
     renderPhoneStep(box);
-  }).catch(function(){
-    box.innerHTML=resultHTML({s:'invalid',t:'ERROR DE CONSULTA',m:'No se pudo consultar. Inténtalo de nuevo.'});
+  }).catch(function(error){
+    box.innerHTML=resultHTML({s:'invalid',t:'ERROR DE CONSULTA',m:(error&&error.message)||'No se pudo consultar. Inténtalo de nuevo.'});
   });
 }
 function renderPhoneStep(box){
