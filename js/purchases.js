@@ -36,6 +36,10 @@ async function revealPublicQRs(){
       box.innerHTML=resultHTML({s:'warn',t:'PAGO EN REVISIÓN',m:'Hola'+(result.n?' '+result.n:'')+'. El pago sigue pendiente de aprobación.'});
       return;
     }
+    if(result.status==='index_pending'){
+      box.innerHTML=resultHTML({s:'warn',t:'PAGO APROBADO',m:'Hola'+(result.n?' '+result.n:'')+'. Tu pago fue aprobado, pero los códigos QR todavía se están preparando. El organizador debe finalizar la actualización de tus entradas.'});
+      return;
+    }
     var arr=result.serials||[];
     if(!arr.length){box.innerHTML=resultHTML({s:'warn',t:'ENTRADAS NO DISPONIBLES',m:'Contacta al organizador para revisar tu compra.'});return;}
     var h='<div class="res res-ok">'
