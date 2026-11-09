@@ -190,7 +190,7 @@ async function createPendingOrder(request, env, data) {
     }
     const id = crypto.randomUUID().replace(/-/g, "");
     const total = Math.round(qty * stage.price * 100) / 100;
-    event.pending[id] = { name, dni, phone, ref, refKey: key, qty, stage: stage.name, total, ts: Date.now(), status: "pendiente" };
+    event.pending[id] = { name, dni, phone, ref, refKey: key, qty, stage: stage.name, unitPrice: stage.price, total, ts: Date.now(), status: "pendiente" };
     event._security.refs[key] = id;
     return { id, total, qty };
   });
@@ -209,8 +209,27 @@ async function approvePayment(request, env, data) {
     if (!Number.isSafeInteger(qty) || qty < 1 || qty > 20 || dni.length < 5 || dni.length > 12 || name.length < 2) {
       throw new ApiError(400, "Los datos de la solicitud no son válidos.");
     }
-    const stage = configStage(event.config, clean(p.stage, 80));
-    p.total = Math.round(stage.price * qty * 100) / 100;
+    // El precio queda fijado cuando se registra la solicitud. Cambios posteriores
+    // de precio, cierre de etapa o pausa de ventas no deben alterar un pago ya enviado.
+    let unitPrice = Number(p.unitPrice);
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+      const storedTotal = Number(p.total);
+      if (Number.isFinite(storedTotal) && storedTotal >= 0) {
+        unitPrice = storedTotal / qty;
+      } else {
+        const stageName = clean(p.stage, 80);
+        const legacyStage = [
+          { name: String(event.config.s1_name || "Preventa 1"), price: Number(event.config.s1_price) },
+          { name: String(event.config.s2_name || "Preventa 2"), price: Number(event.config.s2_price) }
+        ].find(stage => stage.name === stageName);
+        if (!legacyStage || !Number.isFinite(legacyStage.price) || legacyStage.price < 0) {
+          throw new ApiError(409, "No se pudo recuperar el precio original de esta solicitud.");
+        }
+        unitPrice = legacyStage.price;
+      }
+    }
+    p.unitPrice = unitPrice;
+    p.total = Math.round(unitPrice * qty * 100) / 100;
     const day = clean(event.config.active_day || "General", 80);
     event.attendees = Array.isArray(event.attendees) ? event.attendees : Object.values(event.attendees || {});
     let attendee = event.attendees.find(a => a && digits(a.D) === dni && clean(a.E_D || "General", 80) === day);
@@ -236,7 +255,7 @@ async function approvePayment(request, env, data) {
     event.pub = event.pub || {};
     const allTickets = Object.values(event.tickets).filter(t => t && digits(t.d) === dni);
     event.pub[dni] = { n: name, p: true, c: allTickets.length, qrs: null };
-    return { id, dni, phone, serials: allTickets.map(t => t.s), count: qty, approvedBy: email };
+    return { id, dni, phone, serials: allTickets.map(t => t.s), count: qty, total: p.total, approvedBy: email };
   });
   return { ok: true, ...result };
 }
