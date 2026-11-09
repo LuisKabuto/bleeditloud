@@ -17,7 +17,7 @@ GitHub Actions valida:
 - Sintaxis de todos los módulos JavaScript, el Service Worker y el Worker.
 - Referencias locales de CSS, JavaScript, icono y manifiesto.
 - Formato JSON de `manifest.json`.
-- 11 pruebas automatizadas del Worker: 11 aprobadas, 0 fallidas.
+- 13 pruebas automatizadas del Worker: 13 aprobadas, 0 fallidas.
 
 Las pruebas usan una base de datos simulada; no escriben en Firebase real.
 
