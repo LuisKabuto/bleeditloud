@@ -1,28 +1,48 @@
 # Bleed It Loud — migración segura compatible con Firebase Spark
 
 ## Estado actual
-- La rama prepara un Worker para Cloudflare y adapta el frontend a esa API.
-- No está integrado en \`main\`, no está desplegado y no se han modificado datos ni reglas de producción.
+
+- Rama de desarrollo: `development/bleeditloud-portal-access`.
+- El frontend ya utiliza la API Worker para compras, aprobación/rechazo, consulta pública y check-in.
+- El Worker está en el repositorio, pero todavía no está desplegado.
+- `BACKEND_API_URL` está vacío en `js/config.js`.
 - Firebase sigue siendo la base de datos y el proveedor de inicio de sesión.
-- No se requiere activar el plan Blaze para desplegar este backend, pero el nivel gratuito de Cloudflare tiene límites y puede cambiar.
+- No se requiere Firebase Blaze para alojar el Worker en Cloudflare; se deben verificar los límites y condiciones vigentes del plan gratuito.
+- No se han modificado datos ni reglas reales de producción.
+- `database.rules.json` es una propuesta pendiente de revisión.
 
-## Pasos antes de publicar
+## Validación automatizada completada
 
-1. **Respaldo:** exportar una copia de Realtime Database desde Firebase Console. No ejecutar reglas nuevas sobre la base activa sin una prueba de restauración.
-2. **Cuenta de servicio:** en Google Cloud Console del proyecto \`bleeditloud-6fb33\`, crear/seleccionar una cuenta de servicio con permisos mínimos suficientes para Realtime Database. Generar una clave JSON solo si la política de la cuenta lo permite. La clave es un secreto de servidor: no subirla a GitHub ni incluirla en \`index.html\`.
-3. **Worker:** seguir \`worker/README.md\`; configurar \`GOOGLE_SERVICE_ACCOUNT_JSON\` como secreto de Cloudflare. Verificar la URL del Worker.
-4. **Frontend:** colocar la URL real del Worker en \`BACKEND_API_URL\` dentro de \`index.html\`. No publicar mientras esté vacía.
-5. **Reglas:** revisar las reglas reales de producción antes de cambiar permisos. El Worker usa una cuenta de servicio y el navegador todavía necesita lectura de datos para el panel autenticado. No desplegar reglas desde esta rama sin verificar cada pantalla y operación.
-6. **Pruebas de compra:** una compra válida registra una solicitud pendiente y calcula el total con el precio guardado en Firebase; un campo inválido, etapa cerrada o venta pausada debe fallar sin registrar una solicitud.
-7. **Referencia duplicada:** enviar dos compras con la misma referencia debe aceptar como máximo una. Rechazar una solicitud no debe permitir reutilizar una referencia bancaria.
-8. **Aprobación:** solo \`admin@bleeditloud.com\` puede aprobar o rechazar; un pago aprobado debe generar exactamente la cantidad de entradas pagadas y actualizar el índice público.
-9. **Consulta del comprador:** una cédula sin el teléfono correcto no debe revelar si existen entradas; cédula y teléfono correctos deben permitir ver los QR de una compra aprobada; una compra pendiente debe mostrar el estado pendiente.
-10. **Acceso:** el serial debe aceptarse una sola vez. Una segunda lectura debe indicar que ya fue usado. Si el Worker no responde, el sistema no debe autorizar el acceso.
-11. **Compatibilidad:** probar en móvil y escritorio, descarga de QR, lista administrativa, estadísticas, importación/exportación, configuración del evento y cierre de sesión.
-12. **Publicación:** integrar y desplegar solo después de pasar todas las pruebas. Mantener la versión publicada anterior disponible para reversión.
+GitHub Actions valida:
+- Sintaxis de todos los módulos JavaScript, el Service Worker y el Worker.
+- Referencias locales de CSS, JavaScript, icono y manifiesto.
+- Formato JSON de `manifest.json`.
+- 11 pruebas automatizadas del Worker: 11 aprobadas, 0 fallidas.
+
+Las pruebas usan una base de datos simulada; no escriben en Firebase real.
+
+## Pasos pendientes antes de publicar
+
+1. **Respaldo:** exportar Realtime Database desde Firebase Console y comprobar que se puede restaurar una copia de prueba.
+2. **Cuenta de servicio:** crear o seleccionar una cuenta de servicio de Google Cloud con permisos mínimos para Realtime Database. No subir su clave JSON al repositorio.
+3. **Secreto Cloudflare:** guardar el JSON como secreto `GOOGLE_SERVICE_ACCOUNT_JSON`.
+4. **Orígenes permitidos:** revisar `ALLOWED_ORIGINS` en `worker/wrangler.jsonc`; incluir solo los dominios usados por el frontend de pruebas y el dominio final.
+5. **Worker de pruebas:** ejecutar `npm install`, `npm run check`, `npm test` y desplegar primero a un entorno de pruebas con `npm run deploy`.
+6. **Conexión frontend:** configurar la URL HTTPS real del Worker en `BACKEND_API_URL` dentro de `js/config.js`. No usar una URL ficticia ni dejar el valor vacío en un despliegue funcional.
+7. **Reglas Firebase:** revisar las reglas reales y comparar con `database.rules.json`. No desplegar el archivo propuesto sin validar permisos de administrador, portero, compradores y Worker.
+8. **Compra:** comprobar cálculo de precios, etapas cerradas, ventas pausadas, cantidades límite y pérdida de conexión.
+9. **Anti-duplicados:** enviar referencias repetidas y verificar que se acepte como máximo una, incluso si una solicitud fue rechazada.
+10. **Aprobación:** confirmar que solo el administrador pueda aprobar/rechazar y que se emita la cantidad exacta de entradas.
+11. **Consulta:** probar cédula y teléfono correctos e incorrectos, solicitudes pendientes y QR cifrados.
+12. **Puerta:** probar serial válido, inexistente, usado, de otro día y dos lectores concurrentes. Si el Worker no responde, nunca conceder acceso.
+13. **Compatibilidad:** probar panel, estadísticas, edición, importación/exportación, cámara, descargas y cierre de sesión en dispositivos reales.
+14. **Publicación:** integrar solo después de superar las pruebas; conservar una versión anterior para reversión.
 
 ## Riesgos conocidos
-- El limitador de frecuencia del Worker es local a cada instancia y puede no ser un límite global bajo tráfico distribuido.
-- La actualización atómica sobre el nodo completo \`events/live-cafe-rock-2026\` depende de ETag y puede entrar en conflicto con cambios simultáneos. Si falla repetidamente, no se debe repetir la aprobación a ciegas; primero comprobar si la solicitud ya fue procesada.
-- La aprobación y la actualización del índice público son dos llamadas consecutivas. Si la primera tiene éxito y la segunda falla, la entrada queda emitida pero el comprador podría no ver sus QR hasta que un administrador regenere el índice.
-- La base de datos existente puede tener formatos heredados. La prueba debe usar una copia real anonimizada y no solo datos inventados.
+
+- El rate limiter actual se almacena en memoria de cada instancia Worker y no es un límite global distribuido.
+- Las operaciones de compra, aprobación y check-in usan ETag sobre el nodo completo `events/live-cafe-rock-2026`. Si hay conflictos repetidos, comprobar primero el estado en la base antes de reintentar manualmente.
+- La aprobación y actualización del índice público son llamadas consecutivas. Si la primera tiene éxito y la segunda falla, se debe regenerar el índice público.
+- Los datos existentes pueden tener formatos heredados. Probar con una copia anonimizada antes de tocar la base real.
+- El Service Worker almacena los recursos locales del shell, pero la autenticación, el backend y el control de acceso requieren conexión.
+
