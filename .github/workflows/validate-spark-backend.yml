@@ -7,7 +7,7 @@ on:
       - "index.html"
       - ".github/workflows/validate-spark-backend.yml"
   push:
-    branches: ["security/spark-cloudflare-worker-20261027"]
+    branches: ["security/spark-cloudflare-worker-20261027", "development/**"]
     paths:
       - "worker/**"
       - "index.html"
