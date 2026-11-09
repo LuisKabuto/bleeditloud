@@ -213,7 +213,7 @@ async function approvePayment(request, env, data) {
     // de precio, cierre de etapa o pausa de ventas no deben alterar un pago ya enviado.
     let unitPrice = Number(p.unitPrice);
     if (!Number.isFinite(unitPrice) || unitPrice < 0) {
-      const storedTotal = Number(p.total);
+      const storedTotal = p.total == null || p.total === "" ? NaN : Number(p.total);
       if (Number.isFinite(storedTotal) && storedTotal >= 0) {
         unitPrice = storedTotal / qty;
       } else {
