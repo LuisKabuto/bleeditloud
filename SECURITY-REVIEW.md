@@ -1,42 +1,59 @@
-# LIVE CAFÉ ROCK — revisión de seguridad y despliegue
+# Bleed It Loud — revisión de seguridad
 
-## Cambios incluidos en esta rama
+## Estado del desarrollo
 
-- El formulario de compra ahora valida etapa, cantidad (1–20), cédula y teléfono.
-- La compra solo muestra confirmación después de que Firebase confirme que el pedido fue escrito. Si falla la conexión o los permisos, no simula un pedido local ni muestra éxito.
-- El botón de envío se desactiva mientras se procesa la solicitud para evitar doble envío accidental.
-- El importe se formatea para facilitar la lectura.
-- Se añadió una acción para copiar los datos de pago y el total desde el teléfono.
-- Las entradas consultadas por el comprador ahora tienen un flujo de descarga/compartir PNG individual.
+La rama `development/bleeditloud-portal-access` contiene la interfaz modular y una propuesta de backend compatible con Firebase Spark. No está desplegada en producción y no se han cambiado datos ni reglas reales de Firebase.
 
-## Acceso directo al panel
+## Controles implementados en el código
 
-La aplicación ya reconoce las rutas `#admin` y `#portero`; por ejemplo, el panel administrativo se abre mediante `https://TU-DOMINIO/#admin`. La contraseña se valida con Firebase Authentication. La restricción real de datos debe hacerse en Firebase Realtime Database Rules, no solo ocultando botones en el navegador.
+- Validación de nombre, cédula, teléfono, cantidad y etapa en la API de compra.
+- Cálculo del importe en el servidor usando los precios almacenados en Firebase.
+- Bloqueo de referencias bancarias duplicadas, incluso después de rechazar una solicitud.
+- Aprobación y rechazo de pagos reservados al administrador.
+- Emisión de seriales únicos desde el Worker.
+- Check-in transaccional con ETag para impedir que dos lectores consuman el mismo serial.
+- El frontend solo concede acceso después de la confirmación del Worker.
+- Consulta pública de pedidos mediante cédula y teléfono juntos; los seriales se cifran antes de almacenarse en el índice público.
+- Accesos diferenciados para administrador y portero mediante Firebase Authentication.
+- El portero entra directamente al lector de pantalla completa y no recibe las pestañas administrativas.
 
-## Bloqueadores antes de producción
+## Backend y endpoints
 
-1. **Reglas de Firebase:** este repositorio no contiene las reglas actuales de Realtime Database. Hay que inspeccionarlas en Firebase Console y versionarlas antes de cambiar permisos. No se deben desplegar reglas nuevas a ciegas porque pueden bloquear las ventas o, peor, dejar datos accesibles.
-2. **Validación de pagos y precios:** el navegador no es una autoridad confiable. El precio, el estado de la etapa, el total, el cupo y la referencia deben verificarse en una Cloud Function o API confiable. La aprobación manual del administrador debe ser la única que emita tickets.
-3. **Anti-duplicados:** las referencias bancarias deben normalizarse y compararse en el servidor al recibir y aprobar un pedido; una regla de base de datos por sí sola no es suficiente para esta validación de negocio.
-4. **Control de acceso atómico:** la interfaz ahora espera la transacción de Firebase y solo concede acceso si el servidor confirma que el ticket pasó de no usado a usado. Dos lectores concurrentes no deben recibir éxito para el mismo serial. Esto depende de que las reglas de Firebase permitan únicamente al personal autorizado cambiar ese campo; para una protección más sólida, migrar el check-in a una función de backend y probar con dos dispositivos.
-5. **Protección de datos:** el índice público por cédula debe revisarse. Cédula y teléfono son datos personales; cifrar seriales en el cliente no sustituye el control de acceso, limitación de intentos ni protección contra enumeración.
-6. **Límites de abuso:** las escrituras públicas de pedidos deben pasar a una función con validación, límites de frecuencia y protección contra spam. No se debe abrir lectura pública de `pending`, `attendees`, `tickets` ni `doorLog`.
-7. **Dependencias:** fijar versiones revisadas de bibliotecas de terceros, evitar cargar scripts críticos desde CDN sin integridad cuando sea posible y actualizar runtime/dependencias del backend al desplegarlo.
-8. **Copia de seguridad:** exportar una copia de los datos de Firebase antes de migraciones o cambios de reglas. No ejecutar la función de borrado de evento como parte de pruebas.
+El Worker de `worker/src/index.js` implementa:
 
-## Pruebas requeridas antes de publicar
+- `createPendingOrder`
+- `approvePayment`
+- `rejectPayment`
+- `checkInTicket`
+- `setPublicIndex`
+- `getPublicOrderIndex`
+- `getPublicTicketInfo`
 
-- Compra correcta y compra con pérdida de conexión.
-- Dos clics rápidos en “Enviar comprobante”.
-- Cantidad vacía, decimal, cero, negativa y mayor que 20.
-- Etapa cerrada y ventas pausadas.
-- Pago duplicado y referencia repetida.
-- Login como administrador, portero y cuenta sin rol.
-- QR válido, inválido, de otro día y ya usado.
-- Dos dispositivos escaneando el mismo ticket simultáneamente.
-- Descarga/compartir en Android, iPhone y navegador de escritorio.
-- Importación Excel con filas duplicadas, cédulas vacías y columnas inesperadas.
+El Worker no está desplegado. `BACKEND_API_URL` permanece vacío en `js/config.js`, por lo que las operaciones críticas fallan de forma cerrada hasta configurar un endpoint HTTPS real.
 
-## Estado
+## Pruebas automatizadas
 
-Esta rama es una primera entrega de interfaz y flujo de compra. **No representa una auditoría de seguridad completa ni está lista para producción** hasta cerrar los bloqueadores anteriores, revisar las reglas reales de Firebase y ejecutar las pruebas. No se modificaron los datos de producción ni las reglas de Firebase.
+GitHub Actions ejecuta validaciones de sintaxis del frontend, Service Worker y backend, comprueba las referencias locales de archivos y el JSON del manifiesto, y ejecuta 11 pruebas del Worker.
+
+Las 11 pruebas actuales pasan. Cubren compra, cálculo de precios, referencias duplicadas, validación de cantidades, ventas cerradas, autorización administrativa, emisión de entradas, check-in, concurrencia de lectores y CORS.
+
+Estas pruebas utilizan una base de datos simulada y credenciales ficticias. No sustituyen las pruebas de integración con una copia anonimizada de los datos reales ni las pruebas físicas con móviles.
+
+## Riesgos y bloqueadores antes de producción
+
+1. **Cuenta de servicio:** configurar una identidad de Google Cloud con permisos mínimos y guardar su clave únicamente como secreto `GOOGLE_SERVICE_ACCOUNT_JSON` en Cloudflare.
+2. **Reglas reales de Firebase:** inspeccionar y respaldar las reglas vigentes. `database.rules.json` es una propuesta, no debe desplegarse sin verificar cada pantalla y operación.
+3. **Privacidad:** el rol portero actualmente necesita leer asistentes y entradas. Revisar si debe recibir cédula y teléfono completos o si conviene crear una vista reducida de puerta.
+4. **Limitación de abuso:** el rate limiter del Worker es local a cada instancia y de mejor esfuerzo; no es un límite global distribuido. Evaluar Turnstile o un mecanismo distribuido antes de abrir ventas al público.
+5. **Tamaño y concurrencia:** las transacciones usan ETag sobre el nodo completo del evento. Es adecuado para el volumen previsto, pero debe medirse con datos de prueba y revisarse si crece la base.
+6. **Índice público:** la aprobación y el guardado del índice cifrado son dos operaciones consecutivas. Si falla la segunda, el administrador debe regenerar el índice antes de que el comprador pueda descargar sus QR.
+7. **Dependencias externas:** Tailwind, Firebase, QR, Excel y otras librerías se cargan desde CDN. Fijar y revisar versiones, y evaluar integridad SRI o alojamiento local.
+8. **PWA:** el Service Worker almacena el shell y los recursos locales. No proporciona operación offline de autenticación, compras ni check-in.
+9. **Respaldo y restauración:** exportar Realtime Database y comprobar una restauración antes de cambiar reglas o migrar datos.
+10. **Pruebas reales:** validar compra, doble envío, pagos, importación Excel, QR válidos e inválidos, dos lectores simultáneos, cámara y descargas en Android, iPhone y escritorio.
+
+## Decisión de publicación
+
+**No está aprobada para producción todavía.** Primero se debe desplegar el Worker en un entorno de pruebas, conectar el frontend, revisar reglas y privacidad, ejecutar pruebas end-to-end y comprobar recuperación ante fallos.
+
+No ejecutar la opción de borrado de evento durante las pruebas.
