@@ -16,6 +16,11 @@ on:
     paths:
       - "worker/**"
       - "index.html"
+      - "css/**"
+      - "js/**"
+      - "assets/**"
+      - "manifest.json"
+      - "sw.js"
       - ".github/workflows/validate-spark-backend.yml"
 
 jobs:
