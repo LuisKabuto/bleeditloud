@@ -5,6 +5,11 @@ on:
     paths:
       - "worker/**"
       - "index.html"
+      - "css/**"
+      - "js/**"
+      - "assets/**"
+      - "manifest.json"
+      - "sw.js"
       - ".github/workflows/validate-spark-backend.yml"
   push:
     branches: ["security/spark-cloudflare-worker-20261027", "development/**"]
@@ -23,6 +28,11 @@ jobs:
           node-version: 22
       - name: Check Worker syntax
         run: node --check worker/src/index.js
+      - name: Check application JavaScript
+        run: |
+          node --check js/app.js
+          node --check js/pwa.js
+          node --check sw.js
       - name: Install Worker tooling
         working-directory: worker
         run: npm install
