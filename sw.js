@@ -3,6 +3,7 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./css/styles.css",
+  "./js/tailwind.config.js",
   "./js/config.js",
   "./js/core.js",
   "./js/firebase.js",
