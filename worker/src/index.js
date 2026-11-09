@@ -312,6 +312,9 @@ async function getPublicOrderIndex(request, env, data) {
   const snap = await dbGet(env);
   const event = snap.value || {};
   const p = event.pub && event.pub[dni];
+  if (p && p.p === true && !p.qrs) {
+    return { found: true, status: "index_pending", p: true, n: clean(p.n, 80), c: Number(p.c) || 0 };
+  }
   if (p && p.p === true && p.qrs) {
     const serials = await decryptSerials(dni, phone, p.qrs);
     if (!serials || !serials.length) return { found: false };
