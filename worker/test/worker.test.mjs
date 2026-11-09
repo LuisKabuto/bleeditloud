@@ -232,3 +232,27 @@ test("rechaza seriales con formato inválido", async () => {
   const response = await request("checkInTicket", { serial: "ABC-123" }, "door-token");
   assert.equal(response.status, 400);
 });
+
+test("una referencia rechazada no puede reutilizarse", async () => {
+  const payload = { name: "Comprador", dni: "12345678", phone: "04141234567", qty: 1, ref: "REF-REJECT-1", stage: "Preventa 1" };
+  const order = await request("createPendingOrder", payload);
+  const pending = await body(order);
+  const rejected = await request("rejectPayment", { id: pending.id }, "admin-token");
+  assert.equal(rejected.status, 200);
+  assert.equal(eventData.pending[pending.id], undefined);
+
+  const reused = await request("createPendingOrder", payload);
+  assert.equal(reused.status, 409);
+});
+
+test("dos lectores concurrentes no pueden consumir el mismo serial", async () => {
+  eventData.tickets.WXYZ2345 = { s: "WXYZ2345", d: "12345678", n: "Comprador", day: "General", i: 1, u: false };
+  const [first, second] = await Promise.all([
+    request("checkInTicket", { serial: "WXYZ2345" }, "door-token"),
+    request("checkInTicket", { serial: "WXYZ2345" }, "door-token")
+  ]);
+  const results = await Promise.all([body(first), body(second)]);
+  assert.equal(results.filter(result => result.ok === true).length, 1);
+  assert.equal(results.filter(result => result.alreadyUsed === true).length, 1);
+  assert.equal(eventData.tickets.WXYZ2345.u, true);
+});
