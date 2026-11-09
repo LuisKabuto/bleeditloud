@@ -111,6 +111,15 @@ textarea.di{resize:vertical;line-height:1.5}
 #countdown{display:none;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--red);border:1px dashed var(--red);padding:8px 18px;border-radius:999px;background:var(--red-bg)}
 .cta-row{display:flex;flex-direction:column;gap:14px;width:min(440px,100%)}
 @media(min-width:480px){.cta-row{flex-direction:row;justify-content:center}}
+.staff-access{width:min(440px,100%);margin-top:8px;padding-top:18px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:12px}
+.staff-access-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.staff-access-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.staff-btn{min-height:62px;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 10px;border:1px solid var(--border);border-radius:5px;background:var(--card);color:var(--text);font-family:'Anton',sans-serif;font-size:14px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.staff-btn i{font-size:17px;color:var(--red)}
+.staff-btn.door i{color:var(--amber)}
+.staff-btn:hover{transform:translateY(-2px);border-color:var(--red);background:var(--red-bg)}
+.staff-btn:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media(max-width:360px){.staff-access-actions{grid-template-columns:1fr}.staff-btn{min-height:54px}}
 .tbtn{--stub:36px;position:relative;display:inline-flex;align-items:stretch;cursor:pointer;border:none;background:none;padding:0;font-family:'Anton',sans-serif;text-transform:uppercase;transition:transform .2s,filter .2s}
 .tbtn:hover{transform:translateY(-2px)}
 .tbtn:active{transform:translateY(0)}
@@ -311,6 +320,17 @@ tr:hover td{background:var(--field)}
           <span class="tbtn-main"><i class="fa-solid fa-qrcode"></i>Ya tengo mi entrada</span>
           <span class="tbtn-stub">QR</span>
         </button>
+      </div>
+      <div class="staff-access" aria-label="Acceso del equipo">
+        <p class="staff-access-label">Acceso del equipo</p>
+        <div class="staff-access-actions">
+          <button type="button" class="staff-btn" onclick="enterTeamAccess('admin')" aria-label="Entrar al panel administrador">
+            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Panel Admin</span>
+          </button>
+          <button type="button" class="staff-btn door" onclick="enterTeamAccess('portero')" aria-label="Entrar al modo puerta">
+            <i class="fa-solid fa-door-open" aria-hidden="true"></i><span>Modo Puerta</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -841,6 +861,24 @@ function buildEq(){
 
 /* ================= FIREBASE + AUTENTICACIÓN ================= */
 function classify(email){email=(email||'').toLowerCase();if(email===ADMIN_EMAIL)return 'admin';if(email===PORTERO_EMAIL)return 'portero';return null;}
+function enterTeamAccess(role){
+  if(role!=='admin'&&role!=='portero')return;
+  wantLogin=true;
+  currentRole=role;
+  window.location.hash=role;
+  document.getElementById('login-title').textContent=role==='admin'?'ACCESO ADMINISTRADOR':'ACCESO PORTERO';
+  document.getElementById('login-error').style.display='none';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-pass').value='';
+  if(AUTH.user){
+    if(AUTH.role===role){enterPanel();return;}
+    if(fbAuth){
+      fbAuth.signOut().then(function(){location.reload();});
+      return;
+    }
+  }
+  openModal('login-modal');
+}
 function initFirebase(){
   try{
     if(!fbApp)fbApp=firebase.initializeApp(FIREBASE_CONFIG,'live-cafe-app');
@@ -877,6 +915,13 @@ function initFirebase(){
       AUTH.user=u;
       AUTH.role=u?classify(u.email):null;
       if(AUTH.role){
+        if(wantLogin&&AUTH.role!==currentRole){
+          fbAuth.signOut().then(function(){
+            openModal('login-modal');
+            loginError(currentRole==='admin'?'Esta cuenta no tiene acceso de administrador.':'Esta cuenta no tiene acceso de portero.');
+          });
+          return;
+        }
         attachRoleListeners();
         if(wantLogin)enterPanel();
       }else if(u){
