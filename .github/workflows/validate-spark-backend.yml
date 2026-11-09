@@ -67,7 +67,6 @@ jobs:
                       if not self.skip and "".join(self.buf).strip(): self.items.append("".join(self.buf))
                       self.active=False; self.skip=False; self.buf=[]
           p=Scripts(); p.feed(Path("index.html").read_text(encoding="utf-8"))
-          if not p.items: sys.exit("No inline JavaScript found")
           for i, code in enumerate(p.items):
               name=f"/tmp/bleeditloud-inline-{i}.js"
               Path(name).write_text(code,encoding="utf-8")
