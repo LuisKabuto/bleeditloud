@@ -256,3 +256,22 @@ test("dos lectores concurrentes no pueden consumir el mismo serial", async () =>
   assert.equal(results.filter(result => result.alreadyUsed === true).length, 1);
   assert.equal(eventData.tickets.WXYZ2345.u, true);
 });
+
+test("la aprobación conserva el precio original aunque cambie la etapa", async () => {
+  const order = await request("createPendingOrder", {
+    name: "Comprador", dni: "12345678", phone: "04141234567", qty: 2, ref: "REF-PRICE-LOCK", stage: "Preventa 1"
+  });
+  const pending = await body(order);
+  assert.equal(pending.total, 20);
+
+  eventData.config.s1_price = 99;
+  eventData.config.s1_closed = true;
+  eventData.config.sales_paused = true;
+
+  const approved = await request("approvePayment", { id: pending.id }, "admin-token");
+  const result = await body(approved);
+  assert.equal(approved.status, 200);
+  assert.equal(result.total, 20);
+  assert.equal(result.count, 2);
+  assert.equal(eventData.attendees[0].C, 2);
+});
