@@ -103,6 +103,7 @@ function enterPanel(){
   closeModal('login-modal');
   showView('admin');
   applyRole();
+  if(AUTH.role==='portero')enterKioskMode();
 }
 function applyRole(){
   var isAdmin=AUTH.role==='admin';
