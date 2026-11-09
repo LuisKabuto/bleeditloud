@@ -275,3 +275,13 @@ test("la aprobación conserva el precio original aunque cambie la etapa", async 
   assert.equal(result.count, 2);
   assert.equal(eventData.attendees[0].C, 2);
 });
+
+test("informa cuando el pago está aprobado pero el índice QR aún no se generó", async () => {
+  eventData.pub["12345678"] = { n: "Comprador", p: true, c: 2, qrs: null };
+  const response = await request("getPublicOrderIndex", { dni: "12345678", phone: "04141234567" });
+  const result = await body(response);
+  assert.equal(response.status, 200);
+  assert.equal(result.found, true);
+  assert.equal(result.status, "index_pending");
+  assert.equal(result.p, true);
+});
