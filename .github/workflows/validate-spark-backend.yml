@@ -30,8 +30,7 @@ jobs:
         run: node --check worker/src/index.js
       - name: Check application JavaScript
         run: |
-          node --check js/app.js
-          node --check js/pwa.js
+          for file in js/*.js; do node --check "$file"; done
           node --check sw.js
       - name: Install Worker tooling
         working-directory: worker
