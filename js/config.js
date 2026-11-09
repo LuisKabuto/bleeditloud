@@ -29,4 +29,4 @@ var fbApp=null, fbDB=null, fbAuth=null, fbConnected=false;
 var AUTH={user:null,role:null,listenersOn:false};
 var wantLogin=false, selectedStage=0, confirmCb=null, SCANLOG=[], kioskTok=0;
 var currentTheme=localStorage.getItem('bleedit_theme')||'dark';
-var DEFAULT_TICKET_IMG="https://z-cdn-media.chatglm.cn/files/b5514a0a-8209-4f46-8693-d1877cff0de0.jpeg?auth_key=1887157655-9bac99754d044e79b867f92041dfb20c-0-0e1d71ab4f51dfca8b8c9e3a7061b690";
+var DEFAULT_TICKET_IMG="./assets/icon.svg";
