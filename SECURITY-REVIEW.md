@@ -8,6 +8,8 @@ La rama `development/bleeditloud-portal-access` contiene la interfaz modular y u
 
 - Validación de nombre, cédula, teléfono, cantidad y etapa en la API de compra.
 - Cálculo del importe en el servidor usando los precios almacenados en Firebase.
+- El precio queda fijado al registrar la solicitud; cambios posteriores de precio o cierre de etapa no alteran pagos ya enviados.
+- La consulta informa cuando un pago fue aprobado pero el índice de QR todavía está pendiente de regeneración.
 - Bloqueo de referencias bancarias duplicadas, incluso después de rechazar una solicitud.
 - Aprobación y rechazo de pagos reservados al administrador.
 - Emisión de seriales únicos desde el Worker.
@@ -33,9 +35,9 @@ El Worker no está desplegado. `BACKEND_API_URL` permanece vacío en `js/config.
 
 ## Pruebas automatizadas
 
-GitHub Actions ejecuta validaciones de sintaxis del frontend, Service Worker y backend, comprueba las referencias locales de archivos y el JSON del manifiesto, y ejecuta 11 pruebas del Worker.
+GitHub Actions ejecuta validaciones de sintaxis del frontend, Service Worker y backend, comprueba las referencias locales de archivos y el JSON del manifiesto, y ejecuta 13 pruebas del Worker.
 
-Las 11 pruebas actuales pasan. Cubren compra, cálculo de precios, referencias duplicadas, validación de cantidades, ventas cerradas, autorización administrativa, emisión de entradas, check-in, concurrencia de lectores y CORS.
+Las 13 pruebas actuales pasan. Cubren compra, cálculo de precios, referencias duplicadas, validación de cantidades, ventas cerradas, autorización administrativa, emisión de entradas, check-in, concurrencia de lectores y CORS.
 
 Estas pruebas utilizan una base de datos simulada y credenciales ficticias. No sustituyen las pruebas de integración con una copia anonimizada de los datos reales ni las pruebas físicas con móviles.
 
