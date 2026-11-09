@@ -5,12 +5,22 @@ on:
     paths:
       - "worker/**"
       - "index.html"
+      - "css/**"
+      - "js/**"
+      - "assets/**"
+      - "manifest.json"
+      - "sw.js"
       - ".github/workflows/validate-spark-backend.yml"
   push:
-    branches: ["security/spark-cloudflare-worker-20261027"]
+    branches: ["security/spark-cloudflare-worker-20261027", "development/**"]
     paths:
       - "worker/**"
       - "index.html"
+      - "css/**"
+      - "js/**"
+      - "assets/**"
+      - "manifest.json"
+      - "sw.js"
       - ".github/workflows/validate-spark-backend.yml"
 
 jobs:
@@ -23,12 +33,46 @@ jobs:
           node-version: 22
       - name: Check Worker syntax
         run: node --check worker/src/index.js
+      - name: Check application JavaScript
+        run: |
+          for file in js/*.js; do node --check "$file"; done
+          node --check sw.js
       - name: Install Worker tooling
         working-directory: worker
         run: npm install
       - name: Check Worker package script
         working-directory: worker
         run: npm run check
+      - name: Run Worker workflow tests
+        working-directory: worker
+        run: npm test
+      - name: Check local frontend assets and manifest
+        run: |
+          python3 - <<'PY'
+          import json
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class LocalAssets(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.paths=[]
+              def handle_starttag(self, tag, attrs):
+                  attrs=dict(attrs)
+                  candidates=[]
+                  if tag.lower()=="script" and attrs.get("src"):
+                      candidates.append(attrs["src"])
+                  if tag.lower()=="link" and attrs.get("href"):
+                      candidates.append(attrs["href"])
+                  for value in candidates:
+                      if value.startswith("./"):
+                          self.paths.append(value[2:])
+          parser=LocalAssets()
+          parser.feed(Path("index.html").read_text(encoding="utf-8"))
+          missing=[path for path in parser.paths if not Path(path).is_file()]
+          if missing:
+              raise SystemExit("Missing local frontend assets: "+", ".join(missing))
+          json.loads(Path("manifest.json").read_text(encoding="utf-8"))
+          print(f"Checked {len(parser.paths)} local frontend asset reference(s) and manifest JSON")
+          PY
       - name: Check inline JavaScript in index.html
         run: |
           python3 - <<'PY'
@@ -50,7 +94,6 @@ jobs:
                       if not self.skip and "".join(self.buf).strip(): self.items.append("".join(self.buf))
                       self.active=False; self.skip=False; self.buf=[]
           p=Scripts(); p.feed(Path("index.html").read_text(encoding="utf-8"))
-          if not p.items: sys.exit("No inline JavaScript found")
           for i, code in enumerate(p.items):
               name=f"/tmp/bleeditloud-inline-{i}.js"
               Path(name).write_text(code,encoding="utf-8")

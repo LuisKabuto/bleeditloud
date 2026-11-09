@@ -190,7 +190,7 @@ async function createPendingOrder(request, env, data) {
     }
     const id = crypto.randomUUID().replace(/-/g, "");
     const total = Math.round(qty * stage.price * 100) / 100;
-    event.pending[id] = { name, dni, phone, ref, refKey: key, qty, stage: stage.name, total, ts: Date.now(), status: "pendiente" };
+    event.pending[id] = { name, dni, phone, ref, refKey: key, qty, stage: stage.name, unitPrice: stage.price, total, ts: Date.now(), status: "pendiente" };
     event._security.refs[key] = id;
     return { id, total, qty };
   });
@@ -205,12 +205,30 @@ async function approvePayment(request, env, data) {
     event.pending = event.pending || {};
     const p = event.pending[id];
     if (!p) throw new ApiError(409, "La solicitud ya fue procesada.");
-    const qty = Number(p.qty), dni = digits(p.dni), phone = digits(p.phone), name = clean(p.name, 80);
-    if (!Number.isSafeInteger(qty) || qty < 1 || qty > 20 || dni.length < 5 || dni.length > 12 || name.length < 2) {
+    const qty = Number(p.qty), dni = digits(p.dni), phone = digits(p.phone), name = clean(p.name, 80), stageName = clean(p.stage, 80);
+    if (!Number.isSafeInteger(qty) || qty < 1 || qty > 20 || dni.length < 5 || dni.length > 12 || name.length < 2 || !stageName) {
       throw new ApiError(400, "Los datos de la solicitud no son válidos.");
     }
-    const stage = configStage(event.config, clean(p.stage, 80));
-    p.total = Math.round(stage.price * qty * 100) / 100;
+    // El precio queda fijado cuando se registra la solicitud. Cambios posteriores
+    // de precio, cierre de etapa o pausa de ventas no deben alterar un pago ya enviado.
+    let unitPrice = Number(p.unitPrice);
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+      const storedTotal = p.total == null || p.total === "" ? NaN : Number(p.total);
+      if (Number.isFinite(storedTotal) && storedTotal >= 0) {
+        unitPrice = storedTotal / qty;
+      } else {
+        const legacyStage = [
+          { name: String(event.config.s1_name || "Preventa 1"), price: Number(event.config.s1_price) },
+          { name: String(event.config.s2_name || "Preventa 2"), price: Number(event.config.s2_price) }
+        ].find(stage => stage.name === stageName);
+        if (!legacyStage || !Number.isFinite(legacyStage.price) || legacyStage.price < 0) {
+          throw new ApiError(409, "No se pudo recuperar el precio original de esta solicitud.");
+        }
+        unitPrice = legacyStage.price;
+      }
+    }
+    p.unitPrice = unitPrice;
+    p.total = Math.round(unitPrice * qty * 100) / 100;
     const day = clean(event.config.active_day || "General", 80);
     event.attendees = Array.isArray(event.attendees) ? event.attendees : Object.values(event.attendees || {});
     let attendee = event.attendees.find(a => a && digits(a.D) === dni && clean(a.E_D || "General", 80) === day);
@@ -219,9 +237,9 @@ async function approvePayment(request, env, data) {
       attendee.P = true;
       attendee.N = name || attendee.N;
       if (phone) attendee.T = phone;
-      attendee.E = stage.name;
+      attendee.E = stageName;
     } else {
-      attendee = { N: name, D: dni, E: stage.name, E_D: day, C: qty, T: phone, P: true };
+      attendee = { N: name, D: dni, E: stageName, E_D: day, C: qty, T: phone, P: true };
       event.attendees.push(attendee);
     }
     event.tickets = event.tickets || {};
@@ -230,13 +248,13 @@ async function approvePayment(request, env, data) {
     const targetCount = Math.max(qty, Number(attendee.C) || qty);
     for (let i = mine.length; i < targetCount; i++) {
       const serial = newSerial(event.tickets);
-      event.tickets[serial] = { s: serial, d: dni, n: name, e: stage.name, day, i: ++next, u: false, ua: null, ts: Date.now() };
+      event.tickets[serial] = { s: serial, d: dni, n: name, e: stageName, day, i: ++next, u: false, ua: null, ts: Date.now() };
     }
     delete event.pending[id];
     event.pub = event.pub || {};
     const allTickets = Object.values(event.tickets).filter(t => t && digits(t.d) === dni);
     event.pub[dni] = { n: name, p: true, c: allTickets.length, qrs: null };
-    return { id, dni, phone, serials: allTickets.map(t => t.s), count: qty, approvedBy: email };
+    return { id, dni, phone, serials: allTickets.map(t => t.s), count: qty, total: p.total, approvedBy: email };
   });
   return { ok: true, ...result };
 }
@@ -294,6 +312,9 @@ async function getPublicOrderIndex(request, env, data) {
   const snap = await dbGet(env);
   const event = snap.value || {};
   const p = event.pub && event.pub[dni];
+  if (p && p.p === true && !p.qrs) {
+    return { found: true, status: "index_pending", p: true, n: clean(p.n, 80), c: Number(p.c) || 0 };
+  }
   if (p && p.p === true && p.qrs) {
     const serials = await decryptSerials(dni, phone, p.qrs);
     if (!serials || !serials.length) return { found: false };

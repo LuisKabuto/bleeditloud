@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Bleed It Loud — Entradas",
+  "short_name": "Bleed It Loud",
+  "description": "Compra, consulta y validación de entradas para eventos Bleed It Loud.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0c0a08",
+  "theme_color": "#0c0a08",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
