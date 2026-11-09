@@ -43,6 +43,9 @@ jobs:
       - name: Check Worker package script
         working-directory: worker
         run: npm run check
+      - name: Run Worker workflow tests
+        working-directory: worker
+        run: npm test
       - name: Check inline JavaScript in index.html
         run: |
           python3 - <<'PY'
