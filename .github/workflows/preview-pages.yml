@@ -1,0 +1,38 @@
+name: Vista previa Bleed It Loud
+
+on:
+  push:
+    branches:
+      - development/bleeditloud-portal-access
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: bleed-it-loud-preview
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar sitio estático
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Publicar vista previa
+        id: deployment
+        uses: actions/deploy-pages@v4
