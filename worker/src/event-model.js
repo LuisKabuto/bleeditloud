@@ -20,7 +20,7 @@ export function createEventRecord(input = {}) {
   const name = String(input.name ?? "").trim();
   const city = String(input.city ?? "").trim();
   const date = String(input.date ?? "").trim();
-  if (name.length < 2 || city.length < 2 || !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) {
+  if (name.length < 2 || city.length < 2 || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     throw new Error("El evento requiere nombre, ciudad y fecha válida.");
   }
   return {
