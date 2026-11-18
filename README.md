@@ -1,6 +1,6 @@
-# Bleed It Loud
+# Tickets BleedItLoud
 
-Aplicación web para venta, consulta y control de acceso de entradas de eventos de Bleed It Loud.
+Aplicación web para venta, consulta y control de acceso de entradas de Tickets BleedItLoud.
 
 ## Estado de desarrollo
 
@@ -104,7 +104,7 @@ Las pruebas utilizan una base de datos simulada y no modifican Firebase real. Gi
 
 No cambiar sin una migración planificada:
 
-- `FB_EVENT_ID = live-cafe-rock-2026`: identifica la ruta de datos existente.
+- `live-cafe-rock-2026`: identificador histórico de datos; no es el nombre de la aplicación ni el nombre predeterminado de nuevos eventos.
 - El prefijo criptográfico `LCR26|`: forma parte de la derivación de claves para los QR existentes.
 
-Son identificadores históricos que deben mantenerse para conservar compatibilidad.
+Estos identificadores históricos deben mantenerse para conservar compatibilidad.
