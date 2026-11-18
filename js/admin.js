@@ -1,3 +1,52 @@
+/* ================= EVENTOS ================= */
+var adminEvents=[];
+async function loadAdminEvents(){
+  if(AUTH.role!=='admin')return;
+  var status=document.getElementById('event-active-status');
+  try{
+    var result=await callBackend('listEvents',{});
+    adminEvents=Array.isArray(result.events)?result.events:[];
+    var selector=document.getElementById('event-selector');
+    var list=document.getElementById('event-list');
+    if(selector){
+      selector.innerHTML=adminEvents.map(function(e){
+        return '<option value="'+esc(e.id)+'">'+esc(e.name)+' · '+esc(e.city)+' · '+esc(e.date)+'</option>';
+      }).join('');
+      selector.value=ACTIVE_EVENT_ID;
+      if(selector.value!==ACTIVE_EVENT_ID&&adminEvents.length){ACTIVE_EVENT_ID=adminEvents[0].id;localStorage.setItem('bleedit_active_event',ACTIVE_EVENT_ID);selector.value=ACTIVE_EVENT_ID;}
+    }
+    if(status)status.textContent='Activo: '+ACTIVE_EVENT_ID;
+    if(list)list.innerHTML=adminEvents.map(function(e){
+      return '<div class="ab p-4 mb-3"><b>'+esc(e.name)+'</b><div class="hint">'+esc(e.city)+' · '+esc(e.date)+(e.venue?' · '+esc(e.venue):'')+'</div></div>';
+    }).join('')||'<p class="empty">NO HAY EVENTOS REGISTRADOS</p>';
+  }catch(error){
+    if(status)status.textContent='Catálogo no disponible: '+(error.message||'conecta el Worker de pruebas');
+  }
+}
+function selectActiveEvent(id){
+  if(!id)return;
+  ACTIVE_EVENT_ID=id;
+  localStorage.setItem('bleedit_active_event',id);
+  var status=document.getElementById('event-active-status');
+  if(status)status.textContent='Activo: '+id;
+  if(typeof showToast==='function')showToast('Evento activo cambiado','s');
+}
+async function createAdminEvent(){
+  if(AUTH.role!=='admin'){showToast('Solo el admin puede crear eventos','e');return;}
+  var data={
+    id:document.getElementById('new-event-id').value.trim(),
+    name:document.getElementById('new-event-name').value.trim(),
+    city:document.getElementById('new-event-city').value.trim(),
+    date:document.getElementById('new-event-date').value,
+    venue:document.getElementById('new-event-venue').value.trim()
+  };
+  try{
+    await callBackend('createEvent',data);
+    ['new-event-id','new-event-name','new-event-city','new-event-date','new-event-venue'].forEach(function(id){document.getElementById(id).value='';});
+    showToast('Evento creado','s');loadAdminEvents();
+  }catch(error){showToast(error.message||'No se pudo crear el evento','e');}
+}
+
 /* ================= LISTA Y ESTADÍSTICAS ================= */
 function updateUI(){
   var c=document.getElementById('admin-data-count');if(c)c.textContent=attendees.length+' REG';
