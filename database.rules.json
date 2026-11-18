@@ -2,6 +2,10 @@
   "rules": {
     ".read": false,
     ".write": false,
+    "eventCatalog": {
+      ".read": "auth != null && auth.token.email == 'admin@bleeditloud.com'",
+      ".write": "auth != null && auth.token.email == 'admin@bleeditloud.com'"
+    },
     "events": {
       "$event": {
         "config": {
