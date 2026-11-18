@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Bleed It Loud — Entradas",
-  "short_name": "Bleed It Loud",
-  "description": "Compra, consulta y validación de entradas para eventos Bleed It Loud.",
+  "name": "Tickets BleedItLoud",
+  "short_name": "Tickets BleedItLoud",
+  "description": "Compra, consulta y validación de entradas para eventos Tickets BleedItLoud.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
