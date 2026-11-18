@@ -7,6 +7,10 @@ Este backend reemplaza las operaciones críticas que estaban preparadas para Clo
 - Cuenta Cloudflare con Workers.
 - Permisos de administrador sobre el proyecto Firebase `bleeditloud-6fb33`.
 
+## Pruebas
+
+Desde esta carpeta, ejecuta `npm install`, `npm run check` y `npm test`. Las pruebas usan una base simulada y no escriben en Firebase real.
+
 ## Desarrollo y despliegue
 Desde esta carpeta:
 

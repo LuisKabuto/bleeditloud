@@ -1,5 +1,7 @@
+import { LEGACY_EVENT_ID, normalizeEventId, createEventRecord } from "./event-model.js";
+import { listEvents as listEventsFromCatalog } from "./event-catalog.js";
 const TOKEN_SCOPE = "https://www.googleapis.com/auth/firebase.database";
-const EVENT_ID = "live-cafe-rock-2026";
+const EVENT_ID = LEGACY_EVENT_ID;
 const ADMIN_EMAIL = "admin@bleeditloud.com";
 const DOOR_EMAIL = "portero@bleeditloud.com";
 const SERIAL_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -87,32 +89,50 @@ async function accessToken(env) {
   return cachedAccessToken;
 }
 
-function dbUrl(env, path = "") {
+function rootDbUrl(env, path = "") {
+  const base = String(env.FIREBASE_DATABASE_URL || "").replace(/\\/+$/, "");
+  if (!base) throw new ApiError(500, "Falta FIREBASE_DATABASE_URL.");
+  const parts = path ? path.split("/").map(encodeURIComponent).join("/") : "";
+  return base + (parts ? "/" + parts : "") + ".json";
+}
+function dbUrl(env, eventId = EVENT_ID, path = "") {
   const base = String(env.FIREBASE_DATABASE_URL || "").replace(/\/+$/, "");
   if (!base) throw new ApiError(500, "Falta FIREBASE_DATABASE_URL.");
   const parts = path ? path.split("/").map(encodeURIComponent).join("/") : "";
-  return base + "/events/" + encodeURIComponent(EVENT_ID) + (parts ? "/" + parts : "") + ".json";
+  return base + "/events/" + encodeURIComponent(normalizeEventId(eventId)) + (parts ? "/" + parts : "") + ".json";
 }
-async function dbGet(env, path = "") {
+async function rootDbGet(env, path = "") {
   const token = await accessToken(env);
-  const response = await fetch(dbUrl(env, path), { headers: { authorization: "Bearer " + token, "X-Firebase-ETag": "true" } });
+  const response = await fetch(rootDbUrl(env, path), { headers: { authorization: "Bearer " + token, "X-Firebase-ETag": "true" } });
+  if (!response.ok) throw new ApiError(502, "No se pudo consultar el catálogo de eventos.");
+  return { value: await response.json(), etag: response.headers.get("ETag") };
+}
+async function rootDbPut(env, path, value, etag = null) {
+  const token = await accessToken(env);
+  const headers = { authorization: "Bearer " + token, "content-type": "application/json" };
+  if (etag) headers["if-match"] = etag;
+  return fetch(rootDbUrl(env, path), { method: "PUT", headers, body: JSON.stringify(value) });
+}
+async function dbGet(env, eventId = EVENT_ID, path = "") {
+  const token = await accessToken(env);
+  const response = await fetch(dbUrl(env, eventId, path), { headers: { authorization: "Bearer " + token, "X-Firebase-ETag": "true" } });
   if (!response.ok) throw new ApiError(502, "No se pudo consultar Realtime Database.");
   const etag = response.headers.get("ETag");
   if (!etag) throw new ApiError(502, "Realtime Database no devolvió ETag; se canceló la operación para evitar sobrescribir datos.");
   return { value: await response.json(), etag };
 }
-async function dbPut(env, path, value, etag = null) {
+async function dbPut(env, eventId, path, value, etag = null) {
   const token = await accessToken(env);
   const headers = { authorization: "Bearer " + token, "content-type": "application/json" };
   if (etag) headers["if-match"] = etag;
-  return fetch(dbUrl(env, path), { method: "PUT", headers, body: JSON.stringify(value) });
+  return fetch(dbUrl(env, eventId, path), { method: "PUT", headers, body: JSON.stringify(value) });
 }
-async function eventTransaction(env, mutate, attempts = 6) {
+async function eventTransaction(env, eventId, mutate, attempts = 6) {
   for (let i = 0; i < attempts; i++) {
-    const snap = await dbGet(env);
+    const snap = await dbGet(env, eventId);
     const event = safeClone(snap.value);
     const result = await mutate(event);
-    const response = await dbPut(env, "", event, snap.etag);
+    const response = await dbPut(env, eventId, "", event, snap.etag);
     if (response.status === 412) continue;
     if (!response.ok) throw new ApiError(502, "No se pudo guardar el cambio en Realtime Database.");
     return result;
@@ -167,6 +187,7 @@ async function decryptSerials(dni, phone, blob) {
 }
 
 async function createPendingOrder(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   rateLimit(request, "purchase", 8, 10 * 60 * 1000);
   const name = clean(data.name, 80), dni = digits(data.dni), phone = digits(data.phone);
   const ref = clean(data.ref, 80), qty = Number(data.qty), stageName = clean(data.stage, 80);
@@ -175,7 +196,7 @@ async function createPendingOrder(request, env, data) {
     throw new ApiError(400, "Revisa nombre, cédula, teléfono, referencia y cantidad (1–20).");
   }
   const key = await refHash(ref);
-  return eventTransaction(env, async event => {
+  return eventTransaction(env, eventId, async event => {
     event.config = event.config || {};
     event.pending = event.pending || {};
     event._security = event._security || {};
@@ -190,27 +211,46 @@ async function createPendingOrder(request, env, data) {
     }
     const id = crypto.randomUUID().replace(/-/g, "");
     const total = Math.round(qty * stage.price * 100) / 100;
-    event.pending[id] = { name, dni, phone, ref, refKey: key, qty, stage: stage.name, total, ts: Date.now(), status: "pendiente" };
+    event.pending[id] = { name, dni, phone, ref, refKey: key, qty, stage: stage.name, unitPrice: stage.price, total, ts: Date.now(), status: "pendiente" };
     event._security.refs[key] = id;
     return { id, total, qty };
   });
 }
 
 async function approvePayment(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   const email = await verifyUser(request, env, [ADMIN_EMAIL]);
   const id = clean(data.id, 128);
   if (!/^[A-Za-z0-9_-]{5,128}$/.test(id)) throw new ApiError(400, "Solicitud inválida.");
-  const result = await eventTransaction(env, event => {
+  const result = await eventTransaction(env, eventId, event => {
     event.config = event.config || {};
     event.pending = event.pending || {};
     const p = event.pending[id];
     if (!p) throw new ApiError(409, "La solicitud ya fue procesada.");
-    const qty = Number(p.qty), dni = digits(p.dni), phone = digits(p.phone), name = clean(p.name, 80);
-    if (!Number.isSafeInteger(qty) || qty < 1 || qty > 20 || dni.length < 5 || dni.length > 12 || name.length < 2) {
+    const qty = Number(p.qty), dni = digits(p.dni), phone = digits(p.phone), name = clean(p.name, 80), stageName = clean(p.stage, 80);
+    if (!Number.isSafeInteger(qty) || qty < 1 || qty > 20 || dni.length < 5 || dni.length > 12 || name.length < 2 || !stageName) {
       throw new ApiError(400, "Los datos de la solicitud no son válidos.");
     }
-    const stage = configStage(event.config, clean(p.stage, 80));
-    p.total = Math.round(stage.price * qty * 100) / 100;
+    // El precio queda fijado cuando se registra la solicitud. Cambios posteriores
+    // de precio, cierre de etapa o pausa de ventas no deben alterar un pago ya enviado.
+    let unitPrice = Number(p.unitPrice);
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+      const storedTotal = p.total == null || p.total === "" ? NaN : Number(p.total);
+      if (Number.isFinite(storedTotal) && storedTotal >= 0) {
+        unitPrice = storedTotal / qty;
+      } else {
+        const legacyStage = [
+          { name: String(event.config.s1_name || "Preventa 1"), price: Number(event.config.s1_price) },
+          { name: String(event.config.s2_name || "Preventa 2"), price: Number(event.config.s2_price) }
+        ].find(stage => stage.name === stageName);
+        if (!legacyStage || !Number.isFinite(legacyStage.price) || legacyStage.price < 0) {
+          throw new ApiError(409, "No se pudo recuperar el precio original de esta solicitud.");
+        }
+        unitPrice = legacyStage.price;
+      }
+    }
+    p.unitPrice = unitPrice;
+    p.total = Math.round(unitPrice * qty * 100) / 100;
     const day = clean(event.config.active_day || "General", 80);
     event.attendees = Array.isArray(event.attendees) ? event.attendees : Object.values(event.attendees || {});
     let attendee = event.attendees.find(a => a && digits(a.D) === dni && clean(a.E_D || "General", 80) === day);
@@ -219,9 +259,9 @@ async function approvePayment(request, env, data) {
       attendee.P = true;
       attendee.N = name || attendee.N;
       if (phone) attendee.T = phone;
-      attendee.E = stage.name;
+      attendee.E = stageName;
     } else {
-      attendee = { N: name, D: dni, E: stage.name, E_D: day, C: qty, T: phone, P: true };
+      attendee = { N: name, D: dni, E: stageName, E_D: day, C: qty, T: phone, P: true };
       event.attendees.push(attendee);
     }
     event.tickets = event.tickets || {};
@@ -230,23 +270,24 @@ async function approvePayment(request, env, data) {
     const targetCount = Math.max(qty, Number(attendee.C) || qty);
     for (let i = mine.length; i < targetCount; i++) {
       const serial = newSerial(event.tickets);
-      event.tickets[serial] = { s: serial, d: dni, n: name, e: stage.name, day, i: ++next, u: false, ua: null, ts: Date.now() };
+      event.tickets[serial] = { s: serial, d: dni, n: name, e: stageName, day, i: ++next, u: false, ua: null, ts: Date.now() };
     }
     delete event.pending[id];
     event.pub = event.pub || {};
     const allTickets = Object.values(event.tickets).filter(t => t && digits(t.d) === dni);
     event.pub[dni] = { n: name, p: true, c: allTickets.length, qrs: null };
-    return { id, dni, phone, serials: allTickets.map(t => t.s), count: qty, approvedBy: email };
+    return { id, dni, phone, serials: allTickets.map(t => t.s), count: qty, total: p.total, approvedBy: email };
   });
   return { ok: true, ...result };
 }
 
 async function setPublicIndex(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   await verifyUser(request, env, [ADMIN_EMAIL]);
   const dni = digits(data.dni);
   const qrs = data.qrs && typeof data.qrs.iv === "string" && typeof data.qrs.ct === "string" ? data.qrs : null;
   if (!/^[0-9]{5,12}$/.test(dni)) throw new ApiError(400, "Cédula inválida.");
-  return eventTransaction(env, event => {
+  return eventTransaction(env, eventId, event => {
     const rows = (Array.isArray(event.attendees) ? event.attendees : []).filter(a => a && digits(a.D) === dni);
     if (!rows.length) throw new ApiError(404, "No hay asistentes para actualizar.");
     const tickets = Object.values(event.tickets || {}).filter(t => t && digits(t.d) === dni);
@@ -260,10 +301,11 @@ async function setPublicIndex(request, env, data) {
 }
 
 async function rejectPayment(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   await verifyUser(request, env, [ADMIN_EMAIL]);
   const id = clean(data.id, 128);
   if (!/^[A-Za-z0-9_-]{5,128}$/.test(id)) throw new ApiError(400, "Solicitud inválida.");
-  return eventTransaction(env, event => {
+  return eventTransaction(env, eventId, event => {
     if (!event.pending || !event.pending[id]) throw new ApiError(409, "La solicitud ya fue procesada.");
     delete event.pending[id];
     return { ok: true };
@@ -271,10 +313,11 @@ async function rejectPayment(request, env, data) {
 }
 
 async function checkInTicket(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   const email = await verifyUser(request, env, [ADMIN_EMAIL, DOOR_EMAIL]);
   const serial = clean(data.serial, 16).toUpperCase();
   if (!/^[A-Z2-9]{8}$/.test(serial)) throw new ApiError(400, "Serial inválido.");
-  return eventTransaction(env, event => {
+  return eventTransaction(env, eventId, event => {
     const ticket = event.tickets && event.tickets[serial];
     if (!ticket) return { ok: false, exists: false, alreadyUsed: false };
     if (ticket.u === true) return { ok: false, exists: true, alreadyUsed: true };
@@ -288,12 +331,16 @@ async function checkInTicket(request, env, data) {
 }
 
 async function getPublicOrderIndex(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   rateLimit(request, "orderLookup", 20, 10 * 60 * 1000);
   const dni = digits(data.dni), phone = digits(data.phone);
   if (!/^[0-9]{5,12}$/.test(dni) || phone.length < 7 || phone.length > 16) return { found: false };
-  const snap = await dbGet(env);
+  const snap = await dbGet(env, eventId);
   const event = snap.value || {};
   const p = event.pub && event.pub[dni];
+  if (p && p.p === true && !p.qrs) {
+    return { found: true, status: "index_pending", p: true, n: clean(p.n, 80), c: Number(p.c) || 0 };
+  }
   if (p && p.p === true && p.qrs) {
     const serials = await decryptSerials(dni, phone, p.qrs);
     if (!serials || !serials.length) return { found: false };
@@ -305,13 +352,29 @@ async function getPublicOrderIndex(request, env, data) {
 }
 
 async function getPublicTicketInfo(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   rateLimit(request, "ticketLookup", 60, 10 * 60 * 1000);
   const serial = clean(data.serial, 16).toUpperCase();
   if (!/^[A-Z2-9]{8}$/.test(serial)) throw new ApiError(400, "Serial inválido.");
-  const snap = await dbGet(env, "tickets/" + serial);
+  const snap = await dbGet(env, eventId, "tickets/" + serial);
   const t = snap.value;
   if (!t) return { exists: false };
   return { exists: true, e: clean(t.e, 80), day: clean(t.day || "General", 80), i: Number(t.i) || 0, u: t.u === true };
+}
+
+
+async function listEvents(request, env) {
+  await verifyUser(request, env, [ADMIN_EMAIL]);
+  const snap = await rootDbGet(env, "eventCatalog");
+  return { events: listEventsFromCatalog(snap.value || {}) };
+}
+async function createOrUpdateEvent(request, env, data) {
+  await verifyUser(request, env, [ADMIN_EMAIL]);
+  const event = createEventRecord(data);
+  const path = "eventCatalog/" + event.id;
+  const response = await rootDbPut(env, path, event);
+  if (!response.ok) throw new ApiError(502, "No se pudo guardar el evento.");
+  return { ok: true, event };
 }
 
 async function route(request, env) {
@@ -319,6 +382,8 @@ async function route(request, env) {
   if (request.method !== "POST") throw new ApiError(405, "Usa POST para esta operación.");
   const data = await request.json().catch(() => { throw new ApiError(400, "El cuerpo debe ser JSON válido."); });
   switch (new URL(request.url).pathname.replace(/^\/+|\/+$/g, "")) {
+    case "listEvents": return listEvents(request, env);
+    case "createEvent": return createOrUpdateEvent(request, env, data);
     case "createPendingOrder": return createPendingOrder(request, env, data);
     case "approvePayment": return approvePayment(request, env, data);
     case "rejectPayment": return rejectPayment(request, env, data);

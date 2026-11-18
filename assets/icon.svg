@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="88" fill="#0c0a08"/>
+  <path d="M256 48 286 198 432 128 324 244 464 302 308 292 338 456 256 326 174 456 204 292 48 302 188 244 80 128 226 198Z" fill="#e0281a"/>
+  <path d="M256 150 278 236 364 256 278 276 256 362 234 276 148 256 234 236Z" fill="#f3eee3"/>
+  <text x="256" y="420" text-anchor="middle" font-family="Arial,sans-serif" font-size="46" font-weight="900" letter-spacing="5" fill="#f3eee3">BIL</text>
+</svg>
