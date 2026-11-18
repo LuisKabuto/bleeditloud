@@ -1,4 +1,5 @@
-import { LEGACY_EVENT_ID, normalizeEventId } from "./event-model.js";
+import { LEGACY_EVENT_ID, normalizeEventId, createEventRecord } from "./event-model.js";
+import { listEvents as listEventsFromCatalog } from "./event-catalog.js";
 const TOKEN_SCOPE = "https://www.googleapis.com/auth/firebase.database";
 const EVENT_ID = LEGACY_EVENT_ID;
 const ADMIN_EMAIL = "admin@bleeditloud.com";
@@ -88,11 +89,29 @@ async function accessToken(env) {
   return cachedAccessToken;
 }
 
+function rootDbUrl(env, path = "") {
+  const base = String(env.FIREBASE_DATABASE_URL || "").replace(/\\/+$/, "");
+  if (!base) throw new ApiError(500, "Falta FIREBASE_DATABASE_URL.");
+  const parts = path ? path.split("/").map(encodeURIComponent).join("/") : "";
+  return base + (parts ? "/" + parts : "") + ".json";
+}
 function dbUrl(env, eventId = EVENT_ID, path = "") {
   const base = String(env.FIREBASE_DATABASE_URL || "").replace(/\/+$/, "");
   if (!base) throw new ApiError(500, "Falta FIREBASE_DATABASE_URL.");
   const parts = path ? path.split("/").map(encodeURIComponent).join("/") : "";
   return base + "/events/" + encodeURIComponent(normalizeEventId(eventId)) + (parts ? "/" + parts : "") + ".json";
+}
+async function rootDbGet(env, path = "") {
+  const token = await accessToken(env);
+  const response = await fetch(rootDbUrl(env, path), { headers: { authorization: "Bearer " + token, "X-Firebase-ETag": "true" } });
+  if (!response.ok) throw new ApiError(502, "No se pudo consultar el catálogo de eventos.");
+  return { value: await response.json(), etag: response.headers.get("ETag") };
+}
+async function rootDbPut(env, path, value, etag = null) {
+  const token = await accessToken(env);
+  const headers = { authorization: "Bearer " + token, "content-type": "application/json" };
+  if (etag) headers["if-match"] = etag;
+  return fetch(rootDbUrl(env, path), { method: "PUT", headers, body: JSON.stringify(value) });
 }
 async function dbGet(env, eventId = EVENT_ID, path = "") {
   const token = await accessToken(env);
@@ -343,11 +362,28 @@ async function getPublicTicketInfo(request, env, data) {
   return { exists: true, e: clean(t.e, 80), day: clean(t.day || "General", 80), i: Number(t.i) || 0, u: t.u === true };
 }
 
+
+async function listEvents(request, env) {
+  await verifyUser(request, env, [ADMIN_EMAIL]);
+  const snap = await rootDbGet(env, "eventCatalog");
+  return { events: listEventsFromCatalog(snap.value || {}) };
+}
+async function createOrUpdateEvent(request, env, data) {
+  await verifyUser(request, env, [ADMIN_EMAIL]);
+  const event = createEventRecord(data);
+  const path = "eventCatalog/" + event.id;
+  const response = await rootDbPut(env, path, event);
+  if (!response.ok) throw new ApiError(502, "No se pudo guardar el evento.");
+  return { ok: true, event };
+}
+
 async function route(request, env) {
   checkOrigin(request, env);
   if (request.method !== "POST") throw new ApiError(405, "Usa POST para esta operación.");
   const data = await request.json().catch(() => { throw new ApiError(400, "El cuerpo debe ser JSON válido."); });
   switch (new URL(request.url).pathname.replace(/^\/+|\/+$/g, "")) {
+    case "listEvents": return listEvents(request, env);
+    case "createEvent": return createOrUpdateEvent(request, env, data);
     case "createPendingOrder": return createPendingOrder(request, env, data);
     case "approvePayment": return approvePayment(request, env, data);
     case "rejectPayment": return rejectPayment(request, env, data);
