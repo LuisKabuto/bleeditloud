@@ -26,7 +26,7 @@ function initFirebase(){
     fbConnected=true;
     setBadge('on','Nube online');
     /* config es pública (datos del evento, sin secretos) */
-    fbDB.ref('events/'+FB_EVENT_ID+'/config').on('value',function(s){
+    fbDB.ref('events/'+ACTIVE_EVENT_ID+'/config').on('value',function(s){
       salesConfig=s.val()||{};
       if(!salesConfig.s1_name)salesConfig.s1_name='Preventa 1';
       if(salesConfig.s1_price===undefined)salesConfig.s1_price=10;
@@ -62,6 +62,7 @@ function initFirebase(){
           return;
         }
         attachRoleListeners();
+        if(AUTH.role==='admin'&&typeof loadAdminEvents==='function')loadAdminEvents();
         if(wantLogin)enterPanel();
       }else if(u){
         fbAuth.signOut();
@@ -76,12 +77,12 @@ function initFirebase(){
 function attachRoleListeners(){
   if(AUTH.listenersOn)return;AUTH.listenersOn=true;
   setBadge('on',AUTH.role==='admin'?'Admin online':'Portero online');
-  fbDB.ref('events/'+FB_EVENT_ID+'/attendees').on('value',function(s){attendees=s.val()?Object.values(s.val()):[];updateUI();checkMigrationHint();});
-  fbDB.ref('events/'+FB_EVENT_ID+'/tickets').on('value',function(s){tickets=s.val()||{};updateUI();});
-  fbDB.ref('events/'+FB_EVENT_ID+'/doorLog').on('value',function(s){doorLog=s.val()||{};renderTicketCards();});
+  fbDB.ref('events/'+ACTIVE_EVENT_ID+'/attendees').on('value',function(s){attendees=s.val()?Object.values(s.val()):[];updateUI();checkMigrationHint();});
+  fbDB.ref('events/'+ACTIVE_EVENT_ID+'/tickets').on('value',function(s){tickets=s.val()||{};updateUI();});
+  fbDB.ref('events/'+ACTIVE_EVENT_ID+'/doorLog').on('value',function(s){doorLog=s.val()||{};renderTicketCards();});
   if(AUTH.role==='admin'){
-    fbDB.ref('events/'+FB_EVENT_ID+'/pending').on('value',function(s){var v=s.val()||{};pendingPayments=Object.keys(v).map(function(k){var o=v[k]||{};o.id=k;return o;});renderPendingPayments();});
-    fbDB.ref('events/'+FB_EVENT_ID+'/pub').on('value',function(s){pubData=s.val()||{};updatePubStatus();});
+    fbDB.ref('events/'+ACTIVE_EVENT_ID+'/pending').on('value',function(s){var v=s.val()||{};pendingPayments=Object.keys(v).map(function(k){var o=v[k]||{};o.id=k;return o;});renderPendingPayments();});
+    fbDB.ref('events/'+ACTIVE_EVENT_ID+'/pub').on('value',function(s){pubData=s.val()||{};updatePubStatus();});
   }
 }
 function setBadge(cls,txt){var b=document.getElementById('fb-badge');b.className='fb-badge '+(cls||'');b.textContent=txt;}
@@ -117,7 +118,7 @@ function signOutNow(){
 }
 function saveAttendees(){
   if(!fbConnected){updateUI();return;}
-  fbDB.ref('events/'+FB_EVENT_ID+'/attendees').set(attendees).catch(function(err){
+  fbDB.ref('events/'+ACTIVE_EVENT_ID+'/attendees').set(attendees).catch(function(err){
     showToast('Sin permiso para escribir la lista','e');updateUI();
   });
 }
