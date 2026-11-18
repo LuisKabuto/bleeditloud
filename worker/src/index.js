@@ -268,7 +268,7 @@ async function setPublicIndex(request, env, data) {
   const dni = digits(data.dni);
   const qrs = data.qrs && typeof data.qrs.iv === "string" && typeof data.qrs.ct === "string" ? data.qrs : null;
   if (!/^[0-9]{5,12}$/.test(dni)) throw new ApiError(400, "Cédula inválida.");
-  return eventTransaction(env, event => {
+  return eventTransaction(env, eventId, event => {
     const rows = (Array.isArray(event.attendees) ? event.attendees : []).filter(a => a && digits(a.D) === dni);
     if (!rows.length) throw new ApiError(404, "No hay asistentes para actualizar.");
     const tickets = Object.values(event.tickets || {}).filter(t => t && digits(t.d) === dni);
@@ -286,7 +286,7 @@ async function rejectPayment(request, env, data) {
   await verifyUser(request, env, [ADMIN_EMAIL]);
   const id = clean(data.id, 128);
   if (!/^[A-Za-z0-9_-]{5,128}$/.test(id)) throw new ApiError(400, "Solicitud inválida.");
-  return eventTransaction(env, event => {
+  return eventTransaction(env, eventId, event => {
     if (!event.pending || !event.pending[id]) throw new ApiError(409, "La solicitud ya fue procesada.");
     delete event.pending[id];
     return { ok: true };
@@ -298,7 +298,7 @@ async function checkInTicket(request, env, data) {
   const email = await verifyUser(request, env, [ADMIN_EMAIL, DOOR_EMAIL]);
   const serial = clean(data.serial, 16).toUpperCase();
   if (!/^[A-Z2-9]{8}$/.test(serial)) throw new ApiError(400, "Serial inválido.");
-  return eventTransaction(env, event => {
+  return eventTransaction(env, eventId, event => {
     const ticket = event.tickets && event.tickets[serial];
     if (!ticket) return { ok: false, exists: false, alreadyUsed: false };
     if (ticket.u === true) return { ok: false, exists: true, alreadyUsed: true };
@@ -316,7 +316,7 @@ async function getPublicOrderIndex(request, env, data) {
   rateLimit(request, "orderLookup", 20, 10 * 60 * 1000);
   const dni = digits(data.dni), phone = digits(data.phone);
   if (!/^[0-9]{5,12}$/.test(dni) || phone.length < 7 || phone.length > 16) return { found: false };
-  const snap = await dbGet(env);
+  const snap = await dbGet(env, eventId);
   const event = snap.value || {};
   const p = event.pub && event.pub[dni];
   if (p && p.p === true && !p.qrs) {
