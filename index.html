@@ -179,7 +179,8 @@
       </div>
     </div>
     <nav class="tabs">
-      <button class="at ac" data-tab="tab-payments" data-admin-only onclick="switchTab('tab-payments',this)"><i class="fa-solid fa-money-bill-wave mr-1"></i> Pagos</button>
+      <button class="at ac" data-tab="tab-events" data-admin-only onclick="switchTab('tab-events',this)"><i class="fa-solid fa-calendar-days mr-1"></i> Eventos</button>
+      <button class="at" data-tab="tab-payments" data-admin-only onclick="switchTab('tab-payments',this)"><i class="fa-solid fa-money-bill-wave mr-1"></i> Pagos</button>
       <button class="at" data-tab="tab-qr" data-admin-only onclick="switchTab('tab-qr',this)"><i class="fa-solid fa-qrcode mr-1"></i> Entradas</button>
       <button class="at" data-tab="tab-verify" onclick="switchTab('tab-verify',this)"><i class="fa-solid fa-magnifying-glass mr-1"></i> Verificar</button>
       <button class="at" data-tab="tab-list" data-admin-only onclick="switchTab('tab-list',this)"><i class="fa-solid fa-list mr-1"></i> Lista</button>
@@ -187,7 +188,30 @@
     </nav>
   </div>
 
-  <div id="tab-payments" class="tab-c on">
+  <div id="tab-events" class="tab-c on">
+    <div class="wrap-md" style="margin:0 auto">
+      <div class="ab p-6 mb-5">
+        <div class="sec-h">Evento activo</div>
+        <p class="hint">Selecciona el evento que usarán las compras, consultas y entradas de esta sesión.</p>
+        <select id="event-selector" class="di mb-4" onchange="selectActiveEvent(this.value)"></select>
+        <div id="event-active-status" class="mono" style="font-size:11px;color:var(--muted)">Cargando eventos…</div>
+      </div>
+      <div class="ab p-6">
+        <div class="sec-h">Crear evento</div>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <input id="new-event-id" class="di" placeholder="Id: caracas-rock-2027">
+          <input id="new-event-date" class="di" type="date">
+        </div>
+        <input id="new-event-name" class="di mb-4" placeholder="Nombre del evento">
+        <input id="new-event-city" class="di mb-4" placeholder="Ciudad">
+        <input id="new-event-venue" class="di mb-4" placeholder="Lugar">
+        <button class="bp w-full" onclick="createAdminEvent()"><i class="fa-solid fa-plus mr-2"></i>Crear evento</button>
+      </div>
+      <div id="event-list" class="mt-5"></div>
+    </div>
+  </div>
+
+  <div id="tab-payments" class="tab-c">
     <div class="wrap-lg" style="margin:0 auto">
       <div class="sec-h">Pagos pendientes de revisión</div>
       <div id="pending-payments-list" class="space-y-3"></div>
