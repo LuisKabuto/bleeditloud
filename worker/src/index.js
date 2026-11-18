@@ -1,5 +1,6 @@
+import { LEGACY_EVENT_ID, normalizeEventId } from "./event-model.js";
 const TOKEN_SCOPE = "https://www.googleapis.com/auth/firebase.database";
-const EVENT_ID = "live-cafe-rock-2026";
+const EVENT_ID = LEGACY_EVENT_ID;
 const ADMIN_EMAIL = "admin@bleeditloud.com";
 const DOOR_EMAIL = "portero@bleeditloud.com";
 const SERIAL_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -87,32 +88,32 @@ async function accessToken(env) {
   return cachedAccessToken;
 }
 
-function dbUrl(env, path = "") {
+function dbUrl(env, eventId = EVENT_ID, path = "") {
   const base = String(env.FIREBASE_DATABASE_URL || "").replace(/\/+$/, "");
   if (!base) throw new ApiError(500, "Falta FIREBASE_DATABASE_URL.");
   const parts = path ? path.split("/").map(encodeURIComponent).join("/") : "";
-  return base + "/events/" + encodeURIComponent(EVENT_ID) + (parts ? "/" + parts : "") + ".json";
+  return base + "/events/" + encodeURIComponent(normalizeEventId(eventId)) + (parts ? "/" + parts : "") + ".json";
 }
-async function dbGet(env, path = "") {
+async function dbGet(env, eventId = EVENT_ID, path = "") {
   const token = await accessToken(env);
-  const response = await fetch(dbUrl(env, path), { headers: { authorization: "Bearer " + token, "X-Firebase-ETag": "true" } });
+  const response = await fetch(dbUrl(env, eventId, path), { headers: { authorization: "Bearer " + token, "X-Firebase-ETag": "true" } });
   if (!response.ok) throw new ApiError(502, "No se pudo consultar Realtime Database.");
   const etag = response.headers.get("ETag");
   if (!etag) throw new ApiError(502, "Realtime Database no devolvió ETag; se canceló la operación para evitar sobrescribir datos.");
   return { value: await response.json(), etag };
 }
-async function dbPut(env, path, value, etag = null) {
+async function dbPut(env, eventId, path, value, etag = null) {
   const token = await accessToken(env);
   const headers = { authorization: "Bearer " + token, "content-type": "application/json" };
   if (etag) headers["if-match"] = etag;
-  return fetch(dbUrl(env, path), { method: "PUT", headers, body: JSON.stringify(value) });
+  return fetch(dbUrl(env, eventId, path), { method: "PUT", headers, body: JSON.stringify(value) });
 }
-async function eventTransaction(env, mutate, attempts = 6) {
+async function eventTransaction(env, eventId, mutate, attempts = 6) {
   for (let i = 0; i < attempts; i++) {
-    const snap = await dbGet(env);
+    const snap = await dbGet(env, eventId);
     const event = safeClone(snap.value);
     const result = await mutate(event);
-    const response = await dbPut(env, "", event, snap.etag);
+    const response = await dbPut(env, eventId, "", event, snap.etag);
     if (response.status === 412) continue;
     if (!response.ok) throw new ApiError(502, "No se pudo guardar el cambio en Realtime Database.");
     return result;
@@ -167,6 +168,7 @@ async function decryptSerials(dni, phone, blob) {
 }
 
 async function createPendingOrder(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   rateLimit(request, "purchase", 8, 10 * 60 * 1000);
   const name = clean(data.name, 80), dni = digits(data.dni), phone = digits(data.phone);
   const ref = clean(data.ref, 80), qty = Number(data.qty), stageName = clean(data.stage, 80);
@@ -175,7 +177,7 @@ async function createPendingOrder(request, env, data) {
     throw new ApiError(400, "Revisa nombre, cédula, teléfono, referencia y cantidad (1–20).");
   }
   const key = await refHash(ref);
-  return eventTransaction(env, async event => {
+  return eventTransaction(env, eventId, async event => {
     event.config = event.config || {};
     event.pending = event.pending || {};
     event._security = event._security || {};
@@ -197,10 +199,11 @@ async function createPendingOrder(request, env, data) {
 }
 
 async function approvePayment(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   const email = await verifyUser(request, env, [ADMIN_EMAIL]);
   const id = clean(data.id, 128);
   if (!/^[A-Za-z0-9_-]{5,128}$/.test(id)) throw new ApiError(400, "Solicitud inválida.");
-  const result = await eventTransaction(env, event => {
+  const result = await eventTransaction(env, eventId, event => {
     event.config = event.config || {};
     event.pending = event.pending || {};
     const p = event.pending[id];
@@ -260,6 +263,7 @@ async function approvePayment(request, env, data) {
 }
 
 async function setPublicIndex(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   await verifyUser(request, env, [ADMIN_EMAIL]);
   const dni = digits(data.dni);
   const qrs = data.qrs && typeof data.qrs.iv === "string" && typeof data.qrs.ct === "string" ? data.qrs : null;
@@ -278,6 +282,7 @@ async function setPublicIndex(request, env, data) {
 }
 
 async function rejectPayment(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   await verifyUser(request, env, [ADMIN_EMAIL]);
   const id = clean(data.id, 128);
   if (!/^[A-Za-z0-9_-]{5,128}$/.test(id)) throw new ApiError(400, "Solicitud inválida.");
@@ -289,6 +294,7 @@ async function rejectPayment(request, env, data) {
 }
 
 async function checkInTicket(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   const email = await verifyUser(request, env, [ADMIN_EMAIL, DOOR_EMAIL]);
   const serial = clean(data.serial, 16).toUpperCase();
   if (!/^[A-Z2-9]{8}$/.test(serial)) throw new ApiError(400, "Serial inválido.");
@@ -306,6 +312,7 @@ async function checkInTicket(request, env, data) {
 }
 
 async function getPublicOrderIndex(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   rateLimit(request, "orderLookup", 20, 10 * 60 * 1000);
   const dni = digits(data.dni), phone = digits(data.phone);
   if (!/^[0-9]{5,12}$/.test(dni) || phone.length < 7 || phone.length > 16) return { found: false };
@@ -326,10 +333,11 @@ async function getPublicOrderIndex(request, env, data) {
 }
 
 async function getPublicTicketInfo(request, env, data) {
+  const eventId = normalizeEventId(data.eventId || EVENT_ID);
   rateLimit(request, "ticketLookup", 60, 10 * 60 * 1000);
   const serial = clean(data.serial, 16).toUpperCase();
   if (!/^[A-Z2-9]{8}$/.test(serial)) throw new ApiError(400, "Serial inválido.");
-  const snap = await dbGet(env, "tickets/" + serial);
+  const snap = await dbGet(env, eventId, "tickets/" + serial);
   const t = snap.value;
   if (!t) return { exists: false };
   return { exists: true, e: clean(t.e, 80), day: clean(t.day || "General", 80), i: Number(t.i) || 0, u: t.u === true };
