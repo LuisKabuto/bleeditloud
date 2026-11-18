@@ -8,7 +8,7 @@ var _a1="1:838453069044",_a2="web:ce6346a7089385fa628aa1";
 var FIREBASE_CONFIG={apiKey:_k1+_k2,authDomain:"bleeditloud-6fb33.firebaseapp.com",databaseURL:"https://bleeditloud-6fb33-default-rtdb.firebaseio.com",projectId:"bleeditloud-6fb33",storageBucket:"bleeditloud-6fb33.firebasestorage.app",messagingSenderId:"838453069044",appId:_a1+_a2};
 var FB_EVENT_ID='live-cafe-rock-2026';
 /* Evento activo; se puede cambiar desde el selector multi-evento sin romper el histórico. */
-var ACTIVE_EVENT_ID=FB_EVENT_ID;
+var ACTIVE_EVENT_ID=localStorage.getItem('bleedit_active_event')||FB_EVENT_ID;
 /* Backend seguro compatible con Firebase Spark. Configurar la URL después de desplegar el Worker. */
 var BACKEND_API_URL='';
 async function callBackend(action,payload){
